@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface AVAudioProximityDetector : NSObject
 
