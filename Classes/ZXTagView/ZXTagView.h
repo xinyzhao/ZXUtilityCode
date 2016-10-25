@@ -26,8 +26,10 @@
 
 #import <UIKit/UIKit.h>
 
+@class ZXTagLabel;
+
 /// ZXTagAction
-typedef void(^ZXTagAction)(NSString *tag, NSUInteger index);
+typedef void(^ZXTagAction)(ZXTagLabel *label);
 
 /// ZXTagLabel
 @interface ZXTagLabel : UILabel

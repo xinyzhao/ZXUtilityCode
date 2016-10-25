@@ -218,8 +218,7 @@
     UITapGestureRecognizer *tap = sender;
     ZXTagLabel *label = (ZXTagLabel *)tap.view;
     if (label.action) {
-        NSUInteger index = [self.tagLabels indexOfObject:label];
-        label.action(label.text, index);
+        label.action(label);
     }
 }
 
