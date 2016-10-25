@@ -45,6 +45,7 @@ pod "ZXUtilityCode"
 * UIPopoverWindow
 * UITableViewCell+Separator
 * UIViewController+Extra
+* ZXAlertView
 * ZXPageView
 * ZXTabBarController
 * ZXTagView

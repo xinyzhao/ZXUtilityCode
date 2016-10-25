@@ -51,6 +51,7 @@
 #import "UIPopoverWindow.h"
 #import "UITableViewCell+Separator.h"
 #import "UIViewController+Extra.h"
+#import "ZXAlertView.h"
 #import "ZXPageView.h"
 #import "ZXTabBarController.h"
 #import "ZXTagView.h"
