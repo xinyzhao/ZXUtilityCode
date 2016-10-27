@@ -1,5 +1,5 @@
 //
-// ZXImageViewAction.m
+// ZXImageViewCell.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -24,8 +24,10 @@
 // THE SOFTWARE.
 //
 
-#import "ZXImageViewAction.h"
+#import <UIKit/UIKit.h>
 
-@implementation ZXImageViewAction
+@interface ZXImageViewCell : UICollectionViewCell
+@property (nonatomic, copy) UIImage *image;
+@property (nonatomic, copy) NSURL *imageURL;
 
 @end

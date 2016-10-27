@@ -46,6 +46,7 @@ pod "ZXUtilityCode"
 * UITableViewCell+Separator
 * UIViewController+Extra
 * ZXAlertView
+* ZXImageView
 * ZXPageView
 * ZXTabBarController
 * ZXTagView
@@ -59,7 +60,6 @@ pod "ZXUtilityCode"
 * Macrodef
 * ZXBadgeLabel
 * ZXColorPickerController
-* ZXImageViewController
 * ZXRefreshHeaderView
 
 ## License

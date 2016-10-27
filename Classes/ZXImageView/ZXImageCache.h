@@ -1,5 +1,5 @@
 //
-// ZXImageView.h
+// ZXImageCache.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -25,23 +25,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UIImageView+WebCache.h"
 
-@protocol ZXImageViewDelegate;
+typedef void(^ZXImageCompletion)(UIImage *image, NSError *error, NSURL *imageURL);
 
-@interface ZXImageView : UIView
-@property (nonatomic, assign) id<ZXImageViewDelegate> delegate;
-@property (nonatomic, strong) UIImage *image;
-@property (nonatomic, strong) NSURL *imageURL;
-
-- (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)image;
+@interface UIImageView (ZXImageCache)
+- (void)zx_setImageWithURL:(NSURL *)imageURL;
+- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image;
+- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCompletion)completion;
+- (void)zx_cancelImageLoad;
 @end
-
-@protocol ZXImageViewDelegate <NSObject>
-@optional
-- (void)imageViewDidSingleTap:(ZXImageView *)imageView;
-- (void)imageViewDidDoubleTap:(ZXImageView *)imageView;
-- (void)imageViewDidLongPress:(ZXImageView *)imageView;
-- (void)imageView:(ZXImageView *)imageView willShowActivityIndicatorView:(UIActivityIndicatorView *)activityIndicatorView;
-@end
-

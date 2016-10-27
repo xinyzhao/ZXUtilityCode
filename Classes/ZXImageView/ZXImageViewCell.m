@@ -1,5 +1,5 @@
 //
-// ZXImageView.m
+// ZXImageViewCell.m
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -25,8 +25,14 @@
 //
 
 #import "ZXImageView.h"
+#import "ZXImageViewCell.h"
+#import "ZXImageCache.h"
 
-@interface ZXImageView () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
+@interface ZXImageViewCell () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
+{
+    __weak ZXImageView *internalImageView;
+    __weak NSIndexPath *internalIndexPath;
+}
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
@@ -36,15 +42,26 @@
 
 @end
 
-@implementation ZXImageView
+@implementation ZXImageViewCell
 
 - (void)dealloc
 {
-//    [self.imageView sd_cancelCurrentAnimationImagesLoad];
-//    [self.imageView sd_cancelCurrentImageLoad];
+//    NSLog(@"%s", __func__);
 }
 
-#pragma mark - Overwrite
+#pragma mark Setter
+
+- (void)setImage:(UIImage *)image {
+    _image = [image copy];
+    [self setNeedsDisplay];
+}
+
+- (void)setImageURL:(NSURL *)imageURL {
+    _imageURL = [imageURL copy];
+    [self setNeedsLayout];
+}
+
+#pragma mark Overwrite
 
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
@@ -122,7 +139,7 @@
         self.scrollView.delegate = self;
         self.scrollView.showsHorizontalScrollIndicator = NO;
         self.scrollView.showsVerticalScrollIndicator = NO;
-        [self addSubview:self.scrollView];
+        [self.contentView addSubview:self.scrollView];
     } else {
         self.scrollView.frame = rect;
     }
@@ -130,7 +147,7 @@
     if (self.activityIndicatorView == nil) {
         self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         self.activityIndicatorView.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
-        [self addSubview:self.activityIndicatorView];
+        [self.contentView addSubview:self.activityIndicatorView];
     } else {
         self.activityIndicatorView.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
     }
@@ -150,43 +167,18 @@
     }
     //
     if (self.imageURL) {
-        if ([self.delegate respondsToSelector:@selector(imageView:willShowActivityIndicatorView:)]) {
-            [self.delegate imageView:self willShowActivityIndicatorView:self.activityIndicatorView];
-        }
         __weak typeof(self) weakSelf = self;
         [self.activityIndicatorView startAnimating];
         [self.imageView setUserInteractionEnabled:NO];
-        [self.imageView sd_cancelCurrentAnimationImagesLoad];
-        [self.imageView sd_cancelCurrentImageLoad];
-        [self.imageView sd_setImageWithURL:self.imageURL
-                          placeholderImage:self.image
-                                   options:self.image ? SDWebImageRetryFailed : SDWebImageRetryFailed|SDWebImageProgressiveDownload
-                                 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                                     [weakSelf.activityIndicatorView stopAnimating];
-                                     if (error) {
-                                         NSLog(@"%s %@", __PRETTY_FUNCTION__, error.localizedDescription);
-                                     } else if (image) {
-                                         weakSelf.image = image;
-                                     }
-                                 }];
+        [self.imageView zx_setImageWithURL:self.imageURL placeholder:self.image completion:^(UIImage *image, NSError *error, NSURL *imageURL) {
+            [weakSelf.activityIndicatorView stopAnimating];
+            if (error) {
+                NSLog(@"%s %@", __func__, error.localizedDescription);
+            } else if (image) {
+                weakSelf.image = image;
+            }
+        }];
     }
-}
-
-#pragma mark Setter
-
-- (void)setImage:(UIImage *)image {
-    _image = [image copy];
-    [self setNeedsDisplay];
-}
-
-- (void)setImageURL:(NSURL *)imageURL {
-    _imageURL = [imageURL copy];
-    [self setNeedsLayout];
-}
-
-- (void)setImageWithURL:(NSURL *)imageURL placeholderImage:(UIImage *)image {
-    self.image = image;
-    self.imageURL = imageURL;
 }
 
 #pragma mark Functions
@@ -244,8 +236,10 @@
 #pragma mark Target Actions
 
 - (void)onSingleTap:(id)sender {
-    if ([self.delegate respondsToSelector:@selector(imageViewDidSingleTap:)]) {
-        [self.delegate imageViewDidSingleTap:self];
+    __weak typeof(internalImageView) weakImageView = internalImageView;
+    __weak typeof(internalIndexPath) weakIndexPath = internalIndexPath;
+    if ([internalImageView.delegate respondsToSelector:@selector(imageView:didSelectItemAtIndex:)]) {
+        [weakImageView.delegate imageView:weakImageView didSelectItemAtIndex:weakIndexPath.item];
     }
 }
 
@@ -263,16 +257,15 @@
         rect.origin.y = point.y - rect.size.height / 2;
         [self.scrollView zoomToRect:rect animated:YES];
     }
-    if ([self.delegate respondsToSelector:@selector(imageViewDidDoubleTap:)]) {
-        [self.delegate imageViewDidDoubleTap:self];
-    }
 }
 
 - (void)onLongPress:(id)sender {
-    if ([self.delegate respondsToSelector:@selector(imageViewDidLongPress:)]) {
-        UILongPressGestureRecognizer *lp = sender;
-        if (lp.state == UIGestureRecognizerStateBegan) {
-            [self.delegate imageViewDidLongPress:self];
+    UILongPressGestureRecognizer *lp = sender;
+    if (lp.state == UIGestureRecognizerStateBegan) {
+        __weak typeof(internalImageView) weakImageView = internalImageView;
+        __weak typeof(internalIndexPath) weakIndexPath = internalIndexPath;
+        if ([internalImageView.delegate respondsToSelector:@selector(imageView:longPressItemAtIndex:)]) {
+            [weakImageView.delegate imageView:weakImageView longPressItemAtIndex:weakIndexPath.item];
         }
     }
 }

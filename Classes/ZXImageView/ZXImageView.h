@@ -1,5 +1,5 @@
 //
-// ZXImageViewAction.h
+// ZXImageView.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -24,13 +24,33 @@
 // THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
-#import "ZXImageView.h"
+#import "ZXImageViewCell.h"
 
-typedef void(^ZXImageViewBlock)();
+@protocol ZXImageViewDataSource;
+@protocol ZXImageViewDelegate;
 
-@interface ZXImageViewAction : NSObject
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) ZXImageViewBlock block;
+@interface ZXImageView : UIView
+@property (nonatomic, weak) id <ZXImageViewDataSource> dataSource;
+@property (nonatomic, weak) id <ZXImageViewDelegate> delegate;
+@property (nonatomic, assign) CGFloat itemSpacing; // Defalut 10.f
+
+- (ZXImageViewCell *)dequeueReusableCellForItemAtIndex:(NSInteger)index;
+- (NSInteger)numberOfItems;
+- (void)reloadData;
+- (void)scrollToItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 
 @end
+
+@protocol ZXImageViewDataSource <NSObject>
+@required
+- (NSInteger)numberOfItemsInImageView:(ZXImageView *)imageView;
+- (ZXImageViewCell *)imageView:(ZXImageView *)imageView cellForItemAtIndex:(NSInteger)index;
+@end
+
+@protocol ZXImageViewDelegate <NSObject>
+@optional
+- (void)imageView:(ZXImageView *)imageView didDisplayItemAtIndex:(NSInteger)index;
+- (void)imageView:(ZXImageView *)imageView didSelectItemAtIndex:(NSInteger)index;
+- (void)imageView:(ZXImageView *)imageView longPressItemAtIndex:(NSInteger)index;
+@end
+
