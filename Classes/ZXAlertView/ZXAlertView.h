@@ -38,10 +38,10 @@
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *message;
 
-/// Link UIAlertView, compatible with iOS 7,8
+/// Like UIAlertView, compatible with iOS 7,8
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
 
-/// Link UIActionSheet, compatible with iOS 7,8
+/// Like UIActionSheet, compatible with iOS 7,8
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction destructiveAction:(ZXAlertAction *)destructiveAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
 
 - (void)showInViewController:(UIViewController *)viewController;
