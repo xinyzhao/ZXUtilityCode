@@ -26,9 +26,11 @@
 
 #import "ZXAlertView.h"
 
-#define _IOS_VERSION_       [[UIDevice currentDevice].systemVersion floatValue]
-#define _IOS_8_OR_LATER_    (_IOS_VERSION_ >= 8.0)
-#define _IOS_8_OR_EARLIER_  (_IOS_VERSION_ < 8.0)
+#ifndef _SYSTEM_VERSION_
+#define _SYSTEM_VERSION_    [[UIDevice currentDevice].systemVersion floatValue]
+#endif//_SYSTEM_VERSION_
+#define _IOS_8_OR_EARLY_    (_SYSTEM_VERSION_ <  10.0)
+#define _IOS_8_OR_LATER_    (_SYSTEM_VERSION_ >= 8.0)
 
 typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 
@@ -54,10 +56,11 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 
 @end
 
-@interface ZXAlertView () <UIAlertViewDelegate>
+@interface ZXAlertView () <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) NSMutableArray *alertActions;
 @property (nonatomic, strong) UIAlertController *alertController;
 @property (nonatomic, strong) UIAlertView *alertView;
+@property (nonatomic, strong) UIActionSheet *actionSheet;
 
 @end
 
@@ -69,14 +72,15 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
         self.title = title;
         self.message = message;
         //
-        if (_IOS_8_OR_EARLIER_) {
+        if (_IOS_8_OR_EARLY_) {
+            //
+            self.alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelAction.title otherButtonTitles:nil];
+            [self.alertView insertSubview:self atIndex:0];
+            //
             self.alertActions = [NSMutableArray array];
             if (cancelAction) {
                 [self.alertActions addObject:cancelAction];
             }
-            //
-            self.alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelAction.title otherButtonTitles:nil];
-            [self.alertView insertSubview:self atIndex:0];
             //
             if (otherActions) {
                 [self.alertActions addObject:otherActions];
@@ -96,6 +100,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
             }
             
         } else {
+            //
             self.alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
             if (cancelAction) {
                 UIAlertAction *alertAction = [UIAlertAction actionWithTitle:cancelAction.title style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
@@ -132,12 +137,111 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
             }
         }
     }
+    //
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction destructiveAction:(ZXAlertAction *)destructiveAction otherActions:(ZXAlertAction *)otherActions, ... {
+    self = [super init];
+    if (self) {
+        self.title = title;
+        self.message = message;
+        //
+        if (_IOS_8_OR_EARLY_) {
+            //
+            self.actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:cancelAction.title destructiveButtonTitle:destructiveAction.title otherButtonTitles:nil];
+            [self.actionSheet insertSubview:self atIndex:0];
+            //
+            self.alertActions = [NSMutableArray array];
+            if (destructiveAction) {
+                [self.alertActions addObject:destructiveAction];
+            }
+            //
+            if (otherActions) {
+                [self.alertActions addObject:otherActions];
+                [self.actionSheet addButtonWithTitle:otherActions.title ? otherActions.title : @""];
+                //
+                va_list vaList;
+                va_start(vaList, otherActions);
+                id obj;
+                while ((obj = va_arg(vaList, id))) {
+                    if ([obj isKindOfClass:[ZXAlertAction class]]) {
+                        ZXAlertAction *otherAction = obj;
+                        [self.alertActions addObject:obj];
+                        [self.actionSheet addButtonWithTitle:otherAction.title];
+                    }
+                }
+                va_end(vaList);
+            }
+            //
+            if (cancelAction) {
+                [self.alertActions addObject:cancelAction];
+            }
+            
+        } else {
+            //
+            self.alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleActionSheet];
+            //
+            if (cancelAction) {
+                UIAlertAction *alertAction = [UIAlertAction actionWithTitle:cancelAction.title style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                    if (cancelAction.handler) {
+                        cancelAction.handler(cancelAction);
+                    }
+                }];
+                [self.alertController addAction:alertAction];
+            }
+            //
+            if (destructiveAction) {
+                UIAlertAction *alertAction = [UIAlertAction actionWithTitle:destructiveAction.title style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+                    if (destructiveAction.handler) {
+                        destructiveAction.handler(destructiveAction);
+                    }
+                }];
+                [self.alertController addAction:alertAction];
+            }
+            //
+            if (otherActions) {
+                UIAlertAction *alertAction = [UIAlertAction actionWithTitle:otherActions.title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    if (otherActions.handler) {
+                        otherActions.handler(otherActions);
+                    }
+                }];
+                [self.alertController addAction:alertAction];
+                //
+                va_list vaList;
+                va_start(vaList, otherActions);
+                id obj;
+                while ((obj = va_arg(vaList, id))) {
+                    if ([obj isKindOfClass:[ZXAlertAction class]]) {
+                        ZXAlertAction *otherAction = obj;
+                        UIAlertAction *alertAction = [UIAlertAction actionWithTitle:otherAction.title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                            if (otherAction.handler) {
+                                otherAction.handler(otherAction);
+                            }
+                        }];
+                        [self.alertController addAction:alertAction];
+                    }
+                }
+                va_end(vaList);
+            }
+        }
+    }
+    //
     return self;
 }
 
 - (void)showInViewController:(UIViewController *)viewController {
-    if (_IOS_8_OR_EARLIER_) {
-        [self.alertView show];
+    if (_IOS_8_OR_EARLY_) {
+        if (self.alertView) {
+            [self.alertView show];
+        }
+        if (self.actionSheet) {
+            if (viewController.tabBarController) {
+                [self.actionSheet showInView:[UIApplication sharedApplication].keyWindow];
+            } else {
+                [self.actionSheet showInView:viewController.view];
+            }
+        }
     } else if (self.alertController) {
         [viewController presentViewController:self.alertController animated:YES completion:nil];
     }
@@ -146,6 +250,16 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 #pragma mark <UIAlertViewDelegate>
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    ZXAlertAction *action = self.alertActions[buttonIndex];
+    if (action.handler) {
+        action.handler(action);
+    }
+    [self removeFromSuperview];
+}
+
+#pragma mark <UIActionSheetDelegate>
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     ZXAlertAction *action = self.alertActions[buttonIndex];
     if (action.handler) {
         action.handler(action);

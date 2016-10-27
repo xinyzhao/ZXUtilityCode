@@ -29,15 +29,20 @@
 @interface ZXAlertAction : NSObject
 @property (nonatomic, strong) NSString *title;
 
-+ (instancetype)actionWithTitle:(NSString *)title 
-                        handler:(void (^)(ZXAlertAction *action))handler;
++ (instancetype)actionWithTitle:(NSString *)title handler:(void (^)(ZXAlertAction *action))handler;
+- (instancetype)initWithTitle:(NSString *)title handler:(void (^)(ZXAlertAction *action))handler;
+
 @end
 
 @interface ZXAlertView : UIView
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *message;
 
+/// Link UIAlertView, compatible with iOS 7,8
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
+
+/// Link UIActionSheet, compatible with iOS 7,8
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction destructiveAction:(ZXAlertAction *)destructiveAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
 
 - (void)showInViewController:(UIViewController *)viewController;
 
