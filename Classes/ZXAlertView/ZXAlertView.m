@@ -29,8 +29,14 @@
 #ifndef _SYSTEM_VERSION_
 #define _SYSTEM_VERSION_    [[UIDevice currentDevice].systemVersion floatValue]
 #endif//_SYSTEM_VERSION_
-#define _IOS_8_OR_EARLY_    (_SYSTEM_VERSION_ <  10.0)
+
+#ifndef _IOS_8_OR_EARLY_
+#define _IOS_8_OR_EARLY_    (_SYSTEM_VERSION_ <  8.0)
+#endif//_IOS_8_OR_EARLY_
+
+#ifndef _IOS_8_OR_LATER_
 #define _IOS_8_OR_LATER_    (_SYSTEM_VERSION_ >= 8.0)
+#endif//_IOS_8_OR_LATER_
 
 typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 
