@@ -36,6 +36,7 @@
 - (void)setBackItemTarget:(id)target action:(SEL)action;
 
 - (void)setBackItemTintColor:(UIColor *)color;
+- (void)setBackItemTitleFont:(UIFont *)font;
 
 - (void)setTitleFont:(UIFont *)font;
 - (void)setTitleColor:(UIColor *)color;

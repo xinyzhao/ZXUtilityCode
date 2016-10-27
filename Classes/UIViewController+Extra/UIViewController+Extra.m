@@ -42,7 +42,7 @@
     //
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     button.tintColor = self.navigationController.navigationBar.tintColor;
-    button.titleLabel.font = [UIFont systemFontOfSize:15];
+    button.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
     CGSize size = [title sizeWithAttributes:@{NSFontAttributeName:button.titleLabel.font}];
     button.frame = CGRectMake(0, 0, size.width + image.size.width, self.navigationController.navigationBar.frame.size.height);
     [button setTitle:title forState:UIControlStateNormal];
@@ -86,8 +86,16 @@
     if ([self.navigationItem.leftBarButtonItem.customView isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)self.navigationItem.leftBarButtonItem.customView;
         button.tintColor = color;
+        [button setTitleColor:button.tintColor forState:UIControlStateNormal];
     } else {
         self.navigationItem.leftBarButtonItem.tintColor = color;
+    }
+}
+
+- (void)setBackItemTitleFont:(UIFont *)font {
+    if ([self.navigationItem.leftBarButtonItem.customView isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)self.navigationItem.leftBarButtonItem.customView;
+        button.titleLabel.font = font;
     }
 }
 
