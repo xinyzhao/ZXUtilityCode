@@ -256,21 +256,21 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 #pragma mark <UIAlertViewDelegate>
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    [self removeFromSuperview];
     ZXAlertAction *action = self.alertActions[buttonIndex];
     if (action.handler) {
         action.handler(action);
     }
-    [self removeFromSuperview];
 }
 
 #pragma mark <UIActionSheetDelegate>
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    [self removeFromSuperview];
     ZXAlertAction *action = self.alertActions[buttonIndex];
     if (action.handler) {
         action.handler(action);
     }
-    [self removeFromSuperview];
 }
 
 @end
