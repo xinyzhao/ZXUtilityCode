@@ -497,7 +497,7 @@ typedef void (^_saveImageBlock)(NSError *error);
 - (NSUInteger)numberOfBytes {
     __block NSUInteger bytes = 0;
     if (_IOS_8_OR_EARLY_) {
-        bytes = [self.alAsset defaultRepresentation].size;
+        bytes = (NSUInteger)[self.alAsset defaultRepresentation].size;
     } else {
         bytes = self.imageData.length;
     }
@@ -526,7 +526,7 @@ typedef void (^_saveImageBlock)(NSError *error);
     @autoreleasepool {
         if (_IOS_8_OR_EARLY_) {
             ALAssetRepresentation *rep = [self.alAsset defaultRepresentation];
-            NSUInteger bytes = rep.size;
+            NSUInteger bytes = (NSUInteger)rep.size;
             uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t) * bytes);
             if (buffer != NULL) {
                 NSError *error = nil;
