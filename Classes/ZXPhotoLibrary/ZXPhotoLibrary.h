@@ -68,6 +68,7 @@ typedef NS_ENUM(NSInteger, ZXImageContentMode) {
 - (void)requestAuthorization:(void(^)(ZXAuthorizationStatus status))completion;
 - (void)fetchGroupsWithEmptyAlbum:(BOOL)emptyAlbum completion:(void(^)(NSArray<ZXPhotoGroup *> *results))completion;
 - (void)fetchAssetsWithAscending:(BOOL)ascending completion:(void(^)(NSArray<ZXPhotoAsset *> *results))completion;
+- (void)saveImage:(UIImage *)image toPhotoAlbum:(void(^)(NSError *error))completion;
 
 @end
 

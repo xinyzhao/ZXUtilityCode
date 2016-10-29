@@ -183,9 +183,9 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 }
 
 - (void)fetchAssetsWithAscending:(BOOL)ascending completion:(void(^)(NSArray<ZXPhotoAsset *> *results))completion {
+    NSMutableArray<ZXPhotoAsset *> *assets = [NSMutableArray array];
+    //
     @autoreleasepool {
-        NSMutableArray<ZXPhotoAsset *> *assets = [NSMutableArray array];
-        //
         if (_IOS_8_OR_EARLY_) {
             [self fetchGroupsWithEmptyAlbum:NO completion:^(NSArray<ZXPhotoGroup *> *groups) {
                 [groups enumerateObjectsUsingBlock:^(ZXPhotoGroup * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -228,6 +228,78 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     [[NSNotificationCenter defaultCenter] postNotificationName:ZXPhotoLibraryChangedNotification object:self];
+}
+
+#pragma mark UIImageWriteToSavedPhotosAlbum
+
+typedef void (^_saveImageBlock)(NSError *error);
+
+- (void)saveImage:(UIImage *)image toPhotoAlbum:(void (^)(NSError *error))completion {
+    if (_IOS_8_OR_EARLY_) {
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            UIImageWriteToSavedPhotosAlbum(image, weakSelf, @selector(image:didFinishSavingWithError:contextInfo:), (__bridge void *)completion);
+        });
+    } else {
+        void (^completionHandler)(NSError *error) = ^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completion) {
+                    completion(error);
+                }
+            });
+        };
+        //
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            // 获得相簿
+            NSString *title = [NSBundle mainBundle].infoDictionary[@"CFBundleDisplayName"];
+            PHFetchResult<PHAssetCollection *> *result = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[title] options:nil];
+            PHAssetCollection *assetCollection = result.firstObject;
+            // 创建相簿
+            NSError *error = nil;
+            if (assetCollection == nil) {
+                __block NSString *identifier = nil;
+                //
+                [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+                    identifier = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title].placeholderForCreatedAssetCollection.localIdentifier;
+                } error:&error];
+                //
+                if (error == nil) {
+                    PHFetchResult<PHAssetCollection *> *result = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
+                    assetCollection = result.firstObject;
+                }
+            }
+            // 保存图片
+            if (assetCollection) {
+                __block  NSString *identifier;
+                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                    identifier = [PHAssetCreationRequest creationRequestForAssetFromImage:image].placeholderForCreatedAsset.localIdentifier;
+                } completionHandler:^(BOOL success, NSError * _Nullable error) {
+                    if (success) {
+                        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                            PHAsset *asset = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil].lastObject;
+                            PHAssetCollectionChangeRequest *request = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+                            [request addAssets:@[asset]];
+                        } completionHandler:^(BOOL success, NSError * _Nullable error) {
+                            completionHandler(success ? nil : error);
+                        }];
+                    } else {
+                        completionHandler(error);
+                    }
+                }];
+            } else {
+                completionHandler(error);
+            };
+        });
+    }
+}
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _saveImageBlock completion = (__bridge _saveImageBlock)contextInfo;
+        if (completion) {
+            completion(error);
+        }
+    });
 }
 
 @end
@@ -450,6 +522,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 
 - (NSData *)imageData {
     __block NSData *data = nil;
+    //
     @autoreleasepool {
         if (_IOS_8_OR_EARLY_) {
             ALAssetRepresentation *rep = [self.alAsset defaultRepresentation];
@@ -469,6 +542,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
             }];
         }
     }
+    //
     return data;
 }
 
