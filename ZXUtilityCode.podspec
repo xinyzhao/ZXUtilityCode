@@ -119,7 +119,7 @@ Pod::Spec.new do |s|
   #
 
   # s.framework  = "SomeFramework"
-  s.frameworks = "AVFoundation", "Foundation", "UIKit"
+  s.frameworks = "AVFoundation", "Foundation", "UIKit", "AssetsLibrary", "CoreGraphics", "ImageIO", "Photos"
 
   # s.library   = "iconv"
   # s.libraries = "iconv", "xml2"

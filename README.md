@@ -48,6 +48,7 @@ pod "ZXUtilityCode"
 * ZXAlertView
 * ZXImageView
 * ZXPageView
+* ZXPhotoLibrary
 * ZXTabBarController
 * ZXTagView
 
