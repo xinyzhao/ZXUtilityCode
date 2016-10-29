@@ -25,6 +25,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <ImageIO/ImageIO.h>
 
 /// 根据颜色创建图像
 UIKIT_EXTERN UIImage *UIImageFromColor(UIColor *color, CGSize size);
@@ -42,8 +43,7 @@ UIKIT_EXTERN UIImage *UIImageScaling(UIImage *image, CGFloat scale);
 UIKIT_EXTERN UIImage *UIImageResizing(UIImage *image, CGSize size);
 
 /// 缩略图
-UIKIT_EXTERN UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL cropIfNeeded);
-UIKIT_EXTERN UIImage *UIImageThumbnailLimit(UIImage *image, CGSize size, CGSize maxsize, CGSize minsize);
+UIKIT_EXTERN UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL aspectFill);
 
 /// 正向图
 UIKIT_EXTERN UIImage *UIImageCorrectOrientation(UIImage *image);
@@ -85,8 +85,7 @@ UIKIT_EXTERN CGSize UIImageSizeForScreenHeight(UIImage *image);
 - (UIImage *)imageWithSize:(CGSize)size;
 
 /// 缩略图
-- (UIImage *)thumbnailWithSize:(CGSize)size cropIfNeeded:(BOOL)crop;
-- (UIImage *)thumbnailWithSize:(CGSize)size maxsize:(CGSize)maxsize minsize:(CGSize)minsize;
+- (UIImage *)thumbnailWithSize:(CGSize)size aspectFill:(BOOL)aspectFill;
 
 /// 正向图
 - (UIImage *)correctOrientationImage;

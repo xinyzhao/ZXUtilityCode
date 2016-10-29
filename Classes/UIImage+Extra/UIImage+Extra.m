@@ -98,155 +98,35 @@ UIImage *UIImageResizing(UIImage *image, CGSize size) {
     return resizedImage;
 }
 
-UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL cropIfNeeded) {
-    CGSize imageSize = image.size;
-    CGSize thumbSize = size;
-    CGSize cropSize = CGSizeZero;
-    BOOL needsToCrop = NO;
-    // check size
-    if (thumbSize.width <= 0 || thumbSize.height <= 0) {
-        return image;
-    }
-    // scale aspect
-    if (imageSize.width > imageSize.height) {
-        if (thumbSize.width < thumbSize.height) {
-            thumbSize = size = CGSizeMake(size.height, size.width);
-        }
-    } else if (imageSize.width < imageSize.height) {
-        if (thumbSize.width > thumbSize.height) {
-            thumbSize = size = CGSizeMake(size.height, size.width);
-        }
-    } else { // square
-        if (thumbSize.width > thumbSize.height) {
-            thumbSize.width = thumbSize.height;
-        } else {
-            thumbSize.height = thumbSize.width;
-        }
-    }
-    // only crop
-    if (thumbSize.width >= imageSize.width || thumbSize.height >= imageSize.height) {
-        UIImage *thumbImage = image;
-        if (cropIfNeeded) {
-            if (imageSize.width > thumbSize.width) {
-                needsToCrop = YES;
-                cropSize = CGSizeMake(thumbSize.width, imageSize.height);
-            } else if (imageSize.height > thumbSize.height) {
-                needsToCrop = YES;
-                cropSize = CGSizeMake(imageSize.width, thumbSize.height);
-            }
-            // crop
-            if (needsToCrop) {
-                CGRect cropRect = CGRectZero;
-                cropRect.origin.x = (imageSize.width - cropSize.width) / 2;
-                cropRect.origin.y = (imageSize.height - cropSize.height) / 2;
-                cropRect.size = cropSize;
-                thumbImage = UIImageCropping(image, cropRect);
-            }
-        }
-        // return
-        return thumbImage;
-    }
-    // scale aspect fill
-    if (cropIfNeeded) {
+UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL aspectFill) {
+    UIImage *thumbnail = nil;
+    //
+    if (aspectFill) {
+        CGSize imageSize = image.size;
         if (imageSize.width > imageSize.height) {
-            thumbSize.width = imageSize.width / (imageSize.height / thumbSize.height);
-            needsToCrop = thumbSize.width > size.width;
-            cropSize = CGSizeMake(size.width, thumbSize.height);
-        } else if (imageSize.width < imageSize.height) {
-            thumbSize.height = imageSize.height / (imageSize.width / thumbSize.width);
-            needsToCrop = thumbSize.height > size.height;
-            cropSize = CGSizeMake(thumbSize.width, size.height);
-        }
-    } else { // scale aspect fit
-        if (imageSize.width > imageSize.height) {
-            thumbSize.height = imageSize.height / (imageSize.width / thumbSize.width);
-        } else if (imageSize.width < imageSize.height) {
-            thumbSize.width = imageSize.width / (imageSize.height / thumbSize.height);
+            size.width *= imageSize.width / imageSize.height;
+        } else if (imageSize.height > imageSize.width) {
+            size.height *= imageSize.height / imageSize.width;
         }
     }
-    // resize
-    UIImage *thumbImage = UIImageResizing(image, thumbSize);
-    // crop
-    if (cropIfNeeded && needsToCrop) {
-        thumbSize = thumbImage.size;
-        CGRect cropRect = CGRectZero;
-        cropRect.origin.x = (thumbSize.width - cropSize.width) / 2;
-        cropRect.origin.y = (thumbSize.height - cropSize.height) / 2;
-        cropRect.size = cropSize;
-        thumbImage = UIImageCropping(thumbImage, cropRect);
-    }
-    // result
-    return thumbImage;
-}
-
-UIImage *UIImageThumbnailLimit(UIImage *image, CGSize size, CGSize maxsize, CGSize minsize) {
-    CGSize imageSize = image.size;
-    CGSize thumbSize = size;
-    CGSize maxSize = CGSizeMake(MAX(maxsize.width, minsize.width), MAX(maxsize.height, minsize.height));
-    CGSize minSize = CGSizeMake(MIN(maxsize.width, minsize.width), MIN(maxsize.height, minsize.height));
-    // check size
-    if (thumbSize.width <= 0 || thumbSize.height <= 0) {
-        return image;
-    }
-    // scale aspect
-    if (imageSize.width > imageSize.height) {
-        if (thumbSize.width < thumbSize.height) {
-            thumbSize = size = CGSizeMake(size.height, size.width);
-        }
-    } else if (imageSize.width < imageSize.height) {
-        if (thumbSize.width > thumbSize.height) {
-            thumbSize = size = CGSizeMake(size.height, size.width);
+    //
+    NSData *imageData = UIImagePNGRepresentation(image);
+    if (imageData) {
+        CGImageSourceRef sourceRef = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
+        if (sourceRef) {
+            NSDictionary *options = @{(id)kCGImageSourceCreateThumbnailFromImageAlways:(id)kCFBooleanTrue,
+                                      (id)kCGImageSourceThumbnailMaxPixelSize:@(MAX(size.width, size.height))
+                                      };
+            CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (CFDictionaryRef)options);
+            thumbnail = [[UIImage alloc] initWithCGImage:imageRef
+                                                   scale:[UIScreen mainScreen].scale
+                                             orientation:image.imageOrientation];
+            CGImageRelease(imageRef);
+            CFRelease(sourceRef);
         }
     }
-    // limit size
-    if (thumbSize.width > maxSize.width || thumbSize.height > maxSize.height) {
-        thumbSize = CGSizeMake(MIN(thumbSize.width, maxSize.width), MIN(thumbSize.height, maxSize.height));
-    }
-    if (thumbSize.width >= imageSize.width || thumbSize.height >= imageSize.height) {
-        thumbSize = CGSizeMake(MIN(thumbSize.width, minSize.width), MIN(thumbSize.height, minSize.height));
-    }
-    // thumb size
-    if (imageSize.width > imageSize.height) {
-        thumbSize.width = imageSize.width / (imageSize.height / thumbSize.height);
-    } else if (imageSize.width < imageSize.height) {
-        thumbSize.height = imageSize.height / (imageSize.width / thumbSize.width);
-    } else { // square
-        if (thumbSize.width > thumbSize.height) {
-            thumbSize.width = thumbSize.height;
-        } else {
-            thumbSize.height = thumbSize.width;
-        }
-    }
-    // over size
-    if (thumbSize.width > size.width) {
-        thumbSize.width = size.width;
-        thumbSize.height = imageSize.height / (imageSize.width / thumbSize.width);
-    } else if (thumbSize.height > size.height) {
-        thumbSize.height = size.height;
-        thumbSize.width = imageSize.width / (imageSize.height / thumbSize.height);
-    }
-    // under size
-    if (thumbSize.width < minSize.width) {
-        thumbSize.width = minSize.width;
-        thumbSize.height = imageSize.height / (imageSize.width / thumbSize.width);
-    } else if (thumbSize.height < minSize.height) {
-        thumbSize.height = minSize.height;
-        thumbSize.width = imageSize.width / (imageSize.height / thumbSize.height);
-    }
-    // resize
-    UIImage *thumbImage = UIImageResizing(image, thumbSize);
-    // crop size
-    thumbSize = thumbImage.size;
-    if (thumbSize.width > maxSize.width || thumbSize.height > maxSize.height) {
-        CGRect cropRect = CGRectZero;
-        CGSize cropSize = CGSizeMake(MIN(thumbSize.width, maxSize.width), MIN(thumbSize.height, maxSize.height));
-        cropRect.origin.x = (thumbSize.width - cropSize.width) / 2;
-        cropRect.origin.y = (thumbSize.height - cropSize.height) / 2;
-        cropRect.size = cropSize;
-        thumbImage = UIImageCropping(thumbImage, cropRect);
-    }
-    // return
-    return thumbImage;
+    //
+    return thumbnail;
 }
 
 UIImage *UIImageCorrectOrientation(UIImage *image) {
@@ -441,12 +321,8 @@ CGSize UIImageSizeForScreenHeight(UIImage *image) {
     return UIImageResizing(self, size);
 }
 
-- (UIImage *)thumbnailWithSize:(CGSize)size cropIfNeeded:(BOOL)crop {
-    return UIImageThumbnail(self, size, crop);
-}
-
-- (UIImage *)thumbnailWithSize:(CGSize)size maxsize:(CGSize)maxsize minsize:(CGSize)minsize {
-    return UIImageThumbnailLimit(self, size, maxsize, minsize);
+- (UIImage *)thumbnailWithSize:(CGSize)size aspectFill:(BOOL)aspectFill {
+    return UIImageThumbnail(self, size, aspectFill);
 }
 
 - (UIImage *)correctOrientationImage {
