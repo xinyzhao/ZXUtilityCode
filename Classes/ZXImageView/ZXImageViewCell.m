@@ -79,6 +79,11 @@
             image = [self imageForScreenWidth:image];
             imageSize = [self imageSizeForScreenScale:image];
         }
+        // Issue fixes by xyz on 20161029
+        imageSize.width *= self.scrollView.zoomScale;
+        imageSize.height *= self.scrollView.zoomScale;
+        contentSize.width *= self.scrollView.zoomScale;
+        contentSize.height *= self.scrollView.zoomScale;
         //
         if (imageSize.width > contentSize.width || imageSize.height > contentSize.height) {
             imageRect.size = contentSize;
@@ -100,6 +105,7 @@
         //
         self.imageView.frame = imageRect;
         self.imageView.image = image;
+        //
         self.scrollView.contentSize = imageRect.size;
         self.scrollView.contentOffset = contentOffset;
         self.scrollView.minimumZoomScale = minimumZoomScale;
@@ -152,7 +158,7 @@
         self.activityIndicatorView.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
     }
     //
-    rect = self.scrollView.bounds;
+    rect = self.bounds;
     if (self.imageView == nil) {
         self.imageView = [[UIImageView alloc] initWithFrame:rect];
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -185,7 +191,7 @@
 
 - (void)centerImageView {
     CGRect rect = self.imageView.frame;
-    CGSize size = self.scrollView.bounds.size;
+    CGSize size = self.scrollView.frame.size;
     if (rect.size.width < size.width) {
         rect.origin.x = (size.width - rect.size.width) / 2.0f;
     } else {
