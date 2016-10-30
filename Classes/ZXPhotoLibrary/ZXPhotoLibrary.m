@@ -38,10 +38,9 @@
 #define _IOS_8_OR_LATER_    (_SYSTEM_VERSION_ >= 8.0)
 #endif//_IOS_8_OR_LATER_
 
-NSString *const ZXPhotoLibraryChangedNotification = @"ZXPhotoLibraryChangedNotification";
-
 @interface ZXPhotoLibrary () <PHPhotoLibraryChangeObserver>
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
+@property (nonatomic, strong) NSMutableArray *changeObservers;
 
 @end
 
@@ -218,16 +217,41 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
     }
 }
 
+#pragma mark ZXPhotoLibraryChangeObserver
+
+- (void)registerChangeObserver:(id<ZXPhotoLibraryChangeObserver>)observer {
+    if (self.changeObservers == nil) {
+        self.changeObservers = [NSMutableArray array];
+    }
+    if (observer) {
+        [self.changeObservers addObject:observer];
+    }
+}
+
+- (void)unregisterChangeObserver:(id<ZXPhotoLibraryChangeObserver>)observer {
+    if (observer) {
+        [self.changeObservers removeObject:observer];
+    }
+}
+
 #pragma mark ALAssetsLibraryChangedNotification
 
 - (void)onPhotoLibraryChanged:(NSNotification *)notification {
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZXPhotoLibraryChangedNotification object:self];
+    [self.changeObservers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj respondsToSelector:@selector(photoLibraryDidChange:)]) {
+            [obj photoLibraryDidChange:notification];
+        }
+    }];
 }
 
 #pragma mark <PHPhotoLibraryChangeObserver>
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZXPhotoLibraryChangedNotification object:self];
+    [self.changeObservers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj respondsToSelector:@selector(photoLibraryDidChange:)]) {
+            [obj photoLibraryDidChange:changeInstance];
+        }
+    }];
 }
 
 #pragma mark UIImageWriteToSavedPhotosAlbum
@@ -235,9 +259,16 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 typedef void (^_saveImageBlock)(NSError *error);
 
 - (void)saveImage:(UIImage *)image toPhotoAlbum:(void (^)(NSError *error))completion {
+    //
+    static dispatch_queue_t saveQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        saveQueue = dispatch_queue_create("photo.library.save.queue", NULL);
+    });
+    //
     if (_IOS_8_OR_EARLY_) {
         __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(saveQueue, ^{
             UIImageWriteToSavedPhotosAlbum(image, weakSelf, @selector(image:didFinishSavingWithError:contextInfo:), (__bridge void *)completion);
         });
     } else {
@@ -249,11 +280,17 @@ typedef void (^_saveImageBlock)(NSError *error);
             });
         };
         //
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(saveQueue, ^{
+            __block PHAssetCollection *assetCollection = nil;
             // 获得相簿
             NSString *title = [NSBundle mainBundle].infoDictionary[@"CFBundleDisplayName"];
-            PHFetchResult<PHAssetCollection *> *result = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[title] options:nil];
-            PHAssetCollection *assetCollection = result.firstObject;
+            PHFetchResult<PHAssetCollection *> *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+            [result enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([obj.localizedTitle isEqualToString:title]) {
+                    assetCollection = obj;
+                    *stop = YES;
+                }
+            }];
             // 创建相簿
             NSError *error = nil;
             if (assetCollection == nil) {

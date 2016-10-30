@@ -32,9 +32,6 @@
 @class ZXPhotoGroup;
 @class ZXPhotoAsset;
 
-/// ZXPhotoLibraryChangedNotification
-UIKIT_EXTERN NSString *const ZXPhotoLibraryChangedNotification;
-
 /// ZXAuthorizationStatus
 typedef NS_ENUM(NSInteger, ZXAuthorizationStatus) {
     ZXAuthorizationStatusNotDetermined = 0, // User has not yet made a choice with regards to this application
@@ -60,6 +57,15 @@ typedef NS_ENUM(NSInteger, ZXImageContentMode) {
     ZXImageContentModeDefault = ZXImageContentModeAspectFit
 } NS_ENUM_AVAILABLE_IOS(7_0);
 
+/// ZXPhotoLibraryChangeObserver
+@protocol ZXPhotoLibraryChangeObserver <NSObject>
+/**
+ * @brief This callback is invoked on an arbitrary serial queue. If you need this to be handled on a specific queue, you should redispatch appropriately
+ * @param sender PHChange object in iOS 8 and later, otherwise is NSNotifation object
+ */
+- (void)photoLibraryDidChange:(id)sender;
+@end
+
 /// ZXPhotoLibrary
 @interface ZXPhotoLibrary : NSObject
 
@@ -69,6 +75,9 @@ typedef NS_ENUM(NSInteger, ZXImageContentMode) {
 - (void)fetchGroupsWithEmptyAlbum:(BOOL)emptyAlbum completion:(void(^)(NSArray<ZXPhotoGroup *> *results))completion;
 - (void)fetchAssetsWithAscending:(BOOL)ascending completion:(void(^)(NSArray<ZXPhotoAsset *> *results))completion;
 - (void)saveImage:(UIImage *)image toPhotoAlbum:(void(^)(NSError *error))completion;
+
+- (void)registerChangeObserver:(id<ZXPhotoLibraryChangeObserver>)observer;
+- (void)unregisterChangeObserver:(id<ZXPhotoLibraryChangeObserver>)observer;
 
 @end
 
