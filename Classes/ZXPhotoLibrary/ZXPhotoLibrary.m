@@ -364,7 +364,6 @@ typedef void (^_saveImageBlock)(NSError *error);
 
 - (NSUInteger)numberOfAssetsWithMediaType:(ZXAssetMediaType)type {
     NSUInteger count = 0;
-    //
     @autoreleasepool {
         if (_IOS_8_OR_EARLY_) {
             ALAssetsFilter *filter = nil;
@@ -382,7 +381,6 @@ typedef void (^_saveImageBlock)(NSError *error);
             count = [assets countOfAssetsWithMediaType:(NSInteger)type];
         }
     }
-    //
     return count;
 }
 
@@ -482,22 +480,27 @@ typedef void (^_saveImageBlock)(NSError *error);
 }
 
 - (CGSize)mediaSize {
+    CGSize size = [self pixelSize];
+    size.width /= [UIScreen mainScreen].scale;
+    size.height /= [UIScreen mainScreen].scale;
+    return size;
+}
+
+- (CGSize)pixelSize {
     CGSize size = CGSizeZero;
     if (_IOS_8_OR_EARLY_) {
         size = [self.alAsset defaultRepresentation].dimensions;
-        size.width /= [UIScreen mainScreen].scale;
-        size.height /= [UIScreen mainScreen].scale;
     } else {
-        size.width = self.phAsset.pixelWidth / [UIScreen mainScreen].scale;
-        size.height = self.phAsset.pixelHeight / [UIScreen mainScreen].scale;
+        size.width = self.phAsset.pixelWidth;
+        size.height = self.phAsset.pixelHeight;
     }
     return size;
 }
 
 - (NSUInteger)numberOfBytes {
-    __block NSUInteger bytes = 0;
+    NSUInteger bytes = 0;
     if (_IOS_8_OR_EARLY_) {
-        bytes = (NSUInteger)[self.alAsset defaultRepresentation].size;
+        bytes = [NSNumber numberWithLongLong:[self.alAsset defaultRepresentation].size].unsignedIntegerValue;
     } else {
         bytes = self.imageData.length;
     }
@@ -505,7 +508,7 @@ typedef void (^_saveImageBlock)(NSError *error);
 }
 
 - (UIImageOrientation)orientation {
-    __block UIImageOrientation orientation = 0;
+    UIImageOrientation orientation = UIImageOrientationUp;
     @autoreleasepool {
         if (_IOS_8_OR_EARLY_) {
             orientation = (NSInteger)[self.alAsset defaultRepresentation].orientation;
@@ -526,7 +529,7 @@ typedef void (^_saveImageBlock)(NSError *error);
     @autoreleasepool {
         if (_IOS_8_OR_EARLY_) {
             ALAssetRepresentation *rep = [self.alAsset defaultRepresentation];
-            NSUInteger bytes = (NSUInteger)rep.size;
+            NSUInteger bytes = [NSNumber numberWithLongLong:rep.size].unsignedIntegerValue;
             uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t) * bytes);
             if (buffer != NULL) {
                 NSError *error = nil;
@@ -549,15 +552,18 @@ typedef void (^_saveImageBlock)(NSError *error);
 - (UIImage *)imageForAspectFill:(BOOL)aspectFill targetSize:(CGSize)targetSize {
     __block UIImage *image = nil;
     //
-    targetSize.width *= [UIScreen mainScreen].scale;
-    targetSize.height *= [UIScreen mainScreen].scale;
+    CGSize imageSize = self.pixelSize;
+    CGSize thumbSize = targetSize;
+    thumbSize.width *= [UIScreen mainScreen].scale;
+    thumbSize.height *= [UIScreen mainScreen].scale;
     //
     if (aspectFill) {
-        CGSize imageSize = self.mediaSize;
-        if (imageSize.width > imageSize.height) {
-            targetSize.width *= imageSize.width / imageSize.height;
-        } else if (imageSize.height > imageSize.width) {
-            targetSize.height *= imageSize.height / imageSize.width;
+        CGFloat x = thumbSize.width / imageSize.width;
+        CGFloat y = thumbSize.height / imageSize.height;
+        if (x < y) {
+            thumbSize.width = imageSize.width * y;
+        } else {
+            thumbSize.height = imageSize.height * x;
         }
     }
     //
@@ -567,8 +573,9 @@ typedef void (^_saveImageBlock)(NSError *error);
             if (imageData) {
                 CGImageSourceRef sourceRef = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
                 if (sourceRef) {
+                    CGFloat maxPixelSize = MAX(thumbSize.width, thumbSize.height);
                     NSDictionary *options = @{(id)kCGImageSourceCreateThumbnailFromImageAlways:(id)kCFBooleanTrue,
-                                              (id)kCGImageSourceThumbnailMaxPixelSize:@(MAX(targetSize.width, targetSize.height))
+                                              (id)kCGImageSourceThumbnailMaxPixelSize:@(maxPixelSize)
                                               };
                     CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (CFDictionaryRef)options);
                     image = [[UIImage alloc] initWithCGImage:imageRef
@@ -584,7 +591,7 @@ typedef void (^_saveImageBlock)(NSError *error);
             options.synchronous = YES;
             options.resizeMode = PHImageRequestOptionsResizeModeExact;
             //
-            [[PHImageManager defaultManager] requestImageForAsset:self.phAsset targetSize:targetSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+            [[PHImageManager defaultManager] requestImageForAsset:self.phAsset targetSize:thumbSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                 image = result;
             }];
         }

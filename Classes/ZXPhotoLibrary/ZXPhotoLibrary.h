@@ -87,6 +87,7 @@ typedef NS_ENUM(NSInteger, ZXImageContentMode) {
 @interface ZXPhotoAsset : NSObject
 @property (nonatomic, assign, readonly) ZXAssetMediaType mediaType;
 @property (nonatomic, assign, readonly) CGSize mediaSize;
+@property (nonatomic, assign, readonly) CGSize pixelSize;
 @property (nonatomic, assign, readonly) NSUInteger numberOfBytes;
 @property (nonatomic, assign, readonly) UIImageOrientation orientation;
 

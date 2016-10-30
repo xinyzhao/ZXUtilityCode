@@ -101,12 +101,21 @@ UIImage *UIImageResizing(UIImage *image, CGSize size) {
 UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL aspectFill) {
     UIImage *thumbnail = nil;
     //
+    CGSize imageSize = image.size;
+    imageSize.width *= image.scale;
+    imageSize.height *= image.scale;
+    //
+    CGSize thumbSize = size;
+    thumbSize.width *= [UIScreen mainScreen].scale;
+    thumbSize.height *= [UIScreen mainScreen].scale;
+    //
     if (aspectFill) {
-        CGSize imageSize = image.size;
-        if (imageSize.width > imageSize.height) {
-            size.width *= imageSize.width / imageSize.height;
-        } else if (imageSize.height > imageSize.width) {
-            size.height *= imageSize.height / imageSize.width;
+        CGFloat x = thumbSize.width / imageSize.width;
+        CGFloat y = thumbSize.height / imageSize.height;
+        if (x < y) {
+            thumbSize.width = imageSize.width * y;
+        } else {
+            thumbSize.height = imageSize.height * x;
         }
     }
     //
@@ -114,8 +123,9 @@ UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL aspectFill) {
     if (imageData) {
         CGImageSourceRef sourceRef = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
         if (sourceRef) {
+            CGFloat maxPixelSize = MAX(thumbSize.width, thumbSize.height);
             NSDictionary *options = @{(id)kCGImageSourceCreateThumbnailFromImageAlways:(id)kCFBooleanTrue,
-                                      (id)kCGImageSourceThumbnailMaxPixelSize:@(MAX(size.width, size.height))
+                                      (id)kCGImageSourceThumbnailMaxPixelSize:@(maxPixelSize)
                                       };
             CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (CFDictionaryRef)options);
             thumbnail = [[UIImage alloc] initWithCGImage:imageRef
