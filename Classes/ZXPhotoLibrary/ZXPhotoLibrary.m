@@ -130,7 +130,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
     }
 }
 
-- (void)fetchGroupsWithEmptyAlbum:(BOOL)emptyAlbum completion:(void(^)(NSArray<ZXPhotoGroup *> *results))completion {
+- (void)fetchGroupsWithAllAlbums:(BOOL)allAlbums completion:(void(^)(NSArray<ZXPhotoGroup *> *results))completion {
     NSMutableArray<ZXPhotoGroup *> *groups = [NSMutableArray array];
     //
     @autoreleasepool {
@@ -141,7 +141,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
             [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                 if (group) {
                     ZXPhotoGroup *obj = [[ZXPhotoGroup alloc] initWithAssetsGroup:group];
-                    if (emptyAlbum) {
+                    if (allAlbums) {
                         [groups addObject:obj];
                     } else if (obj.numberOfAssets > 0) {
                         [groups addObject:obj];
@@ -154,20 +154,20 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
             }];
             
         } else {
-            PHFetchResult *smartAlbum = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-            [smartAlbum enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            PHFetchResult<PHAssetCollection *> *smartAlbum = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+            [smartAlbum enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 ZXPhotoGroup *group = [[ZXPhotoGroup alloc] initWithAssetCollection:obj];
-                if (emptyAlbum) {
+                if (allAlbums) {
                     [groups addObject:group];
-                } else if (group.numberOfAssets > 0) {
+                } else if (group.numberOfAssets > 0 && obj.assetCollectionSubtype != 1000000201) {
                     [groups addObject:group];
                 }
             }];
             //
-            PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-            [fetchResult enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            PHFetchResult<PHAssetCollection *> *fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+            [fetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 ZXPhotoGroup *group = [[ZXPhotoGroup alloc] initWithAssetCollection:obj];
-                if (emptyAlbum) {
+                if (allAlbums) {
                     [groups addObject:group];
                 } else if (group.numberOfAssets > 0) {
                     [groups addObject:group];
@@ -186,7 +186,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
     //
     @autoreleasepool {
         if (_IOS_8_OR_EARLY_) {
-            [self fetchGroupsWithEmptyAlbum:NO completion:^(NSArray<ZXPhotoGroup *> *groups) {
+            [self fetchGroupsWithAllAlbums:NO completion:^(NSArray<ZXPhotoGroup *> *groups) {
                 [groups enumerateObjectsUsingBlock:^(ZXPhotoGroup * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     [obj fetchAssetsWithAscending:ascending completion:^(NSArray<ZXPhotoAsset *> *results) {
                         [assets addObjectsFromArray:results];
