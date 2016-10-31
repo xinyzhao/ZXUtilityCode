@@ -52,7 +52,9 @@
 #import "UITableViewCell+Separator.h"
 #import "UIViewController+Extra.h"
 #import "ZXAlertView.h"
+#import "ZXImageView.h"
 #import "ZXPageView.h"
+#import "ZXPhotoLibrary.h"
 #import "ZXTabBarController.h"
 #import "ZXTagView.h"
 
