@@ -26,6 +26,7 @@
 
 #import <UIKit/UIKit.h>
 #import <ImageIO/ImageIO.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 /// 根据颜色创建图像
 UIKIT_EXTERN UIImage *UIImageFromColor(UIColor *color, CGSize size);

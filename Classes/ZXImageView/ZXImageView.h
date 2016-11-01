@@ -49,7 +49,6 @@
 
 @protocol ZXImageViewDelegate <NSObject>
 @optional
-- (void)imageView:(ZXImageView *)imageView didDisplayItemAtIndex:(NSInteger)index;
 - (void)imageView:(ZXImageView *)imageView didSelectItemAtIndex:(NSInteger)index;
 - (void)imageView:(ZXImageView *)imageView longPressItemAtIndex:(NSInteger)index;
 @end
