@@ -26,19 +26,17 @@
 
 #import <UIKit/UIKit.h>
 
-IB_DESIGNABLE
 @interface ZXBadgeLabel : UILabel
 
-// audo-hide
-@property (nonatomic, assign) IBInspectable BOOL audoHide;
-
-// border
-@property (nonatomic, strong) IBInspectable UIColor *borderColor;
-@property (nonatomic, assign) IBInspectable CGFloat borderWidth;
+// audo-hide, calls -setHidden when number equal or less than mininum
+@property (nonatomic, assign) BOOL audoHide; // Default YES
 
 // badge number
-@property (nonatomic, assign) IBInspectable NSUInteger number;
-// eg. number>99, threshold==99, display as "99+"
-@property (nonatomic, assign) IBInspectable NSUInteger threshold;
+@property (nonatomic, assign) NSInteger number; // Default 0
+// mininum
+@property (nonatomic, assign) NSInteger mininum; // Default 0
+// maxinum, eg. number>99 and maxinum==99, display as "99+"
+@property (nonatomic, assign) NSInteger maxinum; // Default 99
 
 @end
+

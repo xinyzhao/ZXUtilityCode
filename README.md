@@ -1,6 +1,6 @@
 ZXUtilityCode
 ===============
-Provides some utility codes for iOS.
+Provides a few utility codes for iOS.
 
 ## Requirements
 
@@ -46,6 +46,7 @@ pod "ZXUtilityCode"
 * UITableViewCell+Separator
 * UIViewController+Extra
 * ZXAlertView
+* ZXBadgeLabel
 * ZXImageView
 * ZXPageView
 * ZXPhotoLibrary
@@ -59,7 +60,6 @@ pod "ZXUtilityCode"
 * BDLocationManager
 * Coordinates
 * Macrodef
-* ZXBadgeLabel
 * ZXColorPickerController
 * ZXRefreshHeaderView
 

@@ -32,25 +32,25 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        self.audoHide = YES;
-        self.number = 0;
-        self.threshold = 99;
-        self.clipsToBounds = YES;
-        self.layer.masksToBounds = YES;
+        [self setupView];
     }
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame
+{
     self = [super initWithFrame:frame];
     if (self) {
-        self.audoHide = YES;
-        self.number = 0;
-        self.threshold = 99;
-        self.clipsToBounds = YES;
-        self.layer.masksToBounds = YES;
+        [self setupView];
     }
     return self;
+}
+
+- (void)setupView {
+    self.audoHide = YES;
+    self.number = 0;
+    self.mininum = 0;
+    self.maxinum = 99;
 }
 
 - (void)layoutSubviews {
@@ -80,51 +80,37 @@
     }
 }
 
-- (void)setBorderColor:(UIColor *)borderColor {
-    self.layer.borderColor = borderColor.CGColor;
-}
-
-- (UIColor *)borderColor {
-    return [UIColor colorWithCGColor:self.layer.borderColor];
-}
-
-- (void)setBorderWidth:(CGFloat)borderWidth {
-    self.layer.borderWidth = borderWidth;
-}
-
-- (CGFloat)borderWidth {
-    return self.layer.borderWidth;
-}
-
-- (void)setNumber:(NSUInteger)number {
+- (void)setNumber:(NSInteger)number {
     _number = number;
-    //
-    if (self.audoHide) {
-        self.hidden = _number == 0;
-    }
-    //
     [self updateText];
 }
 
-- (void)setThreshold:(NSUInteger)threshold {
-    _threshold = threshold;
+- (void)setMininum:(NSInteger)mininum {
+    _mininum = mininum;
+    [self updateText];
+}
+
+- (void)setMaxinum:(NSInteger)maxinum {
+    _maxinum = maxinum;
     [self updateText];
 }
 
 - (void)updateText {
     //
-    if (_number > _threshold) {
-        self.text = [NSString stringWithFormat:@"%d+", (int)_threshold];
-    } else if (_number > 0) {
-        self.text = [NSString stringWithFormat:@"%d", (int)_number];
+    if (self.audoHide) {
+        self.hidden = _number <= _mininum;
     }
-    // Fix bugs for UILabel on iOS 8.x
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 &&
-        [[[UIDevice currentDevice] systemVersion] floatValue] < 9.0) {
-        [self layoutSubviews];
+    //
+    if (_number < _mininum) {
+        self.text = [NSString stringWithFormat:@"%zd+", _mininum];
+    } else if (_number > _maxinum) {
+        self.text = [NSString stringWithFormat:@"%zd+", _maxinum];
     } else {
-        [self setNeedsLayout];
+        self.text = [NSString stringWithFormat:@"%zd", _number];
     }
+    //
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 @end
