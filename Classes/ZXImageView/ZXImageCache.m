@@ -78,11 +78,15 @@ static NSCache *_imageCache = nil;
 - (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCompletion)completion {
     self.image = image;
     //
-    NSString *key = [UIImageView MD5String:imageURL.absoluteString];
+    if (self.downloadTask) {
+        [self.downloadTask cancel];
+        self.downloadTask = nil;
+    }
     // 从缓存中加载
+    NSString *key = [UIImageView MD5String:imageURL.absoluteString];
     __block NSData *data = [[UIImageView imageCache] objectForKey:key];
+    // 从本地加载
     if (data == nil) {
-        // 从本地加载
         NSString *file = [NSTemporaryDirectory() stringByAppendingPathComponent:key];
         data = [NSData dataWithContentsOfFile:file];
         if (data) {
@@ -97,12 +101,13 @@ static NSCache *_imageCache = nil;
             if (completion) {
                 completion(image, nil, imageURL);
             }
+        } else {
+            data = nil;
         }
-        
-    } else {
-        // 从网络加载
+    }
+    // 从网络加载
+    if (data == nil) {
         __weak typeof(self) weakSelf = self;
-        [self.downloadTask cancel];
         self.downloadTask = [[NSURLSession sharedSession] downloadTaskWithRequest:[NSURLRequest requestWithURL:imageURL] completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
             if (location) {
                 //
@@ -115,15 +120,16 @@ static NSCache *_imageCache = nil;
                     [[UIImageView imageCache] setObject:data forKey:key];
                 }
                 //
+                __strong typeof(weakSelf) strongSelf = weakSelf;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     UIImage *image = [UIImage imageWithData:data];
                     if (image) {
-                        weakSelf.image = image;
+                        strongSelf.image = image;
                     }
                     if (completion) {
                         completion(image, error, imageURL);
                     }
-                    self.downloadTask = nil;
+                    strongSelf.downloadTask = nil;
                 });
             } else {
                 if (completion) {
