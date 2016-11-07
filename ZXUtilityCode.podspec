@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.0.3"
+  s.version      = "1.0.4"
   s.summary      = "Utility codes for iOS."
 
   # This description is used to generate tags and improve search results.
@@ -119,7 +119,7 @@ Pod::Spec.new do |s|
   #
 
   # s.framework  = "SomeFramework"
-  s.frameworks = "AVFoundation", "Foundation", "UIKit", "AssetsLibrary", "CoreGraphics", "ImageIO", "Photos"
+  s.frameworks = "AssetsLibrary", "AVFoundation", "CoreGraphics", "Foundation", "ImageIO", "Photos", "UIKit"
 
   # s.library   = "iconv"
   # s.libraries = "iconv", "xml2"
