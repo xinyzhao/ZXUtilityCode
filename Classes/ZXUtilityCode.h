@@ -27,6 +27,7 @@
 #ifndef ZXUtilityCode_h
 #define ZXUtilityCode_h
 
+#import "AVAudioProximityDetector.h"
 #import "dispatch_queue.h"
 #import "JSONObject.h"
 #import "NSArray+ObjectByIndex.h"

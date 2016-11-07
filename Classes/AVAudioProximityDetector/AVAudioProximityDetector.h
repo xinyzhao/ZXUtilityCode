@@ -25,6 +25,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 @interface AVAudioProximityDetector : NSObject
 

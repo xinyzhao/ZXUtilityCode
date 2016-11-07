@@ -23,6 +23,7 @@ pod "ZXUtilityCode"
 
 ## Components
 
+* AVAudioProximityDetector
 * Base64Encoding
 * DispatchQueue
 * HashValue
@@ -56,7 +57,6 @@ pod "ZXUtilityCode"
 ### Extras
 
 * AMRPlayer
-* AVAudioProximityDetector
 * BDLocationManager
 * Coordinates
 * Macrodef
