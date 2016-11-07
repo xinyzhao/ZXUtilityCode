@@ -50,13 +50,6 @@ typedef NS_ENUM(NSInteger, ZXAssetMediaType) {
     ZXAssetMediaTypeAudio   = 3,
 } NS_ENUM_AVAILABLE_IOS(7_0);
 
-/// ZXImageContentMode
-typedef NS_ENUM(NSInteger, ZXImageContentMode) {
-    ZXImageContentModeAspectFit = 0,
-    ZXImageContentModeAspectFill = 1,
-    ZXImageContentModeDefault = ZXImageContentModeAspectFit
-} NS_ENUM_AVAILABLE_IOS(7_0);
-
 /// ZXPhotoLibraryChangeObserver
 @protocol ZXPhotoLibraryChangeObserver <NSObject>
 /**
