@@ -35,6 +35,7 @@
 #import "NSDate+Extra.h"
 #import "NSData+HashValue.h"
 #import "NSFileManager+Extra.h"
+#import "NSLog+Extra.h"
 #import "NSObject+PerformAction.h"
 #import "NSString+Base64Encoding.h"
 #import "NSString+HashValue.h"

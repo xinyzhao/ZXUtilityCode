@@ -1,5 +1,5 @@
 //
-// adv_logs.h
+// NSLog+Extra.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -31,20 +31,14 @@
 #define __FILENAME__ [[[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent] cStringUsingEncoding:NSUTF8StringEncoding]
 #endif
 
-// ALog will always output like NSLog
-#define ALog(fmt, ...) NSLog((@"%s(%s:%d) " fmt), __FUNCTION__, __FILENAME__, __LINE__, ##__VA_ARGS__)
+// NSLogA will always output like NSLog
+#define NSLogA(fmt, ...) NSLog((@"%s(%s:%d) " fmt), __FUNCTION__, __FILENAME__, __LINE__, ##__VA_ARGS__)
 
-// DLog will output like NSLog only when the DEBUG variable is set
+// NSLogD will output like NSLog only when the DEBUG variable is set
 #ifdef DEBUG
-#define DLog(fmt, ...) ALog(fmt, ##__VA_ARGS__)
+#define NSLogD(fmt, ...) NSLogA(fmt, ##__VA_ARGS__)
 #else
-#define DLog(...)
+#define NSLogD(fmt, ...)
 #endif
-
-// VLog will output like NSLog in VERBOSE mode
-#define VLog(fmt, ...) NSLog((@"%s(%s:%d) " fmt), __FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__)
-
-// The log output to file, use fclose(stderr) be RECOVERY.
-#define NSLogFile(file) freopen([file cStringUsingEncoding:NSASCIIStringEncoding], "a+", stderr)
 
 #endif //__OBJC__
