@@ -31,6 +31,7 @@ pod "ZXUtilityCode"
 * NSArray+ObjectByIndex
 * NSDate+Extra
 * NSFileManager+Extra
+* NSLog+Extra
 * NSObject+PerformAction
 * NSString+Pinyin
 * NSString+Unicode
@@ -59,7 +60,6 @@ pod "ZXUtilityCode"
 * AMRPlayer
 * BDLocationManager
 * Coordinates
-* Macrodef
 * ZXColorPickerController
 * ZXRefreshHeaderView
 
