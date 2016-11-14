@@ -70,9 +70,7 @@
     return self;
 }
 
-- (BOOL)isScanning {
-    return _session.isRunning;
-}
+#pragma mark Scanning
 
 - (void)startScanning:(QRCodeScannerOutput)output {
     self.outputBlock = output;
@@ -81,6 +79,26 @@
 
 - (void)stopScanning {
     [_session stopRunning];
+}
+
+- (BOOL)isScanning {
+    return _session.isRunning;
+}
+
+#pragma mark AVCaptureTorchMode
+
+- (void)setTorchMode:(AVCaptureTorchMode)torchMode {
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if ([device hasTorch]) {
+        [device lockForConfiguration:nil];
+        [device setTorchMode:torchMode];
+        [device unlockForConfiguration];
+    }
+}
+
+- (AVCaptureTorchMode)torchMode {
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    return device.torchMode;
 }
 
 #pragma mark <AVCaptureMetadataOutputObjectsDelegate>

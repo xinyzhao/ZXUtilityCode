@@ -30,11 +30,12 @@
 typedef void(^QRCodeScannerOutput)(NSArray<NSString *> *results);
 
 @interface QRCodeScanner : NSObject
-@property (nonatomic, readonly) BOOL isScanning;
+@property (nonatomic, assign) AVCaptureTorchMode torchMode; // Default AVCaptureTorchModeOff
 
 - (instancetype)initWithPreview:(UIView *)preview captureRect:(CGRect)frame;
 
 - (void)startScanning:(QRCodeScannerOutput)output;
 - (void)stopScanning;
+- (BOOL)isScanning;
 
 @end
