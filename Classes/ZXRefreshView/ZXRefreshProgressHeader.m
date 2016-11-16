@@ -1,5 +1,5 @@
 //
-// ZXRefreshProgressView.m
+// ZXRefreshProgressHeader.m
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -26,7 +26,7 @@
 
 #import "ZXRefreshProgressHeader.h"
 
-@implementation ZXRefreshProgressView
+@implementation ZXRefreshProgressHeader
 
 - (instancetype)initWithFrame:(CGRect)frame
 {

@@ -38,7 +38,7 @@
 
 @implementation ZXRefreshHeaderView
 
-+ (instancetype)headerWithRefreshingBlock:(ZXRefreshingBlock)refreshingBlock {
++ (instancetype)headerWithRefreshingBlock:(void(^)(void))refreshingBlock {
     CGRect frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0);
     ZXRefreshHeaderView *headerView = [[[self class] alloc] initWithFrame:frame];
     headerView.refreshingBlock = refreshingBlock;
