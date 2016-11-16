@@ -37,7 +37,7 @@
     if ([JSONObject isValidJSONObject:obj]) {
         NSError *error;
         data = [NSJSONSerialization dataWithJSONObject:obj options:kNilOptions error:&error];
-        if (data == nil) {
+        if (error) {
             NSLog(@"dataWithJSONObject failed with error: %@", error.localizedDescription);
         }
     }
@@ -55,7 +55,7 @@
 + (id)JSONObjectWithData:(NSData *)data {
     NSError *error;
     id object = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-    if (object == nil) {
+    if (error) {
         NSLog(@"JSONObjectWithData failed with error: %@", error.localizedDescription);
     }
     return object;
