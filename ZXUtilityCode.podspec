@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.0.5.1"
+  s.version      = "1.0.6"
   s.summary      = "Utility codes for iOS."
 
   # This description is used to generate tags and improve search results.
