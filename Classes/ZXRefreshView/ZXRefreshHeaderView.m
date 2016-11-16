@@ -25,22 +25,23 @@
 //
 
 #import "ZXRefreshHeaderView.h"
+#import <objc/runtime.h>
 
 @interface ZXRefreshHeaderView ()
 @property (nonatomic, assign) UIScrollView *scrollView;
 @property (nonatomic, assign) UIEdgeInsets parentInset;
 @property (nonatomic, assign) ZXRefreshState refreshState;
 @property (nonatomic, assign) CGFloat pullingProgress;
-@property (nonatomic, copy) ZXRefreshHeaderBlock refreshBlock;
+@property (nonatomic, copy) ZXRefreshingBlock refreshingBlock;
 
 @end
 
 @implementation ZXRefreshHeaderView
 
-+ (instancetype)headerWithRefreshingBlock:(ZXRefreshHeaderBlock)block {
++ (instancetype)headerWithRefreshingBlock:(void(^)(void))refreshingBlock {
     CGRect frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0);
     ZXRefreshHeaderView *headerView = [[[self class] alloc] initWithFrame:frame];
-    headerView.refreshBlock = block;
+    headerView.refreshingBlock = refreshingBlock;
     return headerView;
 }
 
@@ -154,8 +155,8 @@
             _scrollView.contentInset = inset;
         }];
         //
-        if (_refreshBlock) {
-            _refreshBlock();
+        if (_refreshingBlock) {
+            _refreshingBlock();
         }
         //
         return YES;

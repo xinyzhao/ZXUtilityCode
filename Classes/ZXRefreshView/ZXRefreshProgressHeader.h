@@ -1,5 +1,5 @@
 //
-// ZXCircularProgressHeader.h
+// ZXRefreshProgressView.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -26,10 +26,11 @@
 
 #import "ZXRefreshHeaderView.h"
 
+/// 环形进度视图
 @class ZXCircularProgressView;
 
-/// 环形进度刷新视图
-@interface ZXCircularProgressHeader : ZXRefreshHeaderView
+/// 进度刷新视图
+@interface ZXRefreshProgressView : ZXRefreshHeaderView
 /// 环形进度视图
 @property (nonatomic, strong) ZXCircularProgressView *progressView;
 /// 环形半径, 默认 16

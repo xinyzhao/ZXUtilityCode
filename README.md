@@ -52,6 +52,7 @@ pod "ZXUtilityCode"
 * ZXImageView
 * ZXPageView
 * ZXPhotoLibrary
+* ZXRefreshView
 * ZXTabBarController
 * ZXTagView
 
@@ -61,7 +62,6 @@ pod "ZXUtilityCode"
 * BDLocationManager
 * Coordinates
 * ZXColorPickerController
-* ZXRefreshHeaderView
 
 ## License
 

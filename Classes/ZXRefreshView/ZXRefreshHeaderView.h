@@ -24,39 +24,14 @@
 // THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
-#import <objc/runtime.h>
+#import "ZXRefreshDefinitions.h"
 
-typedef void(^ZXRefreshHeaderBlock)(void);
-
-typedef NS_ENUM(NSInteger, ZXRefreshState)
-{
-    ZXRefreshStateIdle,
-    ZXRefreshStatePulling,
-    ZXRefreshStateWillRefreshing,
-    ZXRefreshStateRefreshing,
-};
-
-@protocol ZXRefreshHeaderProtocol <NSObject>
-
-- (BOOL)attachToView:(UIView *)view;
-- (BOOL)detach;
-
-- (void)setPullingProgress:(CGFloat)progress;
-
-- (BOOL)beginRefreshing;
-- (BOOL)endRefreshing;
-
-- (void)updateContentSize;
-
-@end
-
-@interface ZXRefreshHeaderView : UIView <ZXRefreshHeaderProtocol>
+@interface ZXRefreshHeaderView : UIView <ZXRefreshProtocol>
 @property (nonatomic, assign) CGFloat contentHeight; // Default 40
 @property (nonatomic, assign) CGFloat contentInset;  // Default 0
 @property (nonatomic, assign) CGFloat contentOffset; // Default 0
 
-+ (instancetype)headerWithRefreshingBlock:(ZXRefreshHeaderBlock)block;
++ (instancetype)headerWithRefreshingBlock:(ZXRefreshingBlock)refreshingBlock;
 
 - (BOOL)isRefreshing;
 

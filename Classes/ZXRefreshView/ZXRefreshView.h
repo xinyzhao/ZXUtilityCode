@@ -1,5 +1,5 @@
 //
-// ZXUtilityCode.h
+// ZXRefreshView.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -24,42 +24,9 @@
 // THE SOFTWARE.
 //
 
-#ifndef ZXUtilityCode_h
-#define ZXUtilityCode_h
+#ifndef ZXRefreshView_h
+#define ZXRefreshView_h
 
-#import "AVAudioProximityDetector.h"
-#import "dispatch_queue.h"
-#import "JSONObject.h"
-#import "NSArray+ObjectByIndex.h"
-#import "NSData+Base64Encoding.h"
-#import "NSDate+Extra.h"
-#import "NSData+HashValue.h"
-#import "NSFileManager+Extra.h"
-#import "NSLog+Extra.h"
-#import "NSObject+PerformAction.h"
-#import "NSString+Base64Encoding.h"
-#import "NSString+HashValue.h"
-#import "NSString+Pinyin.h"
-#import "NSString+Unicode.h"
-#import "NSString+URLEncoding.h"
-#import "NSURLSessionManager.h"
-#import "QRCodeGenerator.h"
-#import "QRCodeReader.h"
-#import "QRCodeScanner.h"
-#import "UIButton+Extra.h"
-#import "UIColor+Extra.h"
-#import "UIImage+Extra.h"
-#import "UINetworkActivityIndicator.h"
-#import "UIPopoverWindow.h"
-#import "UITableViewCell+Separator.h"
-#import "UIViewController+Extra.h"
-#import "ZXAlertView.h"
-#import "ZXBadgeLabel.h"
-#import "ZXImageView.h"
-#import "ZXPageView.h"
-#import "ZXPhotoLibrary.h"
-#import "ZXRefreshView.h"
-#import "ZXTabBarController.h"
-#import "ZXTagView.h"
+#import "ZXRefreshProgressHeader.h"
 
-#endif /* ZXUtilityCode_h */
+#endif /* ZXRefreshView_h */

@@ -1,5 +1,5 @@
 //
-// ZXCircularProgressHeader.m
+// ZXRefreshProgressView.m
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -24,79 +24,9 @@
 // THE SOFTWARE.
 //
 
-#import "ZXCircularProgressHeader.h"
+#import "ZXRefreshProgressHeader.h"
 
-@implementation ZXCircularProgressView
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.backgroundColor = [UIColor clearColor];
-        self.integrity = 0.8;
-        self.lineWidth = 1.5;
-        self.progressColor = [UIColor orangeColor];
-        self.progress = 0.f;
-    }
-    return self;
-}
-
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
-    // The rect is Wrong ?
-    CGFloat progress = _progress > 1.f ? 1.f : _progress;
-    //
-    rect = self.bounds;
-    CGPoint center = CGPointMake(rect.size.width / 2, rect.size.height / 2);
-    CGFloat radius = MIN(rect.size.width, rect.size.height) / 2 - _lineWidth / 2;
-    CGFloat startAngle = -M_PI_2;
-    CGFloat endAngle = startAngle + M_PI * 2 * progress * _integrity;
-    //
-    if (_progress > 1.f) {
-        progress = _progress - 1.f;
-        startAngle += M_PI * 2 * progress * _integrity;
-        endAngle += M_PI * 2 * progress * _integrity;
-    }
-    //
-    UIBezierPath *bezierPath = [UIBezierPath bezierPath];
-    [bezierPath addArcWithCenter:center
-                          radius:radius
-                      startAngle:startAngle
-                        endAngle:endAngle
-                       clockwise:YES];
-    bezierPath.lineWidth = _lineWidth;
-    [_progressColor setStroke];
-    [bezierPath stroke];
-}
-
-- (void)setIntegrity:(CGFloat)integrity {
-    _integrity = integrity;
-    [self setNeedsDisplay];
-}
-
-- (void)setLineWidth:(CGFloat)lineWidth {
-    _lineWidth = lineWidth;
-    [self setNeedsDisplay];
-}
-
-- (void)setProgressColor:(UIColor *)progressColor {
-    _progressColor = [progressColor copy];
-    [self setNeedsDisplay];
-}
-
-- (void)setProgress:(CGFloat)progress {
-    if (progress < 0.f) {
-        progress = 0.f;
-//    } else if (progress > 1.f) {
-//        progress = 1.f;
-    }
-    _progress = progress;
-    [self setNeedsDisplay];
-}
-
-@end
-
-@implementation ZXCircularProgressHeader
+@implementation ZXRefreshProgressView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -161,7 +91,7 @@
     }
 }
 
-#pragma mark <ZXRefreshHeaderProtocol>
+#pragma mark <ZXRefreshProtocol>
 
 - (void)setPullingProgress:(CGFloat)progress {
     [super setPullingProgress:progress];
@@ -189,6 +119,76 @@
     [super updateContentSize];
     //
     self.contentOffset = (self.contentHeight + _circularRadius * 2) / 2;
+}
+
+@end
+
+#pragma mark - ZXCircularProgressView
+
+@implementation ZXCircularProgressView
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.backgroundColor = [UIColor clearColor];
+        self.integrity = 0.8;
+        self.lineWidth = 1.5;
+        self.progressColor = [UIColor orangeColor];
+        self.progress = 0.f;
+    }
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect {
+    [super drawRect:rect];
+    // The rect is Wrong ?
+    CGFloat progress = _progress > 1.f ? 1.f : _progress;
+    //
+    rect = self.bounds;
+    CGPoint center = CGPointMake(rect.size.width / 2, rect.size.height / 2);
+    CGFloat radius = MIN(rect.size.width, rect.size.height) / 2 - _lineWidth / 2;
+    CGFloat startAngle = -M_PI_2;
+    CGFloat endAngle = startAngle + M_PI * 2 * progress * _integrity;
+    //
+    if (_progress > 1.f) {
+        progress = _progress - 1.f;
+        startAngle += M_PI * 2 * progress * _integrity;
+        endAngle += M_PI * 2 * progress * _integrity;
+    }
+    //
+    UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+    [bezierPath addArcWithCenter:center
+                          radius:radius
+                      startAngle:startAngle
+                        endAngle:endAngle
+                       clockwise:YES];
+    bezierPath.lineWidth = _lineWidth;
+    [_progressColor setStroke];
+    [bezierPath stroke];
+}
+
+- (void)setIntegrity:(CGFloat)integrity {
+    _integrity = integrity;
+    [self setNeedsDisplay];
+}
+
+- (void)setLineWidth:(CGFloat)lineWidth {
+    _lineWidth = lineWidth;
+    [self setNeedsDisplay];
+}
+
+- (void)setProgressColor:(UIColor *)progressColor {
+    _progressColor = [progressColor copy];
+    [self setNeedsDisplay];
+}
+
+- (void)setProgress:(CGFloat)progress {
+    if (progress < 0.f) {
+        progress = 0.f;
+    }
+    _progress = progress;
+    [self setNeedsDisplay];
 }
 
 @end
