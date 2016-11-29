@@ -185,7 +185,7 @@ static NSURLSessionManager *_defaultManager = nil;
 
 @implementation NSMultipartFormData
 
-- (instancetype)initWithData:(NSData *)data name:(NSData *)name {
+- (instancetype)initWithData:(NSData *)data name:(NSString *)name {
     self = [super init];
     if (self) {
         self.data = data;
@@ -194,7 +194,7 @@ static NSURLSessionManager *_defaultManager = nil;
     return self;
 }
 
-- (instancetype)initWithData:(NSData *)data name:(NSData *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType {
+- (instancetype)initWithData:(NSData *)data name:(NSString *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType {
     self = [super init];
     if (self) {
         self.data = data;

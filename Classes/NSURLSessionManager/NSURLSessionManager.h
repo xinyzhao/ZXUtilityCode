@@ -35,8 +35,8 @@ typedef void (^NSURLSessionFailureBlock)(NSHTTPURLResponse *response, NSError *e
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *mimeType;
 
-- (instancetype)initWithData:(NSData *)data name:(NSData *)name;
-- (instancetype)initWithData:(NSData *)data name:(NSData *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType;
+- (instancetype)initWithData:(NSData *)data name:(NSString *)name;
+- (instancetype)initWithData:(NSData *)data name:(NSString *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType;
 
 @end
 
