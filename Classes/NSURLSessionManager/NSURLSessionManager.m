@@ -48,7 +48,6 @@ static NSURLSessionManager *_defaultManager = nil;
 {
     self = [super init];
     if (self) {
-        self.timeoutInterval = 30.f;
         self.taskQueue = dispatch_queue_create("NSURLSessionManager", NULL);
     }
     return self;
@@ -78,7 +77,6 @@ static NSURLSessionManager *_defaultManager = nil;
         NSMutableURLRequest *reqeust = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
         reqeust.HTTPMethod = method;
         reqeust.HTTPBody = body;
-        reqeust.timeoutInterval = self.timeoutInterval;
         // header fields
         [headers enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
             [reqeust setValue:obj forHTTPHeaderField:key];
@@ -112,12 +110,99 @@ static NSURLSessionManager *_defaultManager = nil;
     });
 }
 
-- (void)getWithURL:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary *)headers success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
-    [self requestWithURL:url params:params method:@"GET" headers:headers body:nil success:success failure:failure];
+- (void)deleteWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
+    [self requestWithURL:url params:params method:@"DELETE" headers:nil body:nil success:success failure:failure];
+}
+
+- (void)headWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
+    [self requestWithURL:url params:params method:@"HEAD" headers:nil body:nil success:success failure:failure];
+}
+
+- (void)getWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
+    [self requestWithURL:url params:params method:@"GET" headers:nil body:nil success:success failure:failure];
 }
 
 - (void)postWithURL:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary *)headers body:(NSData *)body success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
     [self requestWithURL:url params:params method:@"POST" headers:headers body:body success:success failure:failure];
+}
+
+- (void)postWithURL:(NSString *)url params:(NSDictionary *)params formData:(NSArray<NSMultipartFormData *> *)formData success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
+    // boundary
+    NSString *boundary = [NSString stringWithFormat:@"Boundary+%08X%08X", arc4random(), arc4random()];
+    // body
+    NSMutableData *body = [NSMutableData data];
+    [formData enumerateObjectsUsingBlock:^(NSMultipartFormData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        if (obj.fileName) {
+            NSString *str = [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", obj.name, obj.fileName];
+            [body appendData:[str dataUsingEncoding:NSUTF8StringEncoding]];
+        } else {
+            NSString *str = [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n", obj.name];
+            [body appendData:[str dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+        if (obj.mimeType) {
+            NSString *str = [NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", obj.mimeType];
+            [body appendData:[str dataUsingEncoding:NSUTF8StringEncoding]];
+        } else {
+            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+        if (obj.data) {
+            [body appendData:obj.data];
+        }
+    }];
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    // request
+    NSDictionary *headers = @{@"Content-Type":[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary],
+                              @"Content-Length":[NSString stringWithFormat:@"%zd", body.length]};
+    [self postWithURL:url params:params headers:headers body:body success:success failure:failure];
+}
+
+- (void)postWithURL:(NSString *)url params:(NSDictionary *)params jsonObject:(id)jsonObject success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
+    if ([NSJSONSerialization isValidJSONObject:jsonObject]) {
+        NSError *error;
+        NSData *body = [NSJSONSerialization dataWithJSONObject:jsonObject options:kNilOptions error:&error];
+        if (body) {
+            NSDictionary *headers = @{@"Content-Type":@"Content-Type",
+                                      @"Content-Length":[NSString stringWithFormat:@"%zd", body.length]};
+            [self postWithURL:url params:params headers:headers body:body success:success failure:failure];
+        } else if (failure && error) {
+            failure(nil, error);
+        }
+    } else if (failure) {
+        NSError *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                             code:-1
+                                         userInfo:@{NSLocalizedDescriptionKey:@"Invalid JSON Object"}];
+        failure(nil, error);
+    }
+}
+
+- (void)putWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure {
+    [self requestWithURL:url params:params method:@"PUT" headers:nil body:nil success:success failure:failure];
+}
+
+@end
+
+
+@implementation NSMultipartFormData
+
+- (instancetype)initWithData:(NSData *)data name:(NSData *)name {
+    self = [super init];
+    if (self) {
+        self.data = data;
+        self.name = name;
+    }
+    return self;
+}
+
+- (instancetype)initWithData:(NSData *)data name:(NSData *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType {
+    self = [super init];
+    if (self) {
+        self.data = data;
+        self.name = name;
+        self.fileName = fileName;
+        self.mimeType = mimeType;
+    }
+    return self;
 }
 
 @end

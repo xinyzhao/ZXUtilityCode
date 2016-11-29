@@ -29,13 +29,34 @@
 typedef void (^NSURLSessionSuccessBlock)(NSHTTPURLResponse *response, NSData *data);
 typedef void (^NSURLSessionFailureBlock)(NSHTTPURLResponse *response, NSError *error);
 
+@interface NSMultipartFormData : NSObject
+@property (nonatomic, strong) NSData *data;
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *fileName;
+@property (nonatomic, strong) NSString *mimeType;
+
+- (instancetype)initWithData:(NSData *)data name:(NSData *)name;
+- (instancetype)initWithData:(NSData *)data name:(NSData *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType;
+
+@end
+
 @interface NSURLSessionManager : NSObject
-@property (nonatomic, assign) NSTimeInterval timeoutInterval; // Default 30 secondes
 
 + (NSURLSessionManager *)defaultManager;
 
-- (void)getWithURL:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary *)header success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+- (void)deleteWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
 
-- (void)postWithURL:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary *)header body:(NSData *)body success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+- (void)headWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+
+- (void)getWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+
+- (void)postWithURL:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary *)headers body:(NSData *)body success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+
+- (void)postWithURL:(NSString *)url params:(NSDictionary *)params formData:(NSArray<NSMultipartFormData *> *)formData success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+
+- (void)postWithURL:(NSString *)url params:(NSDictionary *)params jsonObject:(id)jsonObject success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
+
+- (void)putWithURL:(NSString *)url params:(NSDictionary *)params success:(NSURLSessionSuccessBlock)success failure:(NSURLSessionFailureBlock)failure;
 
 @end
+
