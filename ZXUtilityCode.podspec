@@ -1,139 +1,187 @@
-#
-#  Be sure to run `pod spec lint ZXUtilityCode.podspec' to ensure this is a
-#  valid spec and to remove all comments including this before submitting the spec.
-#
-#  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html
-#  To see working Podspecs in the CocoaPods repo see https://github.com/CocoaPods/Specs/
-#
-
 Pod::Spec.new do |s|
-
-  # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  These will help people to find your library, and whilst it
-  #  can feel like a chore to fill in it's definitely to your advantage. The
-  #  summary should be tweet-length, and the description more in depth.
-  #
 
   s.name         = "ZXUtilityCode"
   s.version      = "1.0.7"
   s.summary      = "Utility codes for iOS."
-
-  # This description is used to generate tags and improve search results.
-  #   * Think: What does it do? Why did you write it? What is the focus?
-  #   * Try to keep it short, snappy and to the point.
-  #   * Write the description between the DESC delimiters below.
-  #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
                    DESC
-
   s.homepage     = "https://github.com/xinyzhao/ZXUtilityCode"
-  # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
-
-
-  # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Licensing your code is important. See http://choosealicense.com for more info.
-  #  CocoaPods will detect a license file if there is a named LICENSE*
-  #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
-  #
-
-  # s.license      = "MIT (example)"
-  # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
-
-
-  # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Specify the authors of the library, with email addresses. Email addresses
-  #  of the authors are extracted from the SCM log. E.g. $ git log. CocoaPods also
-  #  accepts just a name if you'd rather not provide an email address.
-  #
-  #  Specify a social_media_url where others can refer to, for example a twitter
-  #  profile URL.
-  #
-
   s.author             = { "xinyzhao" => "xinyzhao@qq.com" }
-  # Or just: s.author    = "xinyzhao"
-  # s.authors            = { "xinyzhao" => "xinyzhao@qq.com" }
-  # s.social_media_url   = "http://twitter.com/xinyzhao"
-
-  # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If this Pod runs only on iOS or OS X, then specify the platform and
-  #  the deployment target. You can optionally include the target after the platform.
-  #
-
-  # s.platform     = :ios
   s.platform     = :ios, "7.0"
-
-  #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
-  # s.watchos.deployment_target = "2.0"
-  # s.tvos.deployment_target = "9.0"
-
-
-  # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Specify the location from where the source should be retrieved.
-  #  Supports git, hg, bzr, svn and HTTP.
-  #
-
   s.source       = { :git => "https://github.com/xinyzhao/ZXUtilityCode.git", :tag => "#{s.version}" }
+  s.requires_arc = true
 
-
-  # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  CocoaPods is smart about how it includes source code. For source files
-  #  giving a folder will include any swift, h, m, mm, c & cpp files.
-  #  For header files it will include any header in the folder.
-  #  Not including the public_header_files will make all headers public.
-  #
-
-  s.source_files  = "Classes", "Classes/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
-
-  # s.public_header_files = "Classes/**/*.h"
-
-
-  # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  A list of resources included with the Pod. These are copied into the
-  #  target bundle with a build phase script. Anything else will be cleaned.
-  #  You can preserve files from being cleaned, please don't preserve
-  #  non-essential files like tests, examples and documentation.
-  #
-
-  # s.resource  = "icon.png"
-  # s.resources = "Resources/*.png"
-
-  # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
-
-
-  # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Link your library with frameworks, or libraries. Libraries do not include
-  #  the lib prefix of their name.
-  #
-
-  # s.framework  = "SomeFramework"
-  s.frameworks = "AssetsLibrary", "AVFoundation", "CoreGraphics", "Foundation", "ImageIO", "Photos", "UIKit"
-
+  s.frameworks = "Foundation", "UIKit"
   # s.library   = "iconv"
   # s.libraries = "iconv", "xml2"
 
+  s.source_files  = "Core/ZXUtilityCode.h"
+  s.public_header_files = "Core/ZXUtilityCode.h"
+  
+  s.subspec "AVAudioProximityDetector" do |ss|
+    ss.source_files  = "Core/AVAudioProximityDetector/*.{h,m}"
+    ss.public_header_files = "Core/AVAudioProximityDetector/*.h"
+    ss.frameworks = "AVFoundation"
+  end
 
-  # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If your library depends on compiler flags you can set them in the xcconfig hash
-  #  where they will only apply to your library. If you depend on other Podspecs
-  #  you can include multiple dependencies to ensure it works.
+  s.subspec "Base64Encoding" do |ss|
+    ss.source_files  = "Core/Base64Encoding/*.{h,m}"
+    ss.public_header_files = "Core/Base64Encoding/*.h"
+  end
 
-  s.requires_arc = true
+  s.subspec "DispatchQueue" do |ss|
+    ss.source_files  = "Core/DispatchQueue/*.{h,m}"
+    ss.public_header_files = "Core/DispatchQueue/*.h"
+  end
 
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  # s.dependency "JSONKit", "~> 1.4"
+  s.subspec "HashValue" do |ss|
+    ss.source_files  = "Core/HashValue/*.{h,m}"
+    ss.public_header_files = "Core/HashValue/*.h"
+  end
+
+  s.subspec "JSONObject" do |ss|
+    ss.source_files  = "Core/JSONObject/*.{h,m}"
+    ss.public_header_files = "Core/JSONObject/*.h"
+  end
+
+  s.subspec "NSArray+Extra" do |ss|
+    ss.source_files  = "Core/NSArray+Extra/*.{h,m}"
+    ss.public_header_files = "Core/NSArray+Extra/*.h"
+  end
+
+  s.subspec "NSDate+Extra" do |ss|
+    ss.source_files  = "Core/NSDate+Extra/*.{h,m}"
+    ss.public_header_files = "Core/NSDate+Extra/*.h"
+  end
+
+  s.subspec "NSFileManager+Extra" do |ss|
+    ss.source_files  = "Core/NSFileManager+Extra/*.{h,m}"
+    ss.public_header_files = "Core/NSFileManager+Extra/*.h"
+  end
+
+  s.subspec "NSLog+Extra" do |ss|
+    ss.source_files  = "Core/NSLog+Extra/*.{h,m}"
+    ss.public_header_files = "Core/NSLog+Extra/*.h"
+  end
+
+  s.subspec "NSObject+PerformAction" do |ss|
+    ss.source_files  = "Core/NSObject+PerformAction/*.{h,m}"
+    ss.public_header_files = "Core/NSObject+PerformAction/*.h"
+  end
+
+  s.subspec "NSString+Pinyin" do |ss|
+    ss.source_files  = "Core/NSString+Pinyin/*.{h,m}"
+    ss.public_header_files = "Core/NSString+Pinyin/*.h"
+  end
+
+  s.subspec "NSString+Unicode" do |ss|
+    ss.source_files  = "Core/NSString+Unicode/*.{h,m}"
+    ss.public_header_files = "Core/NSString+Unicode/*.h"
+  end
+
+  s.subspec "NSString+URLEncoding" do |ss|
+    ss.source_files  = "Core/NSString+URLEncoding/*.{h,m}"
+    ss.public_header_files = "Core/NSString+URLEncoding/*.h"
+  end
+
+  s.subspec "NSURLSessionManager" do |ss|
+    ss.source_files  = "Core/NSURLSessionManager/*.{h,m}"
+    ss.public_header_files = "Core/NSURLSessionManager/*.h"
+  end
+
+  s.subspec "QRCodeGenerator" do |ss|
+    ss.source_files  = "Core/QRCodeGenerator/*.{h,m}"
+    ss.public_header_files = "Core/QRCodeGenerator/*.h"
+  end
+
+  s.subspec "QRCodeReader" do |ss|
+    ss.source_files  = "Core/QRCodeReader/*.{h,m}"
+    ss.public_header_files = "Core/QRCodeReader/*.h"
+  end
+
+  s.subspec "QRCodeScanner" do |ss|
+    ss.source_files  = "Core/QRCodeScanner/*.{h,m}"
+    ss.public_header_files = "Core/QRCodeScanner/*.h"
+    ss.frameworks = "AVFoundation"
+  end
+
+  s.subspec "UIButton+Extra" do |ss|
+    ss.source_files  = "Core/UIButton+Extra/*.{h,m}"
+    ss.public_header_files = "Core/UIButton+Extra/*.h"
+  end
+
+  s.subspec "UIColor+Extra" do |ss|
+    ss.source_files  = "Core/UIColor+Extra/*.{h,m}"
+    ss.public_header_files = "Core/UIColor+Extra/*.h"
+  end
+
+  s.subspec "UIImage+Extra" do |ss|
+    ss.source_files  = "Core/UIImage+Extra/*.{h,m}"
+    ss.public_header_files = "Core/UIImage+Extra/*.h"
+    ss.frameworks = "CoreGraphics", "ImageIO"
+  end
+
+  s.subspec "UINetworkActivityIndicator" do |ss|
+    ss.source_files  = "Core/UINetworkActivityIndicator/*.{h,m}"
+    ss.public_header_files = "Core/UINetworkActivityIndicator/*.h"
+  end
+
+  s.subspec "UIPopoverWindow" do |ss|
+    ss.source_files  = "Core/UIPopoverWindow/*.{h,m}"
+    ss.public_header_files = "Core/UIPopoverWindow/*.h"
+  end
+
+  s.subspec "UITableViewCell+Separator" do |ss|
+    ss.source_files  = "Core/UITableViewCell+Separator/*.{h,m}"
+    ss.public_header_files = "Core/UITableViewCell+Separator/*.h"
+  end
+
+  s.subspec "UIViewController+Extra" do |ss|
+    ss.source_files  = "Core/UIViewController+Extra/*.{h,m}"
+    ss.public_header_files = "Core/UIViewController+Extra/*.h"
+  end
+
+  s.subspec "ZXAlertView" do |ss|
+    ss.source_files  = "Core/ZXAlertView/*.{h,m}"
+    ss.public_header_files = "Core/ZXAlertView/*.h"
+  end
+
+  s.subspec "ZXBadgeLabel" do |ss|
+    ss.source_files  = "Core/ZXBadgeLabel/*.{h,m}"
+    ss.public_header_files = "Core/ZXBadgeLabel/*.h"
+  end
+
+  s.subspec "ZXImageView" do |ss|
+    ss.source_files  = "Core/ZXImageView/*.{h,m}"
+    ss.public_header_files = "Core/ZXImageView/ZXImageView.h"
+  end
+
+  s.subspec "ZXPageView" do |ss|
+    ss.source_files  = "Core/ZXPageView/*.{h,m}"
+    ss.public_header_files = "Core/ZXPageView/*.h"
+  end
+
+  s.subspec "ZXPhotoLibrary" do |ss|
+    ss.source_files  = "Core/ZXPhotoLibrary/*.{h,m}"
+    ss.public_header_files = "Core/ZXPhotoLibrary/*.h"
+    ss.frameworks = "AssetsLibrary", "CoreGraphics", "ImageIO", "Photos"
+  end
+
+  s.subspec "ZXRefreshView" do |ss|
+    ss.source_files  = "Core/ZXRefreshView/*.{h,m}"
+    ss.public_header_files = "Core/ZXRefreshView/ZXRefreshView.h"
+  end
+
+  s.subspec "ZXTabBarController" do |ss|
+    ss.source_files  = "Core/ZXTabBarController/*.{h,m}"
+    ss.public_header_files = "Core/ZXTabBarController/*.h"
+  end
+
+  s.subspec "ZXTagView" do |ss|
+    ss.source_files  = "Core/ZXTagView/*.{h,m}"
+    ss.public_header_files = "Core/ZXTagView/*.h"
+  end
 
 end
