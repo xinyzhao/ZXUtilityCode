@@ -28,7 +28,7 @@ pod "ZXUtilityCode"
 * DispatchQueue
 * HashValue
 * JSONObject
-* NSArray+ObjectByIndex
+* NSArray+Extra
 * NSDate+Extra
 * NSFileManager+Extra
 * NSLog+Extra
