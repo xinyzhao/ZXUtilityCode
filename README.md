@@ -36,7 +36,6 @@ pod "ZXUtilityCode"
 * NSString+Pinyin
 * NSString+Unicode
 * NSString+URLEncoding
-* NSURLSessionManager
 * QRCodeGenerator
 * QRCodeReader
 * QRCodeScanner
@@ -49,6 +48,7 @@ pod "ZXUtilityCode"
 * UIViewController+Extra
 * ZXAlertView
 * ZXBadgeLabel
+* ZXHTTPRequest
 * ZXImageView
 * ZXPageView
 * ZXPhotoLibrary

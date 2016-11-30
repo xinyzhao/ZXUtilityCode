@@ -86,11 +86,6 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/NSString+URLEncoding/*.h"
   end
 
-  s.subspec "NSURLSessionManager" do |ss|
-    ss.source_files  = "Core/NSURLSessionManager/*.{h,m}"
-    ss.public_header_files = "Core/NSURLSessionManager/*.h"
-  end
-
   s.subspec "QRCodeGenerator" do |ss|
     ss.source_files  = "Core/QRCodeGenerator/*.{h,m}"
     ss.public_header_files = "Core/QRCodeGenerator/*.h"
@@ -151,6 +146,11 @@ Pod::Spec.new do |s|
   s.subspec "ZXBadgeLabel" do |ss|
     ss.source_files  = "Core/ZXBadgeLabel/*.{h,m}"
     ss.public_header_files = "Core/ZXBadgeLabel/*.h"
+  end
+
+  s.subspec "ZXHTTPRequest" do |ss|
+    ss.source_files  = "Core/ZXHTTPRequest/*.{h,m}"
+    ss.public_header_files = "Core/ZXHTTPRequest/*.h"
   end
 
   s.subspec "ZXImageView" do |ss|
