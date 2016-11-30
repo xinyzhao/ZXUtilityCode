@@ -1,5 +1,5 @@
 //
-// NSArray+ObjectByIndex.h
+// NSArray+Extra.m
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -24,15 +24,41 @@
 // THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
+#import "NSArray+Extra.h"
+#import <objc/runtime.h>
 
-@interface NSArray (ObjectByIndex)
+@implementation NSArray (Extra)
 
-/// Same as [NSArray objectAtIndex:]
-- (id)objectByIndex:(NSUInteger)index;
++ (void)load {
+    Class class = objc_getClass("__NSArrayI");
+    Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
+    Method exchangeMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
+    method_exchangeImplementations(originalMethod, exchangeMethod);
+}
+
+- (id)objectByIndex:(NSUInteger)index {
+    if (index < self.count) {
+        return [self objectByIndex:index];
+    }
+    return nil;
+}
 
 @end
 
-@interface NSMutableArray (ObjectByIndex)
+@implementation NSMutableArray (Extra)
+
++ (void)load {
+    Class class = objc_getClass("__NSArrayM");
+    Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
+    Method exchangeMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
+    method_exchangeImplementations(originalMethod, exchangeMethod);
+}
+
+- (id)objectByIndex:(NSUInteger)index {
+    if (index < self.count) {
+        return [self objectByIndex:index];
+    }
+    return nil;
+}
 
 @end
