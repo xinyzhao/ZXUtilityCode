@@ -155,7 +155,7 @@ Pod::Spec.new do |s|
 
   s.subspec "ZXImageView" do |ss|
     ss.source_files  = "Core/ZXImageView/*.{h,m}"
-    ss.public_header_files = "Core/ZXImageView/ZXImageView.h"
+    ss.public_header_files = "Core/ZXImageView/*.h"
   end
 
   s.subspec "ZXPageView" do |ss|
@@ -171,7 +171,7 @@ Pod::Spec.new do |s|
 
   s.subspec "ZXRefreshView" do |ss|
     ss.source_files  = "Core/ZXRefreshView/*.{h,m}"
-    ss.public_header_files = "Core/ZXRefreshView/ZXRefreshView.h"
+    ss.public_header_files = "Core/ZXRefreshView/*.h"
   end
 
   s.subspec "ZXTabBarController" do |ss|
