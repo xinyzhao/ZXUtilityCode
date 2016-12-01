@@ -66,9 +66,12 @@
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:reqeust completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             NSLog(@"%@ %@\nRET %@(%d)", method, urlString, error.localizedDescription, (int)error.code);
-            if (failure) {
-                failure((NSHTTPURLResponse *)response, error);
-            }
+            //
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (failure) {
+                    failure((NSHTTPURLResponse *)response, error);
+                }
+            });
         } else {
             id obj = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
             if (obj == nil) {
@@ -78,9 +81,12 @@
                 obj = [NSString stringWithFormat:@"<Unknown data, length: %d bytes>", (int)data.length];
             }
             NSLog(@"%@ %@\nRET %@", method, urlString, obj);
-            if (success) {
-                success((NSHTTPURLResponse *)response, data);
-            }
+            //
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (success) {
+                    success((NSHTTPURLResponse *)response, data);
+                }
+            });
         }
     }];
     [task resume];
