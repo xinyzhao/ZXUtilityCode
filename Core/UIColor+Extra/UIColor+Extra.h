@@ -59,6 +59,9 @@ UIKIT_EXTERN UIColor * UIColorByInverse(UIColor *color);
 + (instancetype)colorWithHexString:(NSString *)string;
 + (instancetype)colorWithHexString:(NSString *)string alpha:(CGFloat)alpha;
 
+/* Get random color */
++ (UIColor *)randomColor;
+
 /* Return the HEX string of the color. */
 - (NSString *)hexString;
 

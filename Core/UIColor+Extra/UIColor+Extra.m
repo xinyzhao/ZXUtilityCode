@@ -90,6 +90,10 @@ UIColor * UIColorByInverse(UIColor *color) {
     return [color colorWithAlphaComponent:alpha];
 }
 
++ (UIColor *)randomColor {
+    return UIColorFromRGB(arc4random() % 256, arc4random() % 256, arc4random() % 256);
+}
+
 - (NSString *)hexString {
     return UIColorToHexString(self, NO);
 }
