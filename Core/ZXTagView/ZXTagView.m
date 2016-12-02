@@ -84,9 +84,9 @@
 }
 
 - (void)updateContentSize {
-    _contentSize = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}];
-    _contentSize.width += self.contentInset.left + self.contentInset.right;
-    _contentSize.height += self.contentInset.top + self.contentInset.bottom;
+    CGSize size = [self.text sizeWithAttributes:@{NSFontAttributeName:self.font}];
+    _contentSize.width = ceilf(size.width) + self.contentInset.left + self.contentInset.right;
+    _contentSize.height = ceilf(size.height) + self.contentInset.top + self.contentInset.bottom;
     [self setNeedsDisplay];
 }
 
