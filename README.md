@@ -9,7 +9,7 @@ Provides a few utility codes for iOS.
 
 ## Installation
 
-ZXUtilityCode is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
+ZXUtilityCode is available through [CocoaPods](https://cocoapods.org/pods/ZXUtilityCode). To install it, simply add the following line to your Podfile:
 
 ```
 pod "ZXUtilityCode"
