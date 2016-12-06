@@ -1,5 +1,5 @@
 //
-// UIPopoverWindow.h
+// ZXPopoverWindow.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -26,10 +26,25 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIPopoverWindow : UIWindow
-@property (nonatomic, readonly) UIView *popoverView;
+/**
+ ZXPopoverWindow
+ */
+@interface ZXPopoverWindow : UIWindow
+/**
+ Presented View
+ */
+@property (nonatomic, readonly) UIView *presentedView;
 
+/**
+ Present view in window
+
+ @param view present view
+ */
 - (void)presentView:(UIView *)view;
+
+/**
+ Dismiss window
+ */
 - (void)dismiss;
 
 @end
