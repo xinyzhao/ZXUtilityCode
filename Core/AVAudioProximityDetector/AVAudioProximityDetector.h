@@ -27,13 +27,33 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
+/**
+ AVAudioProximityDetector
+ */
 @interface AVAudioProximityDetector : NSObject
 
+/**
+ Is monitoring
+ */
 @property (nonatomic, readonly, getter=isMonitoring) BOOL monitoring;
 
+/**
+ Default detector
+
+ @return AVAudioProximityDetector
+ */
 + (instancetype)defaultDetector;
 
+/**
+ Start monitoring
+
+ @return Start successfully YES, otherwise NO
+ */
 - (BOOL)startMonitoring;
+
+/**
+ Stop monitoring
+ */
 - (void)stopMonitoring;
 
 @end

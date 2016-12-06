@@ -26,8 +26,17 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ Read QRCode from UIImage
+ */
 @interface QRCodeReader : NSObject
 
+/**
+ Detect QRCode from UIImage
+
+ @param image QRCode UIImage
+ @return Decoded QRCode NSString array
+ */
 + (NSArray *)decodeQRCodeImage:(UIImage *)image;
 
 @end

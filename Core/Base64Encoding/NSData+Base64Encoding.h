@@ -26,12 +26,43 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ NSData (Base64Encoding)
+ */
 @interface NSData (Base64Encoding)
 
+/**
+ Create an NSData from a Base-64, UTF-8 encoded NSString
+
+ @param base64String a Base-64, UTF-8 encoded NSString
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSData
+ */
 + (instancetype)dataWithBase64EncodedString:(NSString *)base64String options:(NSDataBase64DecodingOptions)options;
+
+/**
+ Create an NSString from a Base-64, UTF-8 encoded NSString
+
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSString
+ */
 - (NSString *)base64DecodedStringWithOptions:(NSDataBase64DecodingOptions)options;
 
+/**
+ Create an NSData from a Base-64, UTF-8 encoded NSData
+
+ @param base64Data a Base-64, UTF-8 encoded NSData
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSData
+ */
 + (instancetype)dataWithBase64EncodedData:(NSData *)base64Data options:(NSDataBase64DecodingOptions)options;
+
+/**
+ Create an NSData from a Base-64, UTF-8 encoded NSData
+
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSData
+ */
 - (NSData *)base64DecodedDataWithOptions:(NSDataBase64DecodingOptions)options;
 
 @end

@@ -28,7 +28,12 @@
 
 @interface UIButton (Extra)
 
-// 设置左字右图
+/**
+ Set left title and right image
+
+ @param spacing Insets between title and image
+ @param state UIControlState
+ */
 - (void)setForceRightToLeft:(CGFloat)spacing forState:(UIControlState)state;
 
 @end

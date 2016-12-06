@@ -28,12 +28,54 @@
 
 @interface NSString (Base64Encoding)
 
+/**
+ Create an NSString from a Base-64, UTF-8 encoded NSString
+
+ @param base64String a Base-64, UTF-8 encoded NSString
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSString
+ */
 + (instancetype)stringWithBase64EncodedString:(NSString *)base64String options:(NSDataBase64DecodingOptions)options;
+
+/**
+ Create an NSString from a Base-64, UTF-8 encoded NSString
+
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSString
+ */
 - (NSString *)base64DecodedStringWithOptions:(NSDataBase64DecodingOptions)options;
+
+/**
+ Create a Base-64, UTF-8 encoded NSString
+
+ @param options NSDataBase64EncodingOptions
+ @return Encoded NSString
+ */
 - (NSString *)base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)options;
 
+/**
+ Create an NSString from a Base-64, UTF-8 encoded NSData
+
+ @param base64Data a Base-64, UTF-8 encoded NSData
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSString
+ */
 + (instancetype)stringWithBase64EncodedData:(NSData *)base64Data options:(NSDataBase64DecodingOptions)options;
+
+/**
+ Create an NSData from a Base-64, UTF-8 encoded NSString
+
+ @param options NSDataBase64DecodingOptions
+ @return Decoded NSData
+ */
 - (NSData *)base64DecodedDataWithOptions:(NSDataBase64DecodingOptions)options;
+
+/**
+ Create a Base-64, UTF-8 encoded NSData
+
+ @param options NSDataBase64EncodingOptions
+ @return Encoded NSData
+ */
 - (NSData *)base64EncodedDataWithOptions:(NSDataBase64EncodingOptions)options;
 
 @end

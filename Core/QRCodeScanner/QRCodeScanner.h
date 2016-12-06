@@ -27,15 +27,48 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
+/**
+ QRCode Scanner Output handler block
+
+ @param results Scanning output results
+ */
 typedef void(^QRCodeScannerOutput)(NSArray<NSString *> *results);
 
+/**
+ QRCodeScanner
+ */
 @interface QRCodeScanner : NSObject
-@property (nonatomic, assign) AVCaptureTorchMode torchMode; // Default AVCaptureTorchModeOff
+/**
+ torchMode Default AVCaptureTorchModeOff
+ */
+@property (nonatomic, assign) AVCaptureTorchMode torchMode;
 
+/**
+ initialzes with preview and capture rect
+
+ @param preview The preview view
+ @param frame Capture frame in preview view
+ @return QRCodeScanner
+ */
 - (instancetype)initWithPreview:(UIView *)preview captureRect:(CGRect)frame;
 
+/**
+ Start scanning
+
+ @param output Output handler
+ */
 - (void)startScanning:(QRCodeScannerOutput)output;
+
+/**
+ Stop scanning
+ */
 - (void)stopScanning;
+
+/**
+ Whether or not scanning
+
+ @return Is scanning is YES, otherwise is NO.
+ */
 - (BOOL)isScanning;
 
 @end
