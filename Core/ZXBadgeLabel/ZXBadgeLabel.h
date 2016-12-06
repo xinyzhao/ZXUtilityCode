@@ -26,16 +26,29 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ ZXBadgeLabel
+ */
 @interface ZXBadgeLabel : UILabel
 
-// audo-hide, calls -setHidden when number equal or less than mininum
+/**
+ Audo-hide, calls -setHidden when number equal or less than mininum
+ */
 @property (nonatomic, assign) BOOL audoHide; // Default YES
 
-// badge number
+/**
+ Badge number
+ */
 @property (nonatomic, assign) NSInteger number; // Default 0
-// mininum
+
+/**
+ Mininum number
+ */
 @property (nonatomic, assign) NSInteger mininum; // Default 0
-// maxinum, eg. number>99 and maxinum==99, display as "99+"
+
+/**
+ Maxinum, eg. number>99 and maxinum==99, display as "99+"
+ */
 @property (nonatomic, assign) NSInteger maxinum; // Default 99
 
 @end

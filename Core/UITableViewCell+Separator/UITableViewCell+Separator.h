@@ -28,10 +28,14 @@
 
 @interface UITableViewCell (Separator)
 
-// Default is the standard separator gray, private property in UITableViewCell.
+/**
+ Default is the standard separator gray, private property in UITableViewCell.
+ */
 @property (nonatomic, strong, setter=saveSeparatorColor:) UIColor *separatorColor;
 
-// Draw the separator if top/bottom great than 0, and specified line width.
+/**
+ Draw the separator if top/bottom great than 0, and specified line width.
+ */
 @property (nonatomic, assign) UIEdgeInsets separatorInset;
 
 @end

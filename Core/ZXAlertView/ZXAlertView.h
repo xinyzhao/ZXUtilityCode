@@ -26,24 +26,77 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ ZXAlertAction
+ */
 @interface ZXAlertAction : NSObject
+
+/**
+ Title for action
+ */
 @property (nonatomic, strong) NSString *title;
 
+/**
+ Make an action
+
+ @param title Title for action
+ @param handler Handler for action
+ @return Instance
+ */
 + (instancetype)actionWithTitle:(NSString *)title handler:(void (^)(ZXAlertAction *action))handler;
+
+/**
+ Initialization
+
+ @param title Title for action
+ @param handler Handler for action
+ @return Instance
+ */
 - (instancetype)initWithTitle:(NSString *)title handler:(void (^)(ZXAlertAction *action))handler;
 
 @end
 
+/**
+ ZXAlertView
+ */
 @interface ZXAlertView : UIView
+/**
+ Title for alert view
+ */
 @property (nonatomic, strong) NSString *title;
+/**
+ Message for alert view
+ */
 @property (nonatomic, strong) NSString *message;
 
-/// Like UIAlertView, compatible with iOS 7,8
+/**
+ Like UIAlertView, compatible with iOS 7,8
+
+ @param title Title for alert view
+ @param message Message for alert view
+ @param cancelAction Cancel action
+ @param otherActions Other actions, end with nil
+ @return Instance
+ */
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
 
-/// Like UIActionSheet, compatible with iOS 7,8
+/**
+ Like UIActionSheet, compatible with iOS 7,8
+
+ @param title Title for alert view
+ @param message Message for alert view
+ @param cancelAction Cancel action
+ @param destructiveAction Destructive action
+ @param otherActions Other actions, end with nil
+ @return Instance
+ */
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction destructiveAction:(ZXAlertAction *)destructiveAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
 
+/**
+ Show the alertView
+
+ @param viewController The parent view controller
+ */
 - (void)showInViewController:(UIViewController *)viewController;
 
 @end

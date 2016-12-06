@@ -26,8 +26,17 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ ZXImageViewCell
+ */
 @interface ZXImageViewCell : UICollectionViewCell
+/**
+ The image
+ */
 @property (nonatomic, copy) UIImage *image;
+/**
+ The image URL
+ */
 @property (nonatomic, copy) NSURL *imageURL;
 
 @end

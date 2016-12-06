@@ -29,27 +29,97 @@
 @protocol ZXImageViewDataSource;
 @protocol ZXImageViewDelegate;
 
+/**
+ ZXImageView
+ */
 @interface ZXImageView : UIView
+/**
+ Data source, see ZXImageViewDataSource
+ */
 @property (nonatomic, weak) id <ZXImageViewDataSource> dataSource;
+/**
+ Delegate, see ZXImageViewDelegate
+ */
 @property (nonatomic, weak) id <ZXImageViewDelegate> delegate;
-@property (nonatomic, assign) CGFloat itemSpacing; // Defalut 10.f
+/**
+ Item spacing, defalut 10.f
+ */
+@property (nonatomic, assign) CGFloat itemSpacing;
 
+/**
+ Create or reuse a ZXImageViewCell
+
+ @param index Index of item
+ @return ZXImageViewCell
+ */
 - (ZXImageViewCell *)dequeueReusableCellForItemAtIndex:(NSInteger)index;
+
+/**
+ Number of items
+
+ @return NSInteger
+ */
 - (NSInteger)numberOfItems;
+
+/**
+ Reload data
+ */
 - (void)reloadData;
+
+/**
+ Scroll to specified item
+
+ @param index Index of item
+ @param animated animated or immediately
+ */
 - (void)scrollToItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 
 @end
 
+/**
+ ZXImageViewDataSource
+ */
 @protocol ZXImageViewDataSource <NSObject>
 @required
+/**
+ Specified number of items
+
+ @param imageView The imageView
+ @return NSInteger
+ */
 - (NSInteger)numberOfItemsInImageView:(ZXImageView *)imageView;
+
+/**
+ Make and config cell from dequeueReusableCellForItemAtIndex:
+
+ @param imageView The imageView
+ @param index The index of item
+ @return ZXImageViewCell
+ */
 - (ZXImageViewCell *)imageView:(ZXImageView *)imageView cellForItemAtIndex:(NSInteger)index;
+
 @end
 
+/**
+ ZXImageViewDelegate
+ */
 @protocol ZXImageViewDelegate <NSObject>
 @optional
+/**
+ The imageView did select item
+
+ @param imageView The imageView
+ @param index The index of item
+ */
 - (void)imageView:(ZXImageView *)imageView didSelectItemAtIndex:(NSInteger)index;
+
+/**
+ The imageView did long press on item
+
+ @param imageView The imageView
+ @param index The index of item
+ */
 - (void)imageView:(ZXImageView *)imageView longPressItemAtIndex:(NSInteger)index;
+
 @end
 

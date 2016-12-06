@@ -26,36 +26,138 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^ZXHTTPRequestSuccess)(NSHTTPURLResponse *response, NSData *data);
-typedef void (^ZXHTTPRequestFailure)(NSHTTPURLResponse *response, NSError *error);
-
 @class ZXHTTPFormData;
 
+/**
+ HTTP request success handler
+ 
+ @param response A NSHTTPURLResponse object
+ @param data The response data
+ */
+typedef void (^ZXHTTPRequestSuccess)(NSHTTPURLResponse *response, NSData *data);
+
+/**
+ HTTP request failure handler
+ 
+ @param response A NSHTTPURLResponse object
+ @param error The error
+ */
+typedef void (^ZXHTTPRequestFailure)(NSHTTPURLResponse *response, NSError *error);
+
+/**
+ ZXHTTPRequest
+ */
 @interface ZXHTTPRequest : NSObject
 
+/**
+ HTTP Request with DELETE method
+ 
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)deleteWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
-+ (NSURLSessionDataTask *)headWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
-
+/**
+ HTTP Request with GET method
+ 
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)getWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
+/**
+ HTTP Request with POST method
+ 
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
+/**
+ HTTP Request with POST method (multipart/form-data)
+
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param formData The form data for HTTP body
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params formData:(NSArray<ZXHTTPFormData *> *)formData success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
+/**
+ HTTP Request with POST method (JSON)
+ 
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param jsonObject A JSON object for HTTP body
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
+/**
+ HTTP Request with PUT method
+ 
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)putWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
 @end
 
+/**
+ ZXHTTPFormData
+ */
 @interface ZXHTTPFormData : NSObject
+/**
+ Required, The form data
+ */
 @property (nonatomic, strong) NSData *data;
+/**
+ Required, Name for data
+ */
 @property (nonatomic, strong) NSString *name;
+/**
+ Optional, File name for data
+ */
 @property (nonatomic, strong) NSString *fileName;
+/**
+ Optional, MIME type for data
+ */
 @property (nonatomic, strong) NSString *mimeType;
 
+/**
+ Initializes with data
+ 
+ @param data The form data
+ @param name Name for data
+ @return Instance
+ */
 - (instancetype)initWithData:(NSData *)data name:(NSString *)name;
+
+/**
+ Initializes with file
+ 
+ @param data The form data
+ @param name Name for data
+ @param fileName file name for data
+ @param mimeType MIME type for data
+ @return Instance
+ */
 - (instancetype)initWithData:(NSData *)data name:(NSString *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType;
 
 @end

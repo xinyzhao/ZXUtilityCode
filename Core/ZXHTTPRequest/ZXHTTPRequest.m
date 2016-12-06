@@ -28,8 +28,31 @@
 
 @interface ZXHTTPRequest ()
 
+/**
+ HTTP Request with POST method
+ 
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param method The HTTP method
+ @param headers The HTTP header fields
+ @param body The HTTP body
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)requestWithURL:(NSString *)url params:(NSDictionary *)params method:(NSString *)method headers:(NSDictionary *)headers body:(NSData *)body success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
+/**
+ HTTP Request with POST method
+
+ @param url The request URL string
+ @param params The query string with key value pairs
+ @param headers The HTTP header fields
+ @param body The HTTP body
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
 + (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary *)headers body:(NSData *)body success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
 @end
@@ -102,10 +125,6 @@
 
 + (NSURLSessionDataTask *)deleteWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
     return [ZXHTTPRequest requestWithURL:url params:params method:@"DELETE" headers:nil body:nil success:success failure:failure];
-}
-
-+ (NSURLSessionDataTask *)headWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
-    return [ZXHTTPRequest requestWithURL:url params:params method:@"HEAD" headers:nil body:nil success:success failure:failure];
 }
 
 + (NSURLSessionDataTask *)getWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {

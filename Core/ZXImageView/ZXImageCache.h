@@ -26,11 +26,47 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^ZXImageCompletion)(UIImage *image, NSError *error, NSURL *imageURL);
+/**
+ ZXImageCache
 
+ @param image Cached image
+ @param error Cached error
+ @param imageURL Cached URL
+ */
+typedef void(^ZXImageCache)(UIImage *image, NSError *error, NSURL *imageURL);
+
+/**
+ UIImageView Category
+ */
 @interface UIImageView (ZXImageCache)
+
+/**
+ Set image with URL
+
+ @param imageURL Image URL
+ */
 - (void)zx_setImageWithURL:(NSURL *)imageURL;
+
+/**
+ Set image with URL and placeholder image
+
+ @param imageURL Image URL
+ @param image Placeholder image
+ */
 - (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image;
-- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCompletion)completion;
+
+/**
+ Set image with URL and placeholder image, completion block
+
+ @param imageURL Image URL
+ @param image Placeholder image
+ @param completion Completion block
+ */
+- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCache)completion;
+
+/**
+ Cacnel image load
+ */
 - (void)zx_cancelImageLoad;
+
 @end

@@ -75,7 +75,7 @@ static NSCache *_imageCache = nil;
     [self zx_setImageWithURL:imageURL placeholder:image completion:nil];
 }
 
-- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCompletion)completion {
+- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCache)completion {
     self.image = image;
     //
     if (self.downloadTask) {

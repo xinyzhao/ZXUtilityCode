@@ -28,27 +28,75 @@
 
 @class ZXPageView;
 
+/**
+ ZXPageViewDelegate
+ */
 @protocol ZXPageViewDelegate <NSObject, UIScrollViewDelegate>
 @required
+/**
+ Make an UIView object for page
+
+ @param pageView The pageView
+ @param index The index of page
+ @return An subview for page
+ */
 - (UIView *)pageView:(ZXPageView *)pageView subviewForPageAtIndex:(NSInteger)index;
+
 @optional
+/**
+ The subview will display
+
+ @param pageView The pageView
+ @param subview The subview
+ @param index The index of page
+ */
 - (void)pageView:(ZXPageView *)pageView willDisplaySubview:(UIView *)subview forPageAtIndex:(NSInteger)index;
 @end
 
+/**
+ ZXPageViewDirection Scrolling direction
+ */
 typedef NS_ENUM(NSInteger, ZXPageViewDirection) {
     ZXPageViewDirectionHorizontal,
     ZXPageViewDirectionVertical,
 };
 
+/**
+ ZXPageView
+ */
 @interface ZXPageView : UIScrollView
+/**
+ Delegate, see ZXPageViewDelegate
+ */
 @property (nonatomic, weak) id <ZXPageViewDelegate> delegate;
-@property (nonatomic, assign) ZXPageViewDirection direction; // Default is ZXPageViewDirectionHorizontal
-@property (nonatomic, assign) NSInteger currentPage; // Default 0
-@property (nonatomic, assign) NSInteger numberOfPages; // Default 0
-@property (nonatomic, assign) NSTimeInterval timeInterval; // Default 0, no auto paging, least 0.1 sec.
+/**
+ Direction, default is ZXPageViewDirectionHorizontal
+ */
+@property (nonatomic, assign) ZXPageViewDirection direction;
+/**
+ Current page, default 0
+ */
+@property (nonatomic, assign) NSInteger currentPage;
+/**
+ The number of pages, default 0
+ */
+@property (nonatomic, assign) NSInteger numberOfPages;
+/**
+ Time interval for auto-paging, default 0 mean no auto-paging
+ */
+@property (nonatomic, assign) NSTimeInterval timeInterval;
 
+/**
+ Set current page with animated
+
+ @param currentPage The current page
+ @param animated animated or immediately
+ */
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
 
+/**
+ Reload data
+ */
 - (void)reloadData;
 
 @end
