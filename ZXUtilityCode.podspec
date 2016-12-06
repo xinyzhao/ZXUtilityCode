@@ -123,11 +123,6 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/UINetworkActivityIndicator/*.h"
   end
 
-  s.subspec "UIPopoverWindow" do |ss|
-    ss.source_files  = "Core/UIPopoverWindow/*.{h,m}"
-    ss.public_header_files = "Core/UIPopoverWindow/*.h"
-  end
-
   s.subspec "UITableViewCell+Separator" do |ss|
     ss.source_files  = "Core/UITableViewCell+Separator/*.{h,m}"
     ss.public_header_files = "Core/UITableViewCell+Separator/*.h"
@@ -167,6 +162,11 @@ Pod::Spec.new do |s|
     ss.source_files  = "Core/ZXPhotoLibrary/*.{h,m}"
     ss.public_header_files = "Core/ZXPhotoLibrary/*.h"
     ss.frameworks = "AssetsLibrary", "CoreGraphics", "ImageIO", "Photos"
+  end
+
+  s.subspec "ZXPopoverWindow" do |ss|
+    ss.source_files  = "Core/ZXPopoverWindow/*.{h,m}"
+    ss.public_header_files = "Core/ZXPopoverWindow/*.h"
   end
 
   s.subspec "ZXRefreshView" do |ss|
