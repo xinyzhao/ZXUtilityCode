@@ -43,7 +43,6 @@ pod "ZXUtilityCode"
 * UIColor+Extra
 * UIImage+Extra
 * UINetworkActivityIndicator
-* UIPopoverWindow
 * UITableViewCell+Separator
 * UIViewController+Extra
 * ZXAlertView
@@ -52,6 +51,7 @@ pod "ZXUtilityCode"
 * ZXImageView
 * ZXPageView
 * ZXPhotoLibrary
+* ZXPopoverWindow
 * ZXRefreshView
 * ZXTabBarController
 * ZXTagView
