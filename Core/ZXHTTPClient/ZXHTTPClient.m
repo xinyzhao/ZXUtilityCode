@@ -131,7 +131,7 @@
         if (headerFields == nil) {
             headerFields = [[NSMutableDictionary alloc] init];
         }
-        [headerFields setObject:@"application/json; charset=UTF-8" forKey:@"Content-Type"];
+        [headerFields setObject:@"application/json; charset=utf-8" forKey:@"Content-Type"];
         [headerFields setObject:[NSString stringWithFormat:@"%zd", bodyData.length] forKey:@"Content-Length"];
         // HTTP request
         return [ZXHTTPClient requestWithURLString:URLString method:method params:params headers:headerFields body:bodyData success:success failure:failure];
