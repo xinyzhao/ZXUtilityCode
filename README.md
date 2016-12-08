@@ -47,7 +47,7 @@ pod "ZXUtilityCode"
 * UIViewController+Extra
 * ZXAlertView
 * ZXBadgeLabel
-* ZXHTTPRequest
+* ZXHTTPClient
 * ZXImageView
 * ZXPageView
 * ZXPhotoLibrary

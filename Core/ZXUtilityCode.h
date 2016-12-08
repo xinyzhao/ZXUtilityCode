@@ -53,7 +53,7 @@
 #import "UIViewController+Extra.h"
 #import "ZXAlertView.h"
 #import "ZXBadgeLabel.h"
-#import "ZXHTTPRequest.h"
+#import "ZXHTTPClient.h"
 #import "ZXImageView.h"
 #import "ZXPageView.h"
 #import "ZXPhotoLibrary.h"

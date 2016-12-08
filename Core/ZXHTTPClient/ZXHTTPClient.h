@@ -1,5 +1,5 @@
 //
-// ZXHTTPRequest.h
+// ZXHTTPClient.h
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
 //
@@ -31,91 +31,104 @@
 /**
  HTTP request success handler
  
- @param response A NSHTTPURLResponse object
+ @param task A NSURLSessionDataTask object
  @param data The response data
  */
-typedef void (^ZXHTTPRequestSuccess)(NSHTTPURLResponse *response, NSData *data);
+typedef void (^ZXHTTPRequestSuccess)(NSURLSessionDataTask *task, NSData *data);
 
 /**
  HTTP request failure handler
  
- @param response A NSHTTPURLResponse object
- @param error The error
+ @param task A NSURLSessionDataTask object
+ @param error Request error occurs
  */
-typedef void (^ZXHTTPRequestFailure)(NSHTTPURLResponse *response, NSError *error);
+typedef void (^ZXHTTPRequestFailure)(NSURLSessionDataTask *task, NSError *error);
 
 /**
- ZXHTTPRequest
+ ZXHTTPClient
  */
-@interface ZXHTTPRequest : NSObject
+@interface ZXHTTPClient : NSObject
+
+#pragma mark HTTP request
 
 /**
- HTTP Request with DELETE method
- 
- @param url The request URL string
+ HTTP Request
+
+ @param URLString The request URL string
+ @param method The HTTP method
  @param params The query string with key value pairs
+ @param headers The HTTP header fields
+ @param body The HTTP body data
  @param success Request success handler
  @param failure Request failure handler
  @return NSURLSessionDataTask
  */
-+ (NSURLSessionDataTask *)deleteWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
++ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers body:(NSData *)body success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
+
+/**
+ HTTP Request with "multipart/form-data"
+ 
+ @param URLString The request URL string
+ @param method The HTTP method
+ @param params The query string with key value pairs
+ @param headers The HTTP header fields
+ @param formData The form data for HTTP body
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
++ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers formData:(NSArray<ZXHTTPFormData *> *)formData success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
+
+/**
+ HTTP Request with "application/json"
+ 
+ @param URLString The request URL string
+ @param method The HTTP method
+ @param params The query string with key value pairs
+ @param headers The HTTP header fields
+ @param jsonObject The JSON object for HTTP body
+ @param success Request success handler
+ @param failure Request failure handler
+ @return NSURLSessionDataTask
+ */
++ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
+
+#pragma mark HTTP methods
 
 /**
  HTTP Request with GET method
  
- @param url The request URL string
+ @param URLString The request URL string
  @param params The query string with key value pairs
  @param success Request success handler
  @param failure Request failure handler
  @return NSURLSessionDataTask
  */
-+ (NSURLSessionDataTask *)getWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
++ (NSURLSessionDataTask *)GET:(NSString *)URLString params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
 /**
  HTTP Request with POST method
  
- @param url The request URL string
- @param params The query string with key value pairs
- @param success Request success handler
- @param failure Request failure handler
- @return NSURLSessionDataTask
- */
-+ (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
-
-/**
- HTTP Request with POST method (multipart/form-data)
-
- @param url The request URL string
+ @param URLString The request URL string
  @param params The query string with key value pairs
  @param formData The form data for HTTP body
  @param success Request success handler
  @param failure Request failure handler
  @return NSURLSessionDataTask
  */
-+ (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params formData:(NSArray<ZXHTTPFormData *> *)formData success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
++ (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params formData:(NSArray<ZXHTTPFormData *> *)formData success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
 /**
- HTTP Request with POST method (JSON)
+ HTTP Request with POST method
  
- @param url The request URL string
+ @param URLString The request URL string
  @param params The query string with key value pairs
- @param jsonObject A JSON object for HTTP body
+ @param jsonObject The JSON object for HTTP body
  @param success Request success handler
  @param failure Request failure handler
  @return NSURLSessionDataTask
  */
-+ (NSURLSessionDataTask *)postWithURL:(NSString *)url params:(NSDictionary *)params jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
-
-/**
- HTTP Request with PUT method
- 
- @param url The request URL string
- @param params The query string with key value pairs
- @param success Request success handler
- @param failure Request failure handler
- @return NSURLSessionDataTask
- */
-+ (NSURLSessionDataTask *)putWithURL:(NSString *)url params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
++ (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
 @end
 
@@ -154,7 +167,7 @@ typedef void (^ZXHTTPRequestFailure)(NSHTTPURLResponse *response, NSError *error
  
  @param data The form data
  @param name Name for data
- @param fileName file name for data
+ @param fileName File name for data
  @param mimeType MIME type for data
  @return Instance
  */
