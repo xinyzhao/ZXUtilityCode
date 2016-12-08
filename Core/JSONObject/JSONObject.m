@@ -33,37 +33,50 @@
 }
 
 + (NSData *)dataWithJSONObject:(id)obj {
-    NSData *data = nil;
-    if ([JSONObject isValidJSONObject:obj]) {
-        NSError *error;
-        data = [NSJSONSerialization dataWithJSONObject:obj options:kNilOptions error:&error];
-        if (error) {
-            NSLog(@"dataWithJSONObject failed with error: %@", error.localizedDescription);
-        }
+    return [JSONObject dataWithJSONObject:obj options:kNilOptions];
+}
+
++ (NSData *)dataWithJSONObject:(id)obj options:(NSJSONWritingOptions)opt {
+    NSError *error;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:obj options:opt error:&error];
+    if (error) {
+        NSLog(@"%s %@", __func__, error.localizedDescription);
     }
     return data;
 }
 
 + (NSString *)stringWithJSONObject:(id)obj {
-    NSData *jsonData = [JSONObject dataWithJSONObject:obj];
-    if (jsonData) {
-        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return [JSONObject stringWithJSONObject:obj options:kNilOptions];
+}
+
++ (NSString *)stringWithJSONObject:(id)obj options:(NSJSONWritingOptions)opt {
+    NSData *data = [JSONObject dataWithJSONObject:obj options:opt];
+    if (data) {
+        return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     }
-    return nil;
+    return data;
 }
 
 + (id)JSONObjectWithData:(NSData *)data {
+    return [JSONObject JSONObjectWithData:data options:NSJSONReadingAllowFragments];
+}
+
++ (id)JSONObjectWithData:(NSData *)data options:(NSJSONReadingOptions)opt {
     NSError *error;
-    id object = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+    id object = [NSJSONSerialization JSONObjectWithData:data options:opt error:&error];
     if (error) {
-        NSLog(@"JSONObjectWithData failed with error: %@", error.localizedDescription);
+        NSLog(@"%s %@", __func__, error.localizedDescription);
     }
     return object;
 }
 
 + (id)JSONObjectWithString:(NSString *)str {
+    return [JSONObject JSONObjectWithString:str options:NSJSONReadingAllowFragments];
+}
+
++ (id)JSONObjectWithString:(NSString *)str options:(NSJSONReadingOptions)opt {
     NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-    return [JSONObject JSONObjectWithData:data];
+    return [JSONObject JSONObjectWithData:data options:opt];
 }
 
 @end

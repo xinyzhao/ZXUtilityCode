@@ -27,43 +27,84 @@
 #import <Foundation/Foundation.h>
 
 /**
- * JSON 对象转换
+ JSONObject
  */
 @interface JSONObject : NSObject
 
 /**
- * @brief 判断是否为有效的 JSON 对象
- * @param obj JSON 对象
- * @return 成功返回 YES，失败返回 NO
+ The object can be converted to JSON data or not
+
+ @param obj JSON object (NSDictionary/NSArray)
+ @return Return YES can be converted, NO otherwise
  */
 + (BOOL)isValidJSONObject:(id)obj;
 
 /**
- * @brief 获取 JSON 数据
- * @param obj JSON 对象
- * @return 成功返回 JSON 数据，失败返回 nil
+ Generate JSON data from a JSON object
+
+ @param obj JSON object (NSDictionary/NSArray)
+ @return Return NSData if converted, nil otherwise
  */
 + (NSData *)dataWithJSONObject:(id)obj;
 
 /**
- * @brief 获取 JSON 格式字符串
- * @param obj JSON 对象
- * @return 成功返回 JSON 格式字符串，失败返回 nil
+ Generate JSON data from a JSON object with options
+
+ @param obj JSON object (NSDictionary/NSArray)
+ @param opt Writing options, see NSJSONWritingOptions
+ @return Return NSData if converted, nil otherwise
+ */
++ (NSData *)dataWithJSONObject:(id)obj options:(NSJSONWritingOptions)opt;
+
+/**
+ Generate JSON string from a JSON object
+
+ @param obj JSON object (NSDictionary/NSArray)
+ @return Return NSString if converted, nil otherwise
  */
 + (NSString *)stringWithJSONObject:(id)obj;
 
 /**
- * @brief 从 JSON 数据中得到 JSON 对象
- * @param data JSON 数据
- * @return 成功返回 JSON 对象，失败返回 nil
+ Generate JSON data from a JSON object  with options
+ 
+ @param obj JSON object (NSDictionary/NSArray)
+ @param opt Writing options, see NSJSONWritingOptions
+ @return Return NSString if converted, nil otherwise
+ */
++ (NSString *)stringWithJSONObject:(id)obj options:(NSJSONWritingOptions)opt;
+
+/**
+ Create a JSON object from JSON data
+
+ @param data JSON data
+ @return Return NSDictionary/NSArray if converted, nil otherwise
  */
 + (id)JSONObjectWithData:(NSData *)data;
 
 /**
- * @brief 从 JSON 字符串中得到 JSON 对象
- * @param string JSON 字符串
- * @return 成功返回 JSON 对象，失败返回nil
+ Create a JSON object from JSON data with options
+
+ @param data JSON data
+ @param opt Reading options, see NSJSONReadingOptions
+ @return Return NSDictionary/NSArray if converted, nil otherwise
+ */
++ (id)JSONObjectWithData:(NSData *)data options:(NSJSONReadingOptions)opt;
+
+/**
+ Create a JSON object from JSON string
+ 
+ @param string JSON data
+ @return Return NSDictionary/NSArray if converted, nil otherwise
  */
 + (id)JSONObjectWithString:(NSString *)string;
+
+/**
+ Create a JSON object from JSON string with options
+
+ @param string JSON string
+ @param opt Reading options, see NSJSONReadingOptions
+ @return Return NSDictionary/NSArray if converted, nil otherwise
+ */
++ (id)JSONObjectWithString:(NSString *)string options:(NSJSONReadingOptions)opt;
 
 @end
