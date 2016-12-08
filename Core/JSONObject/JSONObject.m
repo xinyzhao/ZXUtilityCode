@@ -54,7 +54,7 @@
     if (data) {
         return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     }
-    return data;
+    return nil;
 }
 
 + (id)JSONObjectWithData:(NSData *)data {
