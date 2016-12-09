@@ -26,7 +26,28 @@
 
 #import "ZXHTTPClient.h"
 
+@interface ZXHTTPClient ()
+
++ (NSURLSession *)sharedSession;
+
+@end
+
+#pragma mark - ZXHTTPClient
+
 @implementation ZXHTTPClient
+
++ (NSURLSession *)sharedSession {
+    static NSURLSession *_sharedSession = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSURLSessionConfiguration *configuration = nil;
+        NSOperationQueue *operationQueue = [[NSOperationQueue alloc] init];
+        operationQueue.maxConcurrentOperationCount = 1;
+        ZXHTTPSecurity *sharedSecurity = [ZXHTTPSecurity sharedSecurity];
+        _sharedSession = [NSURLSession sessionWithConfiguration:configuration delegate:sharedSecurity delegateQueue:operationQueue];
+    });
+    return _sharedSession;
+}
 
 #pragma mark HTTP request
 
@@ -53,7 +74,7 @@
         [reqeust setValue:obj forHTTPHeaderField:key];
     }];
     // data task
-    __block NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:reqeust completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    __block NSURLSessionDataTask *task = [[ZXHTTPClient sharedSession] dataTaskWithRequest:reqeust completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (failure) {
@@ -143,7 +164,7 @@
     return nil;
 }
 
-#pragma mark HTTP methods
+#pragma mark HTTP method
 
 + (NSURLSessionDataTask *)GET:(NSString *)URLString params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
     return [ZXHTTPClient requestWithURLString:URLString method:@"GET" params:params headers:nil body:nil success:success failure:failure];

@@ -25,8 +25,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZXHTTPSecurity.h"
 
 @class ZXHTTPFormData;
+
+#pragma mark - ZXHTTPRequest
 
 /**
  HTTP request success handler
@@ -43,6 +46,8 @@ typedef void (^ZXHTTPRequestSuccess)(NSURLSessionDataTask *task, NSData *data);
  @param error Request error occurs
  */
 typedef void (^ZXHTTPRequestFailure)(NSURLSessionDataTask *task, NSError *error);
+
+#pragma mark - ZXHTTPClient
 
 /**
  ZXHTTPClient
@@ -93,7 +98,7 @@ typedef void (^ZXHTTPRequestFailure)(NSURLSessionDataTask *task, NSError *error)
  */
 + (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
-#pragma mark HTTP methods
+#pragma mark HTTP method
 
 /**
  HTTP Request with GET method
@@ -131,6 +136,8 @@ typedef void (^ZXHTTPRequestFailure)(NSURLSessionDataTask *task, NSError *error)
 + (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
 @end
+
+#pragma mark - ZXHTTPFormData
 
 /**
  ZXHTTPFormData
