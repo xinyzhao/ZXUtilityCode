@@ -219,7 +219,7 @@ UIImage *UIImageCorrectOrientation(UIImage *image) {
 
 UIImage *UIImageGrayscale(UIImage *image) {
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
-    CGContextRef context = CGBitmapContextCreate(nil, image.size.width, image.size.height, 8, 0, colorSpace, kCGImageAlphaNone);
+    CGContextRef context = CGBitmapContextCreate(nil, image.size.width, image.size.height, 8, 0, colorSpace, kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast);
     CGColorSpaceRelease(colorSpace);
     //
     if (context) {
@@ -231,6 +231,42 @@ UIImage *UIImageGrayscale(UIImage *image) {
     //
     return image;
 }
+
+// convert to grayscale using recommended method: http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+//UIImage *UIImageGrayscale(UIImage *image) {
+//    typedef enum {
+//        A = 0,
+//        B = 1,
+//        G = 2,
+//        R = 3,
+//    };
+//    //
+//    uint32_t width = image.size.width;
+//    uint32_t height = image.size.height;
+//    uint32_t *pixels = (uint32_t *)malloc(width * height * sizeof(uint32_t));
+//    memset(pixels, 0, width * height * sizeof(uint32_t));
+//    //
+//    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+//    CGContextRef context = CGBitmapContextCreate(pixels, width, height, 8, width * sizeof(uint32_t), colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedLast);
+//    CGColorSpaceRelease(colorSpace);
+//    //
+//    CGContextDrawImage(context, CGRectMake(0, 0, image.size.width, image.size.height), image.CGImage);
+//    //
+//    for(int y = 0; y < height; y++) {
+//        for(int x = 0; x < width; x++) {
+//            uint8_t *pixel = (uint8_t *)&pixels[y * width + x];
+//            uint8_t gray = 0.299 * pixel[R] + 0.587 * pixel[G] + 0.114 * pixel[B];
+//            // set the pixels to gray
+//            pixel[R] = gray;
+//            pixel[G] = gray;
+//            pixel[B] = gray;
+//        }
+//    }
+//    //
+//    UIImage *grayImage = [UIImage imageWithCGImage:CGBitmapContextCreateImage(context)];
+//    CGContextRelease(context);
+//    return grayImage;
+//}
 
 //https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CoreImageFilterReference/index.html#//apple_ref/doc/filter/ci/CIGaussianBlur
 UIImage *UIImageGaussianBlur(UIImage *image, CGFloat radius) {
