@@ -33,14 +33,6 @@
 @property (readwrite, nonatomic, strong) NSSet *pinnedPublicKeys;
 
 /**
- Returns any certificates included in the bundle
- 
- @param bundle The given bundle
- @return The certificates included in the given bundle.
- */
-+ (NSSet *)certificatesInBundle:(NSBundle *)bundle;
-
-/**
  Whether or not the specified server trust should be accepted, based on the security policy.
  
  This method should be used when responding to an authentication challenge from a server.

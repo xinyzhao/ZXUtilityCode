@@ -67,5 +67,13 @@
  */
 + (instancetype)sharedSecurity;
 
+/**
+ Returns any certificates included in the bundle
+ 
+ @param bundle The given bundle
+ @return The certificates included in the given bundle.
+ */
++ (NSSet *)certificatesInBundle:(NSBundle *)bundle;
+
 @end
 
