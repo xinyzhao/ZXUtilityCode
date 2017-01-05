@@ -49,6 +49,7 @@ pod "ZXUtilityCode"
 * ZXBadgeLabel
 * ZXHTTPClient
 * ZXImageView
+* ZXNetworkTrafficMonitor
 * ZXPageView
 * ZXPhotoLibrary
 * ZXPopoverWindow

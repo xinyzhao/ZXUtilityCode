@@ -55,6 +55,7 @@
 #import "ZXBadgeLabel.h"
 #import "ZXHTTPClient.h"
 #import "ZXImageView.h"
+#import "ZXNetworkTrafficMonitor.h"
 #import "ZXPageView.h"
 #import "ZXPhotoLibrary.h"
 #import "ZXPopoverWindow.h"
