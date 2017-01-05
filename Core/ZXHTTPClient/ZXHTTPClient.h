@@ -24,7 +24,6 @@
 // THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
 #import "ZXHTTPSecurity.h"
 
 @class ZXHTTPFormData;
@@ -54,7 +53,16 @@ typedef void (^ZXHTTPRequestFailure)(NSURLSessionDataTask *task, NSError *error)
  */
 @interface ZXHTTPClient : NSObject
 
-#pragma mark HTTP request
+#pragma mark HTTP Security
+
+/**
+ Returns the default security policy.
+ 
+ @return The default security policy.
+ */
++ (ZXHTTPSecurity *)securityPolicy;
+
+#pragma mark HTTP Request
 
 /**
  HTTP Request
@@ -98,7 +106,7 @@ typedef void (^ZXHTTPRequestFailure)(NSURLSessionDataTask *task, NSError *error)
  */
 + (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure;
 
-#pragma mark HTTP method
+#pragma mark HTTP Methods
 
 /**
  HTTP Request with GET method

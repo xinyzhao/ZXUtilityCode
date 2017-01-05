@@ -28,7 +28,7 @@
 
 @interface ZXHTTPClient ()
 
-+ (NSURLSession *)sharedSession;
++ (NSURLSession *)URLSession;
 
 @end
 
@@ -36,20 +36,30 @@
 
 @implementation ZXHTTPClient
 
-+ (NSURLSession *)sharedSession {
-    static NSURLSession *_sharedSession = nil;
++ (NSURLSession *)URLSession {
+    static NSURLSession *_urlSession = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSURLSessionConfiguration *configuration = nil;
         NSOperationQueue *operationQueue = [[NSOperationQueue alloc] init];
         operationQueue.maxConcurrentOperationCount = 1;
-        ZXHTTPSecurity *sharedSecurity = [ZXHTTPSecurity sharedSecurity];
-        _sharedSession = [NSURLSession sessionWithConfiguration:configuration delegate:sharedSecurity delegateQueue:operationQueue];
+        _urlSession = [NSURLSession sessionWithConfiguration:configuration
+                                                   delegate:[ZXHTTPClient securityPolicy]
+                                              delegateQueue:operationQueue];
     });
-    return _sharedSession;
+    return _urlSession;
 }
 
-#pragma mark HTTP request
++ (ZXHTTPSecurity *)securityPolicy {
+    static ZXHTTPSecurity *_securityPolicy = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _securityPolicy = [[ZXHTTPSecurity alloc] init];
+    });
+    return _securityPolicy;
+}
+
+#pragma mark HTTP Request
 
 + (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers body:(NSData *)body success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
     // parameters
@@ -74,7 +84,7 @@
         [reqeust setValue:obj forHTTPHeaderField:key];
     }];
     // data task
-    __block NSURLSessionDataTask *task = [[ZXHTTPClient sharedSession] dataTaskWithRequest:reqeust completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    __block NSURLSessionDataTask *task = [[ZXHTTPClient URLSession] dataTaskWithRequest:reqeust completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (failure) {

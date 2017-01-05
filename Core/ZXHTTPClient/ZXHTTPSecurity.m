@@ -62,15 +62,6 @@
     return [NSSet setWithSet:certificates];
 }
 
-+ (instancetype)sharedSecurity {
-    static ZXHTTPSecurity *_sharedSecurity = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _sharedSecurity = [[ZXHTTPSecurity alloc] init];
-    });
-    return _sharedSecurity;
-}
-
 - (instancetype)init {
     self = [super init];
     if (self) {

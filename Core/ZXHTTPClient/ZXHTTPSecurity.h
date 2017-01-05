@@ -61,13 +61,6 @@
 @property (nonatomic, assign) BOOL validatesPublicKeys;
 
 /**
- Returns the default security instance.
- 
- @return The default security
- */
-+ (instancetype)sharedSecurity;
-
-/**
  Returns any certificates included in the bundle
  
  @param bundle The given bundle
