@@ -174,7 +174,7 @@
     return nil;
 }
 
-#pragma mark HTTP method
+#pragma mark HTTP Methods
 
 + (NSURLSessionDataTask *)GET:(NSString *)URLString params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
     return [ZXHTTPClient requestWithURLString:URLString method:@"GET" params:params headers:nil body:nil success:success failure:failure];
