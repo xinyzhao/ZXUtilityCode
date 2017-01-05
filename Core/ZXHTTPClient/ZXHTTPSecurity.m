@@ -66,8 +66,8 @@
     self = [super init];
     if (self) {
         self.pinnedCertificates = [ZXHTTPSecurity certificatesInBundle:[NSBundle mainBundle]];
-        self.allowInvalidCertificates = NO;
-        self.validatesDomainName = YES;
+        self.allowInvalidCertificates = YES;
+        self.validatesDomainName = NO;
         self.validatesCertificates = NO;
         self.validatesPublicKeys = NO;
     }

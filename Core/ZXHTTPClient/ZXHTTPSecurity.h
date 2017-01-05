@@ -41,22 +41,24 @@
 @property (nonatomic, strong) NSSet<NSData *> *pinnedCertificates;
 
 /**
- Whether or not to trust servers with an invalid or expired SSL certificates. Defaults to `NO`.
+ Whether or not to trust servers with an invalid or expired SSL certificates. Defaults to `YES`.
  */
 @property (nonatomic, assign) BOOL allowInvalidCertificates;
 
 /**
- Whether or not to validate the domain name in the certificate's CN field. Defaults to `YES`.
+ Whether or not to validate the domain name in the certificate's CN field. Defaults to `NO`.
  */
 @property (nonatomic, assign) BOOL validatesDomainName;
 
 /**
  Whether or not to validate host certificates against pinned certificates. Defaults to `NO`.
+ Requirement specified .cer file in the project.
  */
 @property (nonatomic, assign) BOOL validatesCertificates;
 
 /**
  Whether or not to validate host certificates against public keys of pinned certificates. Defaults to `NO`.
+ Requirement specified .cer file in the project, and target devices trust the installed .der files if needed.
  */
 @property (nonatomic, assign) BOOL validatesPublicKeys;
 
