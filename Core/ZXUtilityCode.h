@@ -52,6 +52,7 @@
 #import "UITableViewCell+Separator.h"
 #import "UIViewController+Extra.h"
 #import "ZXAlertView.h"
+#import "ZXAuthorizationManager.h"
 #import "ZXBadgeLabel.h"
 #import "ZXHTTPClient.h"
 #import "ZXImageView.h"

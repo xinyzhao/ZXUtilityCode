@@ -46,6 +46,7 @@ pod "ZXUtilityCode"
 * UITableViewCell+Separator
 * UIViewController+Extra
 * ZXAlertView
+* ZXAuthorizationManager
 * ZXBadgeLabel
 * ZXHTTPClient
 * ZXImageView
