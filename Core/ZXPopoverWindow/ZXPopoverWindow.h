@@ -36,6 +36,21 @@
 @property (nonatomic, readonly) UIView *presentedView;
 
 /**
+ Presented background color, default [[UIColor blackColor] colorWithAlphaComponent:0.4]
+ */
+@property (nonatomic, strong) UIColor *presentedBackgroundColor;
+
+/**
+ Presenting duration of animation, default 0.3 secend
+ */
+@property (nonatomic, assign) NSTimeInterval presentingDuration;
+
+/**
+ Dismissing duration of animation, default 0.2 secend
+ */
+@property (nonatomic, assign) NSTimeInterval dismissingDuration;
+
+/**
  Present view in window
 
  @param view present view

@@ -26,17 +26,24 @@
 
 #import "ZXPopoverWindow.h"
 
-#define ZXPopoverWindowPresentColor [[UIColor blackColor] colorWithAlphaComponent:.4]
-#define ZXPopoverWindowPresentDuration .3
-
 #define ZXPopoverWindowDismissColor [UIColor clearColor]
-#define ZXPopoverWindowDismissDuration .2
 
 @interface ZXPopoverWindow () <UIGestureRecognizerDelegate>
 
 @end
 
 @implementation ZXPopoverWindow
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.presentedBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.4];
+        self.presentingDuration = .3;
+        self.dismissingDuration = .2;
+    }
+    return self;
+}
 
 - (void)presentView:(UIView *)view {
     _presentedView = view;
@@ -53,11 +60,11 @@
     __weak typeof(self) weakSelf = self;
     CGRect frame = _presentedView.frame;
     frame.origin.y = self.frame.size.height - _presentedView.frame.size.height;
-    [UIView animateWithDuration:ZXPopoverWindowPresentDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        weakSelf.backgroundColor = ZXPopoverWindowPresentColor;
+    [UIView animateWithDuration:_presentingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        weakSelf.backgroundColor = self.presentedBackgroundColor;
         _presentedView.frame = frame;
     } completion:^(BOOL finished) {
-        weakSelf.backgroundColor = ZXPopoverWindowPresentColor;
+        weakSelf.backgroundColor = self.presentedBackgroundColor;
         _presentedView.frame = frame;
         //
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
@@ -70,7 +77,7 @@
     __weak typeof(self) weakSelf = self;
     CGRect frame = _presentedView.frame;
     frame.origin.y = self.frame.size.height;
-    [UIView animateWithDuration:ZXPopoverWindowDismissDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:_dismissingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         _presentedView.frame = frame;
         weakSelf.backgroundColor = ZXPopoverWindowDismissColor;
     } completion:^(BOOL finished) {
