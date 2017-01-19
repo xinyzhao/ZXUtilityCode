@@ -34,9 +34,20 @@
 
 @implementation ZXPopoverWindow
 
-- (instancetype)init
+- (instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super init];
+    self = [super initWithCoder:coder];
+    if (self) {
+        self.presentedBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.4];
+        self.presentingDuration = .3;
+        self.dismissingDuration = .2;
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
     if (self) {
         self.presentedBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.4];
         self.presentingDuration = .3;

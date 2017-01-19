@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.2.1"
+  s.version      = "1.2.2"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
