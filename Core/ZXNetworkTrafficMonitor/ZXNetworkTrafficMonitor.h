@@ -43,7 +43,7 @@ typedef void(^ZXNetworkTrafficBlock)(NSUInteger WiFiSent, NSUInteger WiFiReceive
 /**
  Whether or not is monitoring
  */
-@property (nonatomic, readonly, getter=isMonitoring) BOOL monitoring;
+@property (nonatomic, readonly) BOOL isMonitoring;
 
 /**
  Start Monitoring

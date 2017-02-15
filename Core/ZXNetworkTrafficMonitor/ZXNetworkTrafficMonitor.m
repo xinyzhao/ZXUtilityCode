@@ -47,8 +47,7 @@
 @implementation ZXNetworkTrafficMonitor
 
 - (void)startMonitoring:(NSTimeInterval)timeInterval trafficBlock:(ZXNetworkTrafficBlock)trafficBlock {
-    if (!_monitoring) {
-        _monitoring = YES;
+    if (!self.isMonitoring) {
         _trafficBlock = [trafficBlock copy];
         _trafficTimes = 0;
         //
@@ -56,6 +55,10 @@
         [[NSRunLoop currentRunLoop] addTimer:self.trafficTimer forMode:NSRunLoopCommonModes];
         [self.trafficTimer fire];
     }
+}
+
+- (BOOL)isMonitoring {
+    return [self.trafficTimer isValid];
 }
 
 - (void)stopMonitoring {
