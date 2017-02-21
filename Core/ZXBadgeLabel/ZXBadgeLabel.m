@@ -102,11 +102,11 @@
     }
     //
     if (_number < _mininum) {
-        self.text = [NSString stringWithFormat:@"%zd+", _mininum];
+        self.text = [NSString stringWithFormat:@"%lld+", (int64_t)_mininum];
     } else if (_number > _maxinum) {
-        self.text = [NSString stringWithFormat:@"%zd+", _maxinum];
+        self.text = [NSString stringWithFormat:@"%lld+", (int64_t)_maxinum];
     } else {
-        self.text = [NSString stringWithFormat:@"%zd", _number];
+        self.text = [NSString stringWithFormat:@"%lld", (int64_t)_number];
     }
     //
     [self setNeedsLayout];

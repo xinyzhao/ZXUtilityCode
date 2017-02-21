@@ -147,7 +147,7 @@
         headerFields = [[NSMutableDictionary alloc] init];
     }
     [headerFields setObject:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forKey:@"Content-Type"];
-    [headerFields setObject:[NSString stringWithFormat:@"%zd", bodyData.length] forKey:@"Content-Length"];
+    [headerFields setObject:[NSString stringWithFormat:@"%llu", (uint64_t)bodyData.length] forKey:@"Content-Length"];
     // HTTP request
     return [ZXHTTPClient requestWithURLString:URLString method:method params:params headers:headerFields body:bodyData success:success failure:failure];
 }
@@ -163,7 +163,7 @@
             headerFields = [[NSMutableDictionary alloc] init];
         }
         [headerFields setObject:@"application/json; charset=utf-8" forKey:@"Content-Type"];
-        [headerFields setObject:[NSString stringWithFormat:@"%zd", bodyData.length] forKey:@"Content-Length"];
+        [headerFields setObject:[NSString stringWithFormat:@"%llu", (uint64_t)bodyData.length] forKey:@"Content-Length"];
         // HTTP request
         return [ZXHTTPClient requestWithURLString:URLString method:method params:params headers:headerFields body:bodyData success:success failure:failure];
     }
