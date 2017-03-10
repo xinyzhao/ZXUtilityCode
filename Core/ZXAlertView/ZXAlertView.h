@@ -93,8 +93,22 @@
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message cancelAction:(ZXAlertAction *)cancelAction destructiveAction:(ZXAlertAction *)destructiveAction otherActions:(ZXAlertAction *)otherActions, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
- Show the alertView
+ Add UITextField for alert view
 
+ @param configurationHandler configuration handler
+ */
+- (void)addTextField:(void (^)(UITextField *textField))configurationHandler;
+
+/**
+ Text fields for alert view
+
+ @return The text fields
+ */
+- (NSArray<UITextField *> *)textFields;
+
+/**
+ Show the alertView
+ 
  @param viewController The parent view controller
  */
 - (void)showInViewController:(UIViewController *)viewController;

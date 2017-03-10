@@ -67,6 +67,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 @property (nonatomic, strong) UIAlertController *alertController;
 @property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) UIActionSheet *actionSheet;
+@property (nonatomic, strong) NSMutableArray<UITextField *> *textFieldArray;
 
 @end
 
@@ -77,6 +78,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
     if (self) {
         self.title = title;
         self.message = message;
+        self.textFieldArray = [[NSMutableArray alloc] init];
         //
         if (_IOS_8_OR_EARLY_) {
             //
@@ -152,6 +154,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
     if (self) {
         self.title = title;
         self.message = message;
+        self.textFieldArray = [[NSMutableArray alloc] init];
         //
         if (_IOS_8_OR_EARLY_) {
             //
@@ -234,6 +237,30 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
     }
     //
     return self;
+}
+
+- (void)addTextField:(void (^)(UITextField *textField))configurationHandler {
+    if (_IOS_8_OR_EARLY_) {
+        UITextField *textField = [self.alertView textFieldAtIndex:self.textFieldArray.count];
+        if (textField) {
+            [self.textFieldArray addObject:textField];
+        }
+        if (configurationHandler) {
+            configurationHandler(textField);
+        }
+    } else {
+        __weak typeof(self) weakSelf = self;
+        [self.alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+            [weakSelf.textFieldArray addObject:textField];
+            if (configurationHandler) {
+                configurationHandler(textField);
+            }
+        }];
+    }
+}
+
+- (NSArray<UITextField *> *)textFields {
+    return [self.textFieldArray copy];
 }
 
 - (void)showInViewController:(UIViewController *)viewController {
