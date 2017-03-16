@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.2.5"
+  s.version      = "1.2.6"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -69,6 +69,11 @@ Pod::Spec.new do |s|
   s.subspec "NSObject+PerformAction" do |ss|
     ss.source_files  = "Core/NSObject+PerformAction/*.{h,m}"
     ss.public_header_files = "Core/NSObject+PerformAction/*.h"
+  end
+
+  s.subspec "NSString+NumberValue" do |ss|
+    ss.source_files  = "Core/NSString+NumberValue/*.{h,m}"
+    ss.public_header_files = "Core/NSString+NumberValue/*.h"
   end
 
   s.subspec "NSString+Pinyin" do |ss|

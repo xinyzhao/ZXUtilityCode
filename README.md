@@ -33,6 +33,7 @@ pod "ZXUtilityCode"
 * NSFileManager+Extra
 * NSLog+Extra
 * NSObject+PerformAction
+* NSString+NumberValue
 * NSString+Pinyin
 * NSString+Unicode
 * NSString+URLEncoding

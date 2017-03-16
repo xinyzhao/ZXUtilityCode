@@ -39,6 +39,7 @@
 #import "NSObject+PerformAction.h"
 #import "NSString+Base64Encoding.h"
 #import "NSString+HashValue.h"
+#import "NSString+NumberValue.h"
 #import "NSString+Pinyin.h"
 #import "NSString+Unicode.h"
 #import "NSString+URLEncoding.h"
