@@ -46,6 +46,7 @@
 #import "QRCodeGenerator.h"
 #import "QRCodeReader.h"
 #import "QRCodeScanner.h"
+#import "UIApplicationIdleTimer.h"
 #import "UIButton+Extra.h"
 #import "UIColor+Extra.h"
 #import "UIImage+Extra.h"
