@@ -40,6 +40,7 @@ pod "ZXUtilityCode"
 * QRCodeGenerator
 * QRCodeReader
 * QRCodeScanner
+* UIApplicationIdleTimer
 * UIButton+Extra
 * UIColor+Extra
 * UIImage+Extra

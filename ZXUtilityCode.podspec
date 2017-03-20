@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.2.7"
+  s.version      = "1.2.8"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -105,6 +105,11 @@ Pod::Spec.new do |s|
     ss.source_files  = "Core/QRCodeScanner/*.{h,m}"
     ss.public_header_files = "Core/QRCodeScanner/*.h"
     ss.frameworks = "AVFoundation"
+  end
+
+  s.subspec "UIApplicationIdleTimer" do |ss|
+    ss.source_files  = "Core/UIApplicationIdleTimer/*.{h,m}"
+    ss.public_header_files = "Core/UIApplicationIdleTimer/*.h"
   end
 
   s.subspec "UIButton+Extra" do |ss|
