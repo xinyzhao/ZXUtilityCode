@@ -28,6 +28,15 @@
 
 @implementation UIApplicationIdleTimer
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.disabled = [UIApplication sharedApplication].idleTimerDisabled;
+    }
+    return self;
+}
+
 - (void)setDisabled:(BOOL)disabled {
     if (_disabled != disabled) {
         _disabled = disabled;
