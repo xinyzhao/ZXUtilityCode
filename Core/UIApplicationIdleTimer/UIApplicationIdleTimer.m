@@ -60,7 +60,7 @@
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     // 不自动锁屏
-    [UIApplication sharedApplication].idleTimerDisabled = [UIApplication sharedIdleTimer].disabled;
+    [UIApplication sharedApplication].idleTimerDisabled = self.disabled;
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification {

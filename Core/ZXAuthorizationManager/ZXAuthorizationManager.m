@@ -53,7 +53,9 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
         if (status == AVAuthorizationStatusNotDetermined) {
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
                 if (handler) {
-                    handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                    });
                 }
             }];
         } else if (handler) {
@@ -68,7 +70,9 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
             CFRelease(addressBook);
             if (handler) {
-                handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                });
             }
         });
     } else {
@@ -77,7 +81,9 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
             CNContactStore *contactStore = [[CNContactStore alloc] init];
             [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError *__nullable error) {
                 if (handler) {
-                    handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                    });
                 }
             }];
         } else if (handler) {
@@ -114,7 +120,9 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0) {
         [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
             if (handler) {
-                handler(granted);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    handler(granted);
+                });
             }
         }];
     }
@@ -130,11 +138,11 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         if (status == PHAuthorizationStatusNotDetermined) {
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (handler) {
+                if (handler) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
                         handler(status);
-                    }
-                });
+                    });
+                }
             }];
         } else if (handler) {
            handler(status);
@@ -146,7 +154,10 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status{
     if (self.locationHandler) {
-        self.locationHandler(status);
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.locationHandler(status);
+        });
     }
 }
 
