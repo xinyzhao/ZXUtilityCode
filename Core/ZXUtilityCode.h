@@ -49,6 +49,7 @@
 #import "UIApplicationIdleTimer.h"
 #import "UIButton+Extra.h"
 #import "UIColor+Extra.h"
+#import "UIDevice+Extra.h"
 #import "UIImage+Extra.h"
 #import "UINetworkActivityIndicator.h"
 #import "UITableViewCell+Separator.h"
