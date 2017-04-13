@@ -99,15 +99,19 @@
     [self setNeedsLayout];
 }
 
+/**
+ CGFLOAT_MAX/FLT_MAX/MAXFLOAT
+ CGFLOAT_MAX 在 iOS 10.3 中指向 DBL_MAX，会导致NaN错误
+ */
 - (void)resetEdgeInset {
     if (_numberOfPages > 1) {
         if (_direction == ZXPageViewDirectionHorizontal) {
             CGFloat width = self.frame.size.width;
-            width *= floorf(CGFLOAT_MAX / width);
+            width *= floorf(FLT_MAX / width);
             self.contentInset = UIEdgeInsetsMake(0, width, 0, width);
         } else {
             CGFloat height = self.frame.size.height;
-            height *= floorf(CGFLOAT_MAX / height);
+            height *= floorf(FLT_MAX / height);
             self.contentInset = UIEdgeInsetsMake(height, 0, height, 0);
         }
     } else {
