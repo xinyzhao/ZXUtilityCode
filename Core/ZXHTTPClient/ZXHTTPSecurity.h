@@ -1,9 +1,7 @@
 //
 // ZXHTTPSecurity.h
 //
-// Copyright (c) 2016 Zhao Xin. All rights reserved.
-//
-// https://github.com/xinyzhao/ZXUtilityCode
+// Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
 // Reference AFSecurityPolicy in AFNetworking
 // https://github.com/AFNetworking/AFNetworking
