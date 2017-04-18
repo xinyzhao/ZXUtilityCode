@@ -42,7 +42,6 @@ pod "ZXUtilityCode"
 * QRCodeScanner
 * UIApplicationIdleTimer
 * UIButton+Extra
-* UIDevice+Extra
 * UIColor+Extra
 * UIImage+Extra
 * UINetworkActivityIndicator

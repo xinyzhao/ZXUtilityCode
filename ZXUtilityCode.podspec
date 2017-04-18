@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.3.3"
+  s.version      = "1.3.4"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -120,12 +120,6 @@ Pod::Spec.new do |s|
   s.subspec "UIColor+Extra" do |ss|
     ss.source_files  = "Core/UIColor+Extra/*.{h,m}"
     ss.public_header_files = "Core/UIColor+Extra/*.h"
-  end
-
-  s.subspec "UIDevice+Extra" do |ss|
-    ss.source_files  = "Core/UIDevice+Extra/*.{h,m}"
-    ss.public_header_files = "Core/UIDevice+Extra/*.h"
-    ss.dependency 'SAMKeychain'
   end
 
   s.subspec "UIImage+Extra" do |ss|
