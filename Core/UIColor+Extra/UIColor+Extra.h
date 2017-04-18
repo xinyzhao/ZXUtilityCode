@@ -25,43 +25,43 @@
 #import <UIKit/UIKit.h>
 
 /**
- Make color from integer with ARGB format.
- eg. 0xffffffff or 0xffffff or 0xff etc.
- 
- @param value Color integer, ARGB format
- @return UIColor
- */
-UIKIT_EXTERN UIColor * UIColorFromInteger(NSUInteger value);
-
-/**
  Make color from RGBA value.
 
- @param r red, 0 - 255
- @param g green, 0 - 255
- @param b blue, 0 - 255
- @param a alpha, 0 - 255
+ @param r red, 0 - 1
+ @param g green, 0 - 1
+ @param b blue, 0 - 1
+ @param a alpha, 0 - 1
  @return UIColor
  */
-UIKIT_EXTERN UIColor * UIColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+UIKIT_EXTERN UIColor* UIColorFromRGBA(CGFloat r, CGFloat g, CGFloat b, CGFloat a);
 
 /**
- Make color from RGB value, alpha is 255.
+ Make color from RGB value, alpha is 1.
 
- @param r red, 0 - 255
- @param g green, 0 - 255
- @param b blue, 0 - 255
+ @param r red, 0 - 1
+ @param g green, 0 - 1
+ @param b blue, 0 - 1
  @return UIColor
  */
-UIKIT_EXTERN UIColor * UIColorFromRGB(uint8_t r, uint8_t g, uint8_t b);
+UIKIT_EXTERN UIColor* UIColorFromRGB(CGFloat r, CGFloat g, CGFloat b);
+
+/**
+ Make color from integer with RGB format.
+ 
+ @param value color integer, RGB format
+ @param alpha alpha, 0 - 1
+ @return UIColor
+ */
+UIKIT_EXTERN UIColor* UIColorFromHEX(NSUInteger value, CGFloat alpha);
 
 /**
  Make color from HEX string
- eg. @"ffffffff" or @"#ffffff" or @"0xffffffff" etc.
  
  @param string HEX string, ARGB format
+ @param alpha alpha, 0 - 1
  @return UIColor
  */
-UIKIT_EXTERN UIColor * UIColorFromHexString(NSString *string);
+UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string, CGFloat alpha);
 
 /**
  Make HEX string from color.
@@ -70,15 +70,15 @@ UIKIT_EXTERN UIColor * UIColorFromHexString(NSString *string);
  @param alpha Whether or not have alpha field
  @return NSString
  */
-UIKIT_EXTERN NSString * UIColorToHexString(UIColor *color, BOOL alpha);
+UIKIT_EXTERN NSString* UIColorToHexString(UIColor *color);
 
 /**
  Inverse color
-
+ 
  @param color Original color
  @return UIColor
  */
-UIKIT_EXTERN UIColor * UIColorByInverse(UIColor *color);
+UIKIT_EXTERN UIColor* UIColorByInverse(UIColor *color);
 
 /**
  UIColor Extra
