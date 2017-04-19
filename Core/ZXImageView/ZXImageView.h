@@ -45,6 +45,13 @@
 @property (nonatomic, assign) CGFloat itemSpacing;
 
 /**
+ Register custom cell class
+
+ @param cellClass Base on ZXImageViewCell subclass
+ */
+- (void)registerCellClass:(Class)cellClass;
+
+/**
  Create or reuse a ZXImageViewCell
 
  @param index Index of item

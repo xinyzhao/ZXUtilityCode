@@ -78,7 +78,13 @@ static NSString * const _reuseIdentifier = @"ZXImageViewCell";
     self.collectionView.showsVerticalScrollIndicator = NO;
     [self addSubview:self.collectionView];
     // Register cell classes
-    [self.collectionView registerClass:[ZXImageViewCell class] forCellWithReuseIdentifier:_reuseIdentifier];
+    [self registerCellClass:[ZXImageViewCell class]];
+}
+
+- (void)registerCellClass:(Class)cellClass {
+    if ([cellClass isSubclassOfClass:[ZXImageViewCell class]]) {
+        [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:_reuseIdentifier];
+    }
 }
 
 - (void)layoutSubviews {

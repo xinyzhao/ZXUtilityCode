@@ -27,10 +27,10 @@
 /**
  Make color from RGBA value.
 
- @param r red, 0 - 1
- @param g green, 0 - 1
- @param b blue, 0 - 1
- @param a alpha, 0 - 1
+ @param r Red, 0 - 1
+ @param g Green, 0 - 1
+ @param b Blue, 0 - 1
+ @param a Alpha, 0 - 1
  @return UIColor
  */
 UIKIT_EXTERN UIColor* UIColorFromRGBA(CGFloat r, CGFloat g, CGFloat b, CGFloat a);
@@ -38,29 +38,32 @@ UIKIT_EXTERN UIColor* UIColorFromRGBA(CGFloat r, CGFloat g, CGFloat b, CGFloat a
 /**
  Make color from RGB value, alpha is 1.
 
- @param r red, 0 - 1
- @param g green, 0 - 1
- @param b blue, 0 - 1
+ @param r Red, 0 - 1
+ @param g Green, 0 - 1
+ @param b Blue, 0 - 1
  @return UIColor
  */
 UIKIT_EXTERN UIColor* UIColorFromRGB(CGFloat r, CGFloat g, CGFloat b);
 
 /**
- Make color from HEX string.
- eg. 0xAARRGGBB or 0xRRGGBB
+ Make color from HEX string, RGB format
+ eg. @"RRGGBB"
  
- @param string HEX string, ARGB format
+ @param string HEX color string
+ @param alpha Alpha value
  @return UIColor
  */
-UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string);
+UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string, CGFloat alpha);
 
 /**
- Make color from integer value.
+ Make color from integer value, RGB format
+ eg. 0xRRGGBB
  
- @param value Integer value
+ @param value Integer color value
+ @param alpha Alpha value
  @return UIColor
  */
-UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value);
+UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha);
 
 /**
  UIColor Extra
@@ -77,12 +80,29 @@ UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value);
 + (instancetype)colorWithHexString:(NSString *)string;
 
 /**
+ Make color with HEX string.
+
+ @param string HEX string, RGB format
+ @param alpha alpha value
+ @return UIColor
+ */
++ (instancetype)colorWithHexString:(NSString *)string alpha:(CGFloat)alpha;
+
+/**
  Make color with integer value.
  
  @param value Integer value
  @return UIColor
  */
 + (instancetype)colorWithInteger:(NSInteger)value;
+
+/**
+ Make color with integer value.
+ 
+ @param value Integer value
+ @return UIColor
+ */
++ (instancetype)colorWithInteger:(NSInteger)value alpha:(CGFloat)alpha;
 
 /**
  Gen random color

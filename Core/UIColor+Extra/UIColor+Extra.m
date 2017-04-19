@@ -32,36 +32,44 @@ UIColor* UIColorFromRGB(CGFloat r, CGFloat g, CGFloat b) {
     return UIColorFromRGBA(r, g, b, 1.f);
 }
 
-UIColor* UIColorFromHexString(NSString *string) {
-    NSRange range = [string rangeOfString:@"[a-fA-F0-9]{6,8}" options:NSRegularExpressionSearch];
+UIColor* UIColorFromHexString(NSString *string, CGFloat alpha) {
+    NSRange range = [string rangeOfString:@"[a-fA-F0-9]{6}" options:NSRegularExpressionSearch];
     if (range.location != NSNotFound) {
         unsigned int hex = 0;
         NSString *str = [string substringWithRange:range];
         [[NSScanner scannerWithString:str] scanHexInt:&hex];
-        return UIColorFromInteger(hex);
+        return UIColorFromInteger(hex, alpha);
     }
     return nil;
 }
 
-UIColor* UIColorFromInteger(NSInteger value) {
-    CGFloat a = 1.f;
-    if ((value & 0xff000000)) {
-        a = ((value & 0xff000000) >> 24) / 255.f;
-    }
+UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha) {
+//    CGFloat a = 1.f;
+//    if ((value & 0xff000000)) {
+//        a = ((value & 0xff000000) >> 24) / 255.f;
+//    }
     CGFloat r = ((value & 0x00ff0000) >> 16) / 255.f;
     CGFloat g = ((value & 0x0000ff00) >> 8) / 255.f;
     CGFloat b = (value & 0x000000ff) / 255.f;
-    return UIColorFromRGBA(r, g, b, a);
+    return UIColorFromRGBA(r, g, b, alpha);
 }
 
 @implementation UIColor (Extra)
 
 + (instancetype)colorWithHexString:(NSString *)string {
-    return UIColorFromHexString(string);
+    return UIColorFromHexString(string, 1.f);
+}
+
++ (instancetype)colorWithHexString:(NSString *)string alpha:(CGFloat)alpha {
+    return UIColorFromHexString(string, alpha);
 }
 
 + (instancetype)colorWithInteger:(NSInteger)value {
-    return UIColorFromInteger(value);
+    return UIColorFromInteger(value, 1.f);
+}
+
++ (instancetype)colorWithInteger:(NSInteger)value alpha:(CGFloat)alpha {
+    return UIColorFromInteger(value, alpha);
 }
 
 + (UIColor *)randomColor {
