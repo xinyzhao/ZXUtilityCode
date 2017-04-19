@@ -36,5 +36,9 @@
  The image URL
  */
 @property (nonatomic, copy) NSURL *imageURL;
+/**
+ The image view
+ */
+@property (nonatomic, readonly) UIImageView *imageView;
 
 @end

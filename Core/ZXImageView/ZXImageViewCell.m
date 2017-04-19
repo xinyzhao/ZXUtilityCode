@@ -32,7 +32,6 @@
     __weak NSIndexPath *internalIndexPath;
 }
 @property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleTap;
 @property (nonatomic, strong) UITapGestureRecognizer *doubleTap;
@@ -158,9 +157,9 @@
     //
     rect = self.bounds;
     if (self.imageView == nil) {
-        self.imageView = [[UIImageView alloc] initWithFrame:rect];
-        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.scrollView addSubview:self.imageView];
+        _imageView = [[UIImageView alloc] initWithFrame:rect];
+        _imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.scrollView addSubview:_imageView];
     } else {
         self.imageView.frame = rect;
     }
