@@ -46,39 +46,21 @@ UIKIT_EXTERN UIColor* UIColorFromRGBA(CGFloat r, CGFloat g, CGFloat b, CGFloat a
 UIKIT_EXTERN UIColor* UIColorFromRGB(CGFloat r, CGFloat g, CGFloat b);
 
 /**
- Make color from integer with RGB format.
- 
- @param value color integer, RGB format
- @param alpha alpha, 0 - 1
- @return UIColor
- */
-UIKIT_EXTERN UIColor* UIColorFromHEX(NSUInteger value, CGFloat alpha);
-
-/**
- Make color from HEX string
+ Make color from HEX string.
+ eg. 0xAARRGGBB or 0xRRGGBB
  
  @param string HEX string, ARGB format
- @param alpha alpha, 0 - 1
  @return UIColor
  */
-UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string, CGFloat alpha);
+UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string);
 
 /**
- Make HEX string from color.
-
- @param color UIColor
- @param alpha Whether or not have alpha field
- @return NSString
- */
-UIKIT_EXTERN NSString* UIColorToHexString(UIColor *color);
-
-/**
- Inverse color
+ Make color from integer value.
  
- @param color Original color
+ @param value Integer value
  @return UIColor
  */
-UIKIT_EXTERN UIColor* UIColorByInverse(UIColor *color);
+UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value);
 
 /**
  UIColor Extra
@@ -86,21 +68,21 @@ UIKIT_EXTERN UIColor* UIColorByInverse(UIColor *color);
 @interface UIColor (Extra)
 
 /**
- Make color with HEX string
-
+ Make color with HEX string.
+ eg. 0xAARRGGBB or 0xRRGGBB
+ 
  @param string HEX string, ARGB format
  @return UIColor
  */
 + (instancetype)colorWithHexString:(NSString *)string;
 
 /**
- Make color with HEX string and alpha
-
- @param string HEX string, RGB format
- @param alpha alpha value, 0.0 - 1.0
+ Make color with integer value.
+ 
+ @param value Integer value
  @return UIColor
  */
-+ (instancetype)colorWithHexString:(NSString *)string alpha:(CGFloat)alpha;
++ (instancetype)colorWithInteger:(NSInteger)value;
 
 /**
  Gen random color
@@ -111,17 +93,24 @@ UIKIT_EXTERN UIColor* UIColorByInverse(UIColor *color);
 
 /**
  Return the HEX string of the color
-
+ 
  @return UIColor
  */
 - (NSString *)hexString;
 
 /**
  Return the inverse color
-
+ 
  @return UIColor
  */
 - (UIColor *)inverseColor;
+
+/**
+ Return the integer value of the color
+ 
+ @return NSInteger
+ */
+- (NSInteger)integerValue;
 
 /**
  Return the alpha value of the color
