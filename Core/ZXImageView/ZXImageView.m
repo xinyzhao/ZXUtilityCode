@@ -109,6 +109,11 @@ static NSString * const _reuseIdentifier = @"ZXImageViewCell";
     return [_collectionView dequeueReusableCellWithReuseIdentifier:_reuseIdentifier forIndexPath:indexPath];
 }
 
+- (ZXImageViewCell *)cellForItemAtIndex:(NSInteger)index {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
+    return (ZXImageViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
+}
+
 - (NSInteger)numberOfItems {
     return [self.collectionView numberOfItemsInSection:0];
 }
