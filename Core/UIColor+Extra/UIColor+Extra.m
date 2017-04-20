@@ -24,81 +24,97 @@
 
 #import "UIColor+Extra.h"
 
-UIColor* UIColorFromRGBA(CGFloat r, CGFloat g, CGFloat b, CGFloat a) {
-    return [UIColor colorWithRed:r green:g blue:b alpha:a];
-}
-
-UIColor* UIColorFromRGB(CGFloat r, CGFloat g, CGFloat b) {
-    return UIColorFromRGBA(r, g, b, 1.f);
-}
-
-UIColor* UIColorFromHexString(NSString *string, CGFloat alpha) {
+UIColor* UIColorFromHEX(NSString *string, CGFloat alpha) {
     NSRange range = [string rangeOfString:@"[a-fA-F0-9]{6}" options:NSRegularExpressionSearch];
     if (range.location != NSNotFound) {
         unsigned int hex = 0;
         NSString *str = [string substringWithRange:range];
         [[NSScanner scannerWithString:str] scanHexInt:&hex];
-        return UIColorFromInteger(hex, alpha);
+        return UIColorFromRGB(hex, alpha);
     }
     return nil;
 }
 
-UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha) {
-//    CGFloat a = 1.f;
-//    if ((value & 0xff000000)) {
-//        a = ((value & 0xff000000) >> 24) / 255.f;
-//    }
+UIColor* UIColorFromRGB(NSInteger value, CGFloat alpha) {
+    CGFloat a = 1.f;
+    if ((value & 0xff000000)) {
+        a = ((value & 0xff000000) >> 24) / 255.f;
+    }
     CGFloat r = ((value & 0x00ff0000) >> 16) / 255.f;
     CGFloat g = ((value & 0x0000ff00) >> 8) / 255.f;
     CGFloat b = (value & 0x000000ff) / 255.f;
-    return UIColorFromRGBA(r, g, b, alpha);
+    return [UIColor colorWithRed:r green:g blue:b alpha:alpha];
+}
+
+NSString *UIColorToHEX(UIColor *color, NSString *prefix) {
+    CGFloat r,g,b,a;
+    [color getRed:&r green:&g blue:&b alpha:&a];
+    return [NSString stringWithFormat:@"%@%02x%02x%02x", prefix ? prefix : @"",
+            (int)roundf(r * 255),
+            (int)roundf(g * 255),
+            (int)roundf(b * 255)];
+}
+
+NSInteger UIColorToRGB(UIColor *color, BOOL alpha) {
+    CGFloat r,g,b,a;
+    [color getRed:&r green:&g blue:&b alpha:&a];
+    //
+    NSString *str = [NSString stringWithFormat:@"%02x%02x%02x%02x",
+                     alpha ? (int)roundf(a * 255) : 0x00,
+                     (int)roundf(r * 255),
+                     (int)roundf(g * 255),
+                     (int)roundf(b * 255)];
+    //
+    unsigned int hex = 0;
+    [[NSScanner scannerWithString:str] scanHexInt:&hex];
+    return hex;
 }
 
 @implementation UIColor (Extra)
 
-+ (instancetype)colorWithHexString:(NSString *)string {
-    return UIColorFromHexString(string, 1.f);
++ (instancetype)colorWithString:(NSString *)string {
+    return UIColorFromHEX(string, 1.f);
 }
 
-+ (instancetype)colorWithHexString:(NSString *)string alpha:(CGFloat)alpha {
-    return UIColorFromHexString(string, alpha);
++ (instancetype)colorWithString:(NSString *)string alpha:(CGFloat)alpha {
+    return UIColorFromHEX(string, alpha);
 }
 
 + (instancetype)colorWithInteger:(NSInteger)value {
-    return UIColorFromInteger(value, 1.f);
+    return UIColorFromRGB(value, 1.f);
 }
 
 + (instancetype)colorWithInteger:(NSInteger)value alpha:(CGFloat)alpha {
-    return UIColorFromInteger(value, alpha);
+    return UIColorFromRGB(value, alpha);
 }
 
 + (UIColor *)randomColor {
     CGFloat r = (arc4random() % 256) / 255.f;
     CGFloat g = (arc4random() % 256) / 255.f;
     CGFloat b = (arc4random() % 256) / 255.f;
-    return UIColorFromRGB(r, g, b);
-}
-
-- (NSString *)hexString {
-    CGFloat r,g,b,a;
-    [self getRed:&r green:&g blue:&b alpha:&a];
-    return [NSString stringWithFormat:@"%02x%02x%02x",
-            (int)roundf(r * 255),
-            (int)roundf(g * 255),
-            (int)roundf(b * 255)];
+    return [UIColor colorWithRed:r green:g blue:b alpha:1.f];;
 }
 
 - (UIColor *)inverseColor {
     CGFloat r,g,b,a;
     [self getRed:&r green:&g blue:&b alpha:&a];
-    return [UIColor colorWithRed:1.f - r green:1.f - g blue:1.f - b alpha:a];
+    return [UIColor colorWithRed:(1.f - r) green:(1.f - g) blue:(1.f - b) alpha:a];
+}
+
+- (NSString *)stringValue {
+    return UIColorToHEX(self, nil);
+}
+
+- (NSString *)stringValueWithPrefix:(NSString *)prefix {
+    return UIColorToHEX(self, prefix);
 }
 
 - (NSInteger)integerValue {
-    unsigned int hex = 0;
-    NSString *str = self.hexString;
-    [[NSScanner scannerWithString:str] scanHexInt:&hex];
-    return hex;
+    return UIColorToRGB(self, NO);
+}
+
+- (NSInteger)integerValueWithAlpha:(BOOL)alpha {
+    return UIColorToRGB(self, alpha);
 }
 
 - (CGFloat)alpha {

@@ -25,35 +25,14 @@
 #import <UIKit/UIKit.h>
 
 /**
- Make color from RGBA value.
-
- @param r Red, 0 - 1
- @param g Green, 0 - 1
- @param b Blue, 0 - 1
- @param a Alpha, 0 - 1
- @return UIColor
- */
-UIKIT_EXTERN UIColor* UIColorFromRGBA(CGFloat r, CGFloat g, CGFloat b, CGFloat a);
-
-/**
- Make color from RGB value, alpha is 1.
-
- @param r Red, 0 - 1
- @param g Green, 0 - 1
- @param b Blue, 0 - 1
- @return UIColor
- */
-UIKIT_EXTERN UIColor* UIColorFromRGB(CGFloat r, CGFloat g, CGFloat b);
-
-/**
  Make color from HEX string, RGB format
- eg. @"RRGGBB"
+ eg. @"0xRRGGBB", @"#RRGGBB", @"RRGGBB"
  
  @param string HEX color string
  @param alpha Alpha value
  @return UIColor
  */
-UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string, CGFloat alpha);
+UIKIT_EXTERN UIColor* UIColorFromHEX(NSString *string, CGFloat alpha);
 
 /**
  Make color from integer value, RGB format
@@ -63,7 +42,16 @@ UIKIT_EXTERN UIColor* UIColorFromHexString(NSString *string, CGFloat alpha);
  @param alpha Alpha value
  @return UIColor
  */
-UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha);
+UIKIT_EXTERN UIColor* UIColorFromRGB(NSInteger value, CGFloat alpha);
+
+/**
+ Return the HEX string of the color with prefix
+ 
+ @param color UIColor
+ @param prefix Prefix of color
+ @return HEX string of the color with prefix
+ */
+UIKIT_EXTERN NSString *UIColorToHEX(UIColor *color, NSString *prefix);
 
 /**
  UIColor Extra
@@ -71,25 +59,27 @@ UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha);
 @interface UIColor (Extra)
 
 /**
- Make color with HEX string.
- eg. 0xAARRGGBB or 0xRRGGBB
+ Make color from HEX string, RGB format
+ eg. @"0xRRGGBB", @"#RRGGBB", @"RRGGBB"
  
- @param string HEX string, ARGB format
+ @param string HEX string, RGB format
  @return UIColor
  */
-+ (instancetype)colorWithHexString:(NSString *)string;
++ (instancetype)colorWithString:(NSString *)string;
 
 /**
- Make color with HEX string.
+ Make color from HEX string, RGB format
+ eg. @"0xRRGGBB", @"#RRGGBB", @"RRGGBB"
 
  @param string HEX string, RGB format
  @param alpha alpha value
  @return UIColor
  */
-+ (instancetype)colorWithHexString:(NSString *)string alpha:(CGFloat)alpha;
++ (instancetype)colorWithString:(NSString *)string alpha:(CGFloat)alpha;
 
 /**
- Make color with integer value.
+ Make color from integer value, RGB format
+ eg. 0xRRGGBB
  
  @param value Integer value
  @return UIColor
@@ -97,7 +87,8 @@ UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha);
 + (instancetype)colorWithInteger:(NSInteger)value;
 
 /**
- Make color with integer value.
+ Make color from integer value, RGB format
+ eg. 0xRRGGBB
  
  @param value Integer value
  @return UIColor
@@ -112,13 +103,6 @@ UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha);
 + (UIColor *)randomColor;
 
 /**
- Return the HEX string of the color
- 
- @return UIColor
- */
-- (NSString *)hexString;
-
-/**
  Return the inverse color
  
  @return UIColor
@@ -126,11 +110,34 @@ UIKIT_EXTERN UIColor* UIColorFromInteger(NSInteger value, CGFloat alpha);
 - (UIColor *)inverseColor;
 
 /**
+ Return the HEX string of the color
+ 
+ @return HEX string of the color
+ */
+- (NSString *)stringValue;
+
+/**
+ Return the HEX string of the color with prefix
+
+ @param prefix Prefix of color
+ @return HEX string of the color with prefix
+ */
+- (NSString *)stringValueWithPrefix:(NSString *)prefix;
+
+/**
  Return the integer value of the color
  
  @return NSInteger
  */
 - (NSInteger)integerValue;
+
+/**
+ Return the integer value of the color
+
+ @param alpha Whether or not include alpha value
+ @return NSInteger
+ */
+- (NSInteger)integerValueWithAlpha:(BOOL)alpha;
 
 /**
  Return the alpha value of the color
