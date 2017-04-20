@@ -50,6 +50,7 @@
 #import "UIImage+Extra.h"
 #import "UINetworkActivityIndicator.h"
 #import "UITableViewCell+Separator.h"
+#import "UIView+Snapshot.h"
 #import "UIViewController+Extra.h"
 #import "ZXAlertView.h"
 #import "ZXAuthorizationManager.h"

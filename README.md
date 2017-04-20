@@ -46,6 +46,7 @@ pod "ZXUtilityCode"
 * UIImage+Extra
 * UINetworkActivityIndicator
 * UITableViewCell+Separator
+* UIView+Snapshot
 * UIViewController+Extra
 * ZXAlertView
 * ZXAuthorizationManager
