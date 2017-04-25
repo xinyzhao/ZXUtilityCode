@@ -55,6 +55,7 @@
 #import "ZXAlertView.h"
 #import "ZXAuthorizationManager.h"
 #import "ZXBadgeLabel.h"
+#import "ZXDrawingView.h"
 #import "ZXHTTPClient.h"
 #import "ZXImageView.h"
 #import "ZXNetworkTrafficMonitor.h"

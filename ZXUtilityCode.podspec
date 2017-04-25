@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.4.0"
+  s.version      = "1.4.1"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -163,6 +163,11 @@ Pod::Spec.new do |s|
   s.subspec "ZXBadgeLabel" do |ss|
     ss.source_files  = "Core/ZXBadgeLabel/*.{h,m}"
     ss.public_header_files = "Core/ZXBadgeLabel/*.h"
+  end
+
+  s.subspec "ZXDrawingView" do |ss|
+    ss.source_files  = "Core/ZXDrawingView/*.{h,m}"
+    ss.public_header_files = "Core/ZXDrawingView/*.h"
   end
 
   s.subspec "ZXHTTPClient" do |ss|
