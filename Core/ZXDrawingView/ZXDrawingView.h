@@ -25,13 +25,6 @@
 #import <UIKit/UIKit.h>
 
 /**
- ZXDrawingTouchesBlock
-
- @param touches The touches
- */
-typedef void(^ZXDrawingTouchesBlock)(NSSet *touches, UIEvent *event);
-
-/**
  ZXDrawingView
  */
 @interface ZXDrawingView : UIView
@@ -49,25 +42,29 @@ typedef void(^ZXDrawingTouchesBlock)(NSSet *touches, UIEvent *event);
 @property (nonatomic, assign) BOOL eraserEnabled;
 
 /**
- Touches began
+ Add a point to line
+
+ @param point The line point
+ @param newLine Whether or not a new line
  */
-@property (nonatomic, copy) ZXDrawingTouchesBlock touchesBegan;
-/**
- Touches moved
- */
-@property (nonatomic, copy) ZXDrawingTouchesBlock touchesMoved;
-/**
- Touches ended
- */
-@property (nonatomic, copy) ZXDrawingTouchesBlock touchesEnded;
+- (void)addPoint:(CGPoint)point toNewLine:(BOOL)newLine;
 
 /**
- Clear the drawing
+ Add points to line
+
+ @param points The line points
+ @param newLine Whether or not a new line
  */
-- (void)clear;
+- (void)addPoints:(NSArray *)points toNewLine:(BOOL)newLine;
+
 /**
- Return to previous step
+ Remove all lines
  */
-- (void)undo;
+- (void)removeAllLines;
+
+/**
+ Remove the last line
+ */
+- (void)removeLastLine;
 
 @end

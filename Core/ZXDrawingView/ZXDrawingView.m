@@ -79,6 +79,8 @@
     for (ZXDrawingPath *path in self.linePaths) {
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGContextSetBlendMode(context, path.isEraser ? kCGBlendModeDestinationIn : kCGBlendModeNormal);
+        CGContextSetLineCap(context, path.lineCapStyle);
+        CGContextSetLineJoin(context, path.lineJoinStyle);
         CGContextSetLineWidth(context, path.lineWidth);
         [path.lineColor setStroke];
         CGContextAddPath(context, path.CGPath);
@@ -88,63 +90,73 @@
 
 #pragma mark Functions
 
-- (void)clear {
+- (void)addPoint:(CGPoint)point toNewLine:(BOOL)newLine{
+    if (newLine) {
+        ZXDrawingPath *path = [ZXDrawingPath bezierPath];
+        path.isEraser = self.eraserEnabled;
+        if (path.isEraser) {
+            path.lineColor = [UIColor clearColor];
+        } else {
+            path.lineColor = self.lineColor;
+        }
+        path.lineWidth = self.lineWidth;
+        path.lineCapStyle = kCGLineCapRound;
+        path.lineJoinStyle = kCGLineJoinRound;
+        [path moveToPoint:point];
+        [self.linePaths addObject:path];
+    } else {
+        ZXDrawingPath *path = [self.linePaths lastObject];
+        if (path) {
+            [path addLineToPoint:point];
+            [self setNeedsDisplay];
+        }
+    }
+}
+
+- (void)addPoints:(NSArray *)points toNewLine:(BOOL)newLine {
+    if (newLine) {
+        ZXDrawingPath *path = [ZXDrawingPath bezierPath];
+        path.isEraser = self.eraserEnabled;
+        if (path.isEraser) {
+            path.lineColor = [UIColor clearColor];
+        } else {
+            path.lineColor = self.lineColor;
+        }
+        path.lineWidth = self.lineWidth;
+        path.lineCapStyle = kCGLineCapRound;
+        path.lineJoinStyle = kCGLineJoinRound;
+        [points enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj == 0) {
+                [path moveToPoint:[obj CGPointValue]];
+            } else {
+                [path addLineToPoint:[obj CGPointValue]];
+            }
+        }];
+        [self.linePaths addObject:path];
+    } else {
+        ZXDrawingPath *path = [self.linePaths lastObject];
+        if (path) {
+            for (NSValue *point in points) {
+                [path addLineToPoint:[point CGPointValue]];
+            }
+        }
+    }
+    if (points.count > 0) {
+        [self setNeedsDisplay];
+    }
+}
+
+- (void)removeAllLines {
     if (self.linePaths.count > 0) {
         [self.linePaths removeAllObjects];
         [self setNeedsDisplay];
     }
 }
 
-- (void)undo {
+- (void)removeLastLine {
     if (self.linePaths.count > 0) {
         [self.linePaths removeLastObject];
         [self setNeedsDisplay];
-    }
-}
-
-#pragma mark UIResponder
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint point = [[touches anyObject] locationInView:self];
-    //
-    ZXDrawingPath *path = [ZXDrawingPath bezierPath];
-    path.isEraser = _eraserEnabled;
-    if (path.isEraser) {
-        path.lineColor = [UIColor clearColor];
-    } else {
-        path.lineColor = self.lineColor;
-    }
-    path.lineWidth = self.lineWidth;
-    path.lineCapStyle = kCGLineCapRound;
-    path.lineJoinStyle = kCGLineJoinRound;
-    [path moveToPoint:point];
-    [self.linePaths addObject:path];
-    //
-    if (_touchesBegan) {
-        _touchesBegan(touches, event);
-    }
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint point = [[touches anyObject] locationInView:self];
-    //
-    ZXDrawingPath *path = [self.linePaths lastObject];
-    [path addLineToPoint:point];
-    [self setNeedsDisplay];
-    //
-    if (_touchesMoved) {
-        _touchesMoved(touches, event);
-    }
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [self touchesMoved:touches withEvent:event];
-    //
-    if (_touchesEnded) {
-        _touchesEnded(touches, event);
     }
 }
 

@@ -82,9 +82,9 @@ UIImage *UIImageCropping(UIImage *image, CGRect rect) {
 }
 
 UIImage *UIImageScaling(UIImage *image, CGFloat scale) {
-    CGSize size = CGSizeZero;
-    size.width = roundf(image.size.width * scale);
-    size.height = roundf(image.size.height * scale);
+    CGSize size = UIImageSizeForScreenScale(image);
+    size.width = roundf(size.width * scale);
+    size.height = roundf(size.height * scale);
     return UIImageResizing(image, size);
 }
 
