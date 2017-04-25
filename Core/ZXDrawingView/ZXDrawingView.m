@@ -126,7 +126,7 @@
         path.lineCapStyle = kCGLineCapRound;
         path.lineJoinStyle = kCGLineJoinRound;
         [points enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (obj == 0) {
+            if (idx == 0) {
                 [path moveToPoint:[obj CGPointValue]];
             } else {
                 [path addLineToPoint:[obj CGPointValue]];
