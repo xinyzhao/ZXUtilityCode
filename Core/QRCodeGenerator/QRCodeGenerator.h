@@ -24,32 +24,59 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ QRCodeGenerator
+ */
 @interface QRCodeGenerator : NSObject
 
 /**
  * @brief Make QRCode image from data
- * @author xinyzhao[https://github.com/xinyzhao/ZXUtilityCode]
+ * @param data Source data
+ * @return The QRCode image
+ */
++ (UIImage *)imageWithData:(NSData *)data;
+
+/**
+ * @brief Make QRCode image from data
+ * @param data Source data
+ * @param size QRCode image size
+ * @return The QRCode image
+ */
++ (UIImage *)imageWithData:(NSData *)data size:(CGSize)size;
+
+/**
+ * @brief Make QRCode image from data
  * @param data Source data
  * @param size QRCode image size
  * @param color QRCode image tint color
  * @param backgroundColor QRCode background color
  * @return The QRCode image
  */
-+ (UIImage *)imageWithData:(NSData *)data;
-+ (UIImage *)imageWithData:(NSData *)data size:(CGSize)size;
 + (UIImage *)imageWithData:(NSData *)data size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
 
 /**
  * @brief Make QRCode image from data
- * @author xinyzhao[https://github.com/xinyzhao/ZXUtilityCode]
+ * @param text Source text string
+ * @return The QRCode image
+ */
++ (UIImage *)imageWithText:(NSString *)text;
+
+/**
+ * @brief Make QRCode image from data
+ * @param text Source text string
+ * @param size QRCode image size
+ * @return The QRCode image
+ */
++ (UIImage *)imageWithText:(NSString *)text size:(CGSize)size;
+
+/**
+ * @brief Make QRCode image from data
  * @param text Source text string
  * @param size QRCode image size
  * @param color QRCode image tint color
  * @param backgroundColor QRCode background color
  * @return The QRCode image
  */
-+ (UIImage *)imageWithText:(NSString *)text;
-+ (UIImage *)imageWithText:(NSString *)text size:(CGSize)size;
 + (UIImage *)imageWithText:(NSString *)text size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
 
 @end

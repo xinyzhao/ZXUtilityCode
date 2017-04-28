@@ -38,7 +38,6 @@
  Add NSCameraUsageDescription to info.plist
 
  @param handler Authorization handler
- @param status Authorization status
  */
 + (void)authorizationForCamera:(void(^)(AVAuthorizationStatus status))handler;
 
@@ -47,7 +46,6 @@
  Add NSContactsUsageDescription to info.plist
 
  @param handler Authorization handler
- @param status Authorization status
  */
 + (void)authorizationForContacts:(void(^)(AVAuthorizationStatus status))handler;
 
@@ -57,7 +55,6 @@
 
  @param always Request always authorization
  @param handler Authorization handler
- @param status Authorization status
  */
 + (void)authorizationForLocation:(BOOL)always handler:(void(^)(CLAuthorizationStatus status))handler;
 
@@ -66,7 +63,6 @@
  Add NSMicrophoneUsageDescription to info.plist
 
  @param handler Authorization handler
- @param granted Granted or denied
  */
 + (void)authorizationForMicrophone:(void(^)(BOOL granted))handler;
 
@@ -75,7 +71,6 @@
  Add NSPhotoLibraryUsageDescription to info.plist
 
  @param handler Authorization handler
- @param status Authorization status, ALAuthorizationStatus/PHAuthorizationStatus
  */
 + (void)authorizationForPhotoLibrary:(void(^)(NSInteger status))handler;
 

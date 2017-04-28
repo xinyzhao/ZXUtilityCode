@@ -26,11 +26,6 @@
 
 /**
  ZXNetworkTrafficBlock
- 
- @param WiFiSentBytes Sent bytes of WiFi
- @param WiFiReceivedBytes Received bytes of WiFi
- @param WWANSentBytes Sent bytes of WWAN
- @param WWANReceivedBytes Received bytes of WWAN
  */
 typedef void(^ZXNetworkTrafficBlock)(NSUInteger WiFiSent, NSUInteger WiFiReceived, NSUInteger WWANSent, NSUInteger WWANReceived);
 
