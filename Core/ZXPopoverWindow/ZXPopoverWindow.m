@@ -24,9 +24,9 @@
 
 #import "ZXPopoverWindow.h"
 
-#define ZXPopoverWindowDismissColor [UIColor clearColor]
-
 @interface ZXPopoverWindow () <UIGestureRecognizerDelegate>
+@property (nonatomic, assign) CGRect fromFrame;
+@property (nonatomic, assign) CGRect toFrame;
 
 @end
 
@@ -55,42 +55,50 @@
 }
 
 - (void)presentView:(UIView *)view {
-    _presentedView = view;
-    if (_presentedView) {
-        CGRect frame = self.frame;
-        frame.origin.y = self.frame.size.height;
-        frame.size.height = _presentedView.frame.size.height;
-        _presentedView.frame = frame;
-        [self addSubview:_presentedView];
-    }
-    self.backgroundColor = ZXPopoverWindowDismissColor;
-    self.hidden = NO;
+    CGRect from = self.frame;
+    from.origin.y = self.frame.size.height;
+    from.size.height = view.frame.size.height;
     //
-    __weak typeof(self) weakSelf = self;
-    CGRect frame = _presentedView.frame;
-    frame.origin.y = self.frame.size.height - _presentedView.frame.size.height;
-    [UIView animateWithDuration:_presentingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        weakSelf.backgroundColor = self.presentedBackgroundColor;
-        _presentedView.frame = frame;
-    } completion:^(BOOL finished) {
-        weakSelf.backgroundColor = self.presentedBackgroundColor;
-        _presentedView.frame = frame;
+    CGRect to = from;
+    to.origin.y = self.frame.size.height - view.frame.size.height;
+    //
+    [self presentView:view from:from to:to];
+}
+
+- (void)presentView:(UIView *)view from:(CGRect)fromFrame to:(CGRect)toFrame {
+    _presentedView = view;
+    _fromFrame = fromFrame;
+    _toFrame = toFrame;
+    //
+    if (_presentedView) {
+        [_presentedView setFrame:_fromFrame];
+        [self addSubview:_presentedView];
+        [self setBackgroundColor:[UIColor clearColor]];
+        [self setHidden:NO];
         //
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
-        tap.delegate = self;
-        [weakSelf addGestureRecognizer:tap];
-    }];
+        __weak typeof(self) weakSelf = self;
+        [UIView animateWithDuration:_presentingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            weakSelf.backgroundColor = weakSelf.presentedBackgroundColor;
+            _presentedView.frame = _toFrame;
+            //
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
+            tap.delegate = self;
+            [weakSelf addGestureRecognizer:tap];
+            
+        } completion:^(BOOL finished) {
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
+            tap.delegate = weakSelf;
+            [weakSelf addGestureRecognizer:tap];
+        }];
+    }
 }
 
 - (void)dismiss {
     __weak typeof(self) weakSelf = self;
-    CGRect frame = _presentedView.frame;
-    frame.origin.y = self.frame.size.height;
     [UIView animateWithDuration:_dismissingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        _presentedView.frame = frame;
-        weakSelf.backgroundColor = ZXPopoverWindowDismissColor;
+        weakSelf.backgroundColor = [UIColor clearColor];
+        _presentedView.frame = _fromFrame;
     } completion:^(BOOL finished) {
-        [_presentedView removeFromSuperview];
         weakSelf.hidden = YES;
     }];
 }

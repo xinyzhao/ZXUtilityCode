@@ -51,9 +51,18 @@
 /**
  Present view in window
 
- @param view present view
+ @param view Present view
  */
 - (void)presentView:(UIView *)view;
+
+/**
+ Present view in window
+
+ @param view Present view
+ @param from From frame
+ @param to To frame
+ */
+- (void)presentView:(UIView *)view from:(CGRect)fromFrame to:(CGRect)toFrame;
 
 /**
  Dismiss window
