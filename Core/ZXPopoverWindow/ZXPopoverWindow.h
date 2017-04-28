@@ -62,7 +62,7 @@
  @param from From frame
  @param to To frame
  */
-- (void)presentView:(UIView *)view from:(CGRect)fromFrame to:(CGRect)toFrame;
+- (void)presentView:(UIView *)view from:(CGRect)from to:(CGRect)to;
 
 /**
  Dismiss window

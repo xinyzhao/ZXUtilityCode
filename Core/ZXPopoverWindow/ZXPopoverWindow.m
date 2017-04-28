@@ -65,10 +65,10 @@
     [self presentView:view from:from to:to];
 }
 
-- (void)presentView:(UIView *)view from:(CGRect)fromFrame to:(CGRect)toFrame {
+- (void)presentView:(UIView *)view from:(CGRect)from to:(CGRect)to {
     _presentedView = view;
-    _fromFrame = fromFrame;
-    _toFrame = toFrame;
+    _fromFrame = from;
+    _toFrame = to;
     //
     if (_presentedView) {
         [_presentedView setFrame:_fromFrame];
