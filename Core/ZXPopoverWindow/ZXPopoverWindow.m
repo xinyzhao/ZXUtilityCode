@@ -27,6 +27,7 @@
 @interface ZXPopoverWindow () <UIGestureRecognizerDelegate>
 @property (nonatomic, assign) CGRect fromFrame;
 @property (nonatomic, assign) CGRect toFrame;
+@property (nonatomic, assign) BOOL isPresented;
 
 @end
 
@@ -66,11 +67,15 @@
 }
 
 - (void)presentView:(UIView *)view from:(CGRect)from to:(CGRect)to {
+    if (_presentedView) {
+        [_presentedView removeFromSuperview];
+    }
     _presentedView = view;
     _fromFrame = from;
     _toFrame = to;
     //
     if (_presentedView) {
+        _isPresented = YES;
         [_presentedView setFrame:_fromFrame];
         [self addSubview:_presentedView];
         [self setBackgroundColor:[UIColor clearColor]];
@@ -79,7 +84,7 @@
         __weak typeof(self) weakSelf = self;
         [UIView animateWithDuration:_presentingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             weakSelf.backgroundColor = weakSelf.presentedBackgroundColor;
-            _presentedView.frame = _toFrame;
+            weakSelf.presentedView.frame = _toFrame;
             //
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
             tap.delegate = self;
@@ -94,12 +99,16 @@
 }
 
 - (void)dismiss {
+    _isPresented = NO;
     __weak typeof(self) weakSelf = self;
-    [UIView animateWithDuration:_dismissingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:_dismissingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
         weakSelf.backgroundColor = [UIColor clearColor];
-        _presentedView.frame = _fromFrame;
+        weakSelf.presentedView.frame = _fromFrame;
     } completion:^(BOOL finished) {
-        weakSelf.hidden = YES;
+        if (!_isPresented) {
+            [weakSelf.presentedView removeFromSuperview];
+            weakSelf.hidden = YES;
+        }
     }];
 }
 
