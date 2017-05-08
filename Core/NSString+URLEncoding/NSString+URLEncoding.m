@@ -29,9 +29,19 @@ NSString *NSStringWithURLEncoding(NSString *string, NSStringEncoding encoding) {
     return str;
 }
 
+NSString *NSStringWithURLDecoding(NSString *string, NSStringEncoding encoding) {
+    NSString *str = CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, (__bridge CFStringRef)string, CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`"), CFStringConvertNSStringEncodingToEncoding(encoding)));
+    return str;
+}
+
 @implementation NSString (URLEncode)
 
 - (NSString*)stringByURLEncoding:(NSStringEncoding)encoding {
     return NSStringWithURLEncoding(self, encoding);
 }
+
+- (NSString*)stringByURLDecoding:(NSStringEncoding)encoding {
+    return NSStringWithURLDecoding(self, encoding);
+}
+
 @end

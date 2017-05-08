@@ -25,7 +25,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Create an NSString from URL encoded NSString
+ Encoding string
 
  @param string Original string
  @param encoding NSStringEncoding
@@ -34,16 +34,33 @@
 extern NSString *NSStringWithURLEncoding(NSString *string, NSStringEncoding encoding);
 
 /**
+ Decoding string
+
+ @param string Encoded string
+ @param encoding NSStringEncoding
+ @return Decoded string
+ */
+extern NSString *NSStringWithURLDecoding(NSString *string, NSStringEncoding encoding);
+
+/**
  NSString (URLEncoding)
  */
 @interface NSString (URLEncoding)
 
 /**
- Create an NSString from URL encoded NSString
+ Encoding string
 
  @param encoding NSStringEncoding
  @return Encoded NSString
  */
 - (NSString*)stringByURLEncoding:(NSStringEncoding)encoding;
+
+/**
+ Decoding string
+
+ @param encoding NSStringEncoding
+ @return Decoded NSString
+ */
+- (NSString*)stringByURLDecoding:(NSStringEncoding)encoding;
 
 @end
