@@ -82,7 +82,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "NSString+Unicode" do |ss|
-    ss.dependency 'Core/NSObject+Extra'
+    ss.dependency 'ZXUtilityCode/NSObject+Extra'
     ss.source_files  = "Core/NSString+Unicode/*.{h,m}"
     ss.public_header_files = "Core/NSString+Unicode/*.h"
   end
@@ -114,7 +114,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "UIButton+Extra" do |ss|
-    ss.dependency 'Core/NSObject+Extra'
+    ss.dependency 'ZXUtilityCode/NSObject+Extra'
     ss.source_files  = "Core/UIButton+Extra/*.{h,m}"
     ss.public_header_files = "Core/UIButton+Extra/*.h"
   end
