@@ -23,7 +23,7 @@
 //
 
 #import "NSString+Unicode.h"
-#import <objc/runtime.h>
+#import "NSObject+Extra.h"
 
 @implementation NSString (Unicode)
 
@@ -42,21 +42,24 @@
 @implementation NSArray (Unicode)
 
 + (void)load {
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(description)), class_getInstanceMethod([self class], @selector(replaceDescription)));
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(descriptionWithLocale:)), class_getInstanceMethod([self class], @selector(replaceDescriptionWithLocale:)));
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(descriptionWithLocale:indent:)), class_getInstanceMethod([self class], @selector(replaceDescriptionWithLocale:indent:)));
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self swizzleMethod:@selector(description) with:@selector(unicode_description)];
+        [self swizzleMethod:@selector(descriptionWithLocale:) with:@selector(unicode_descriptionWithLocale:)];
+        [self swizzleMethod:@selector(descriptionWithLocale:indent:) with:@selector(unicode_descriptionWithLocale:indent:)];
+    });
 }
 
-- (NSString *)replaceDescription {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescription]];
+- (NSString *)unicode_description {
+    return [NSString stringByReplacingUnicodeString:[self unicode_description]];
 }
 
-- (NSString *)replaceDescriptionWithLocale:(nullable id)locale {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescriptionWithLocale:locale]];
+- (NSString *)unicode_descriptionWithLocale:(nullable id)locale {
+    return [NSString stringByReplacingUnicodeString:[self unicode_descriptionWithLocale:locale]];
 }
 
-- (NSString *)replaceDescriptionWithLocale:(nullable id)locale indent:(NSUInteger)level {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescriptionWithLocale:locale indent:level]];
+- (NSString *)unicode_descriptionWithLocale:(nullable id)locale indent:(NSUInteger)level {
+    return [NSString stringByReplacingUnicodeString:[self unicode_descriptionWithLocale:locale indent:level]];
 }
 
 @end
@@ -64,21 +67,24 @@
 @implementation NSDictionary (Unicode)
 
 + (void)load {
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(description)), class_getInstanceMethod([self class], @selector(replaceDescription)));
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(descriptionWithLocale:)), class_getInstanceMethod([self class], @selector(replaceDescriptionWithLocale:)));
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(descriptionWithLocale:indent:)), class_getInstanceMethod([self class], @selector(replaceDescriptionWithLocale:indent:)));
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self swizzleMethod:@selector(description) with:@selector(unicode_description)];
+        [self swizzleMethod:@selector(descriptionWithLocale:) with:@selector(unicode_descriptionWithLocale:)];
+        [self swizzleMethod:@selector(descriptionWithLocale:indent:) with:@selector(unicode_descriptionWithLocale:indent:)];
+    });
 }
 
-- (NSString *)replaceDescription {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescription]];
+- (NSString *)unicode_description {
+    return [NSString stringByReplacingUnicodeString:[self unicode_description]];
 }
 
-- (NSString *)replaceDescriptionWithLocale:(nullable id)locale {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescriptionWithLocale:locale]];
+- (NSString *)unicode_descriptionWithLocale:(nullable id)locale {
+    return [NSString stringByReplacingUnicodeString:[self unicode_descriptionWithLocale:locale]];
 }
 
-- (NSString *)replaceDescriptionWithLocale:(nullable id)locale indent:(NSUInteger)level {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescriptionWithLocale:locale indent:level]];
+- (NSString *)unicode_descriptionWithLocale:(nullable id)locale indent:(NSUInteger)level {
+    return [NSString stringByReplacingUnicodeString:[self unicode_descriptionWithLocale:locale indent:level]];
 }
 
 @end
@@ -86,21 +92,24 @@
 @implementation NSSet (Unicode)
 
 + (void)load {
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(description)), class_getInstanceMethod([self class], @selector(replaceDescription)));
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(descriptionWithLocale:)), class_getInstanceMethod([self class], @selector(replaceDescriptionWithLocale:)));
-    method_exchangeImplementations(class_getInstanceMethod([self class], @selector(descriptionWithLocale:indent:)), class_getInstanceMethod([self class], @selector(replaceDescriptionWithLocale:indent:)));
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self swizzleMethod:@selector(description) with:@selector(unicode_description)];
+        [self swizzleMethod:@selector(descriptionWithLocale:) with:@selector(unicode_descriptionWithLocale:)];
+        [self swizzleMethod:@selector(descriptionWithLocale:indent:) with:@selector(unicode_descriptionWithLocale:indent:)];
+    });
 }
 
-- (NSString *)replaceDescription {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescription]];
+- (NSString *)unicode_description {
+    return [NSString stringByReplacingUnicodeString:[self unicode_description]];
 }
 
-- (NSString *)replaceDescriptionWithLocale:(nullable id)locale {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescriptionWithLocale:locale]];
+- (NSString *)unicode_descriptionWithLocale:(nullable id)locale {
+    return [NSString stringByReplacingUnicodeString:[self unicode_descriptionWithLocale:locale]];
 }
 
-- (NSString *)replaceDescriptionWithLocale:(nullable id)locale indent:(NSUInteger)level {
-    return [NSString stringByReplacingUnicodeString:[self replaceDescriptionWithLocale:locale indent:level]];
+- (NSString *)unicode_descriptionWithLocale:(nullable id)locale indent:(NSUInteger)level {
+    return [NSString stringByReplacingUnicodeString:[self unicode_descriptionWithLocale:locale indent:level]];
 }
 
 @end

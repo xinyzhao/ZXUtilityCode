@@ -23,8 +23,62 @@
 //
 
 #import "UIButton+Extra.h"
+#import "NSObject+Extra.h"
+
+@interface UIButton (_Extra)
+@property (nonatomic, assign) NSTimeInterval acceptEventTime;
+
+@end
+
+@implementation UIButton (_Extra)
+
+- (void)setAcceptEventTime:(NSTimeInterval)acceptEventTime {
+    objc_setAssociatedObject(self, @selector(acceptEventTime), @(acceptEventTime), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSTimeInterval)acceptEventTime {
+    NSNumber *number = objc_getAssociatedObject(self, @selector(acceptEventTime));
+    return number ? [number doubleValue] : 0.f;
+}
+
+@end
 
 @implementation UIButton (Extra)
+
+#pragma mark Methods hook
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        SEL originalSelector = @selector(sendAction:to:forEvent:);
+        SEL swizzledSelector = @selector(extra_sendAction:to:forEvent:);
+        [self swizzleMethod:originalSelector with:swizzledSelector];
+    });
+}
+
+- (void)extra_sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event {
+    NSTimeInterval time = [NSDate date].timeIntervalSince1970;
+    if (time - self.acceptEventTime < self.acceptEventInterval) {
+        return;
+    }
+    if (self.acceptEventInterval > 0.f) {
+        self.acceptEventTime = time;
+    }
+    [self extra_sendAction:action to:target forEvent:event];
+}
+
+#pragma mark Setter & Getter
+
+- (void)setAcceptEventInterval:(NSTimeInterval)acceptEventInterval {
+    objc_setAssociatedObject(self, @selector(acceptEventInterval), @(acceptEventInterval), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSTimeInterval)acceptEventInterval {
+    NSNumber *number = objc_getAssociatedObject(self, @selector(acceptEventInterval));
+    return number ? [number doubleValue] : 0.f;
+}
+
+#pragma mark Functions
 
 - (void)setForceRightToLeft:(CGFloat)spacing forState:(UIControlState)state {
     if ([[UIDevice currentDevice].systemVersion floatValue] < 9.0) {

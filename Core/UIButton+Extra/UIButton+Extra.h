@@ -27,6 +27,11 @@
 @interface UIButton (Extra)
 
 /**
+ Set accept event time interval, default 0 sec.
+ */
+@property (nonatomic, assign) NSTimeInterval acceptEventInterval;
+
+/**
  Set left title and right image
 
  @param spacing Insets between title and image

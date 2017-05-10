@@ -28,10 +28,13 @@
 @implementation NSArray (Extra)
 
 + (void)load {
-    Class class = objc_getClass("__NSArrayI");
-    Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
-    Method exchangeMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
-    method_exchangeImplementations(originalMethod, exchangeMethod);
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class class = objc_getClass("__NSArrayI");
+        Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
+        Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    });
 }
 
 - (id)objectByIndex:(NSUInteger)index {
@@ -46,10 +49,13 @@
 @implementation NSMutableArray (Extra)
 
 + (void)load {
-    Class class = objc_getClass("__NSArrayM");
-    Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
-    Method exchangeMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
-    method_exchangeImplementations(originalMethod, exchangeMethod);
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class class = objc_getClass("__NSArrayM");
+        Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
+        Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    });
 }
 
 - (id)objectByIndex:(NSUInteger)index {

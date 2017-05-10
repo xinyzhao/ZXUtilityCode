@@ -1,5 +1,5 @@
 //
-// NSObject+PerformAction.h
+// NSObject+Extra.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -23,13 +23,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
 
-@interface NSObject (PerformAction)
+@interface NSObject (Extra)
 
-- (BOOL)canPerformAction:(SEL)selector;
++ (void)swizzleMethod:(SEL)originalSelector with:(SEL)swizzledSelector;
++ (void)swizzleClassMethod:(SEL)originalSelector with:(SEL)swizzledSelector;
 
-- (void)performAction:(SEL)selector;
-- (void)performAction:(SEL)selector withObject:(id)object;
-- (void)performAction:(SEL)selector withObject:(id)object1 withObject2:(id)object2;
+- (BOOL)respondsToMethod:(SEL)selector;
+
+- (void)performMethod:(SEL)selector;
+- (void)performMethod:(SEL)selector withObject:(id)object;
+- (void)performMethod:(SEL)selector withObject:(id)object1 withObject2:(id)object2;
 
 @end

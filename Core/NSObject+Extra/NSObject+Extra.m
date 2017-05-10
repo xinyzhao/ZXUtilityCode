@@ -1,5 +1,5 @@
 //
-// NSObject+PerformAction.m
+// NSObject+Extra.m
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,27 +22,58 @@
 // THE SOFTWARE.
 //
 
-#import "NSObject+PerformAction.h"
+#import "NSObject+Extra.h"
 
-@implementation NSObject (PerformAction)
+@implementation NSObject (Extra)
 
-- (BOOL)canPerformAction:(SEL)selector {
++ (void)swizzleMethod:(SEL)originalSelector with:(SEL)swizzledSelector {
+    Class class = self;
+    
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+    
+    // When swizzling a class method, use the following:
+    // Class class = object_getClass((id)self);
+    // ...
+    // Method originalMethod = class_getClassMethod(class, originalSelector);
+    // Method swizzledMethod = class_getClassMethod(class, swizzledSelector);
+    
+    BOOL didAddMethod = class_addMethod(class,
+                                        originalSelector,
+                                        method_getImplementation(swizzledMethod),
+                                        method_getTypeEncoding(swizzledMethod));
+    
+    if (didAddMethod) {
+        class_replaceMethod(class,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+    } else {
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+}
+
++ (void)swizzleClassMethod:(SEL)originalSelector with:(SEL)swizzledSelector {
+    [object_getClass((id)self) swizzleMethod:originalSelector with:swizzledSelector];
+}
+
+- (BOOL)respondsToMethod:(SEL)selector {
     return selector && [self respondsToSelector:selector];
 }
 
-- (void)performAction:(SEL)selector {
+- (void)performMethod:(SEL)selector {
     IMP imp = [self methodForSelector:selector];
     void (*func)(id, SEL) = (void *)imp;
     func(self, selector);
 }
 
-- (void)performAction:(SEL)selector withObject:(id)object {
+- (void)performMethod:(SEL)selector withObject:(id)object {
     IMP imp = [self methodForSelector:selector];
     void (*func)(id, SEL, id) = (void *)imp;
     func(self, selector, object);
 }
 
-- (void)performAction:(SEL)selector withObject:(id)object1 withObject2:(id)object2 {
+- (void)performMethod:(SEL)selector withObject:(id)object1 withObject2:(id)object2 {
     IMP imp = [self methodForSelector:selector];
     void (*func)(id, SEL, id, id) = (void *)imp;
     func(self, selector, object1, object2);
