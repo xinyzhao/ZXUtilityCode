@@ -24,7 +24,7 @@
 
 #import "NSDate+Extra.h"
 
-NSString *const NSDateExtraFormatDatetime   = @"yyyy-MM-dd HH:mm:ss";
+NSString *const NSDateExtraFormatDateTime   = @"yyyy-MM-dd HH:mm:ss";
 NSString *const NSDateExtraFormatDate       = @"yyyy-MM-dd";
 NSString *const NSDateExtraFormatTime       = @"HH:mm:ss";
 
@@ -58,13 +58,13 @@ static NSCache *_dateFormatterCache = nil;
 }
 
 + (NSDate *)dateWithString:(NSString *)string format:(NSString *)format {
-    NSString *key = format ? format : NSDateExtraFormatDatetime;
+    NSString *key = format ? format : NSDateExtraFormatDateTime;
     NSDateFormatter *dateFormatter = [NSDate dateFormatterForDateFormat:key];
     return [dateFormatter dateFromString:string];
 }
 
 - (NSString *)stringWithFormat:(NSString *)format {
-    NSString *key = format ? format : NSDateExtraFormatDatetime;
+    NSString *key = format ? format : NSDateExtraFormatDateTime;
     NSDateFormatter *dateFormatter = [NSDate dateFormatterForDateFormat:key];
     return [dateFormatter stringFromDate:self];
 }
@@ -73,8 +73,8 @@ static NSCache *_dateFormatterCache = nil;
     return [self stringWithFormat:NSDateExtraFormatDate];
 }
 
-- (NSString *)datetimeString {
-    return [self stringWithFormat:NSDateExtraFormatDatetime];
+- (NSString *)dateTimeString {
+    return [self stringWithFormat:NSDateExtraFormatDateTime];
 }
 
 - (NSString *)timeString {

@@ -31,7 +31,7 @@
 
 - (NSString *)stringWithFormat:(NSString *)format;
 - (NSString *)dateString; //NSDateExtraFormatDate
-- (NSString *)datetimeString; //NSDateExtraFormatDatetime
+- (NSString *)dateTimeString; //NSDateExtraFormatDateTime
 - (NSString *)timeString; //NSDateExtraFormatTime
 
 - (NSDate *)prevDayDate; // 前一天
@@ -54,7 +54,7 @@
 @end
 
 // yyyy-MM-dd HH:mm:ss
-extern NSString *const NSDateExtraFormatDatetime;
+extern NSString *const NSDateExtraFormatDateTime;
 // yyyy-MM-dd
 extern NSString *const NSDateExtraFormatDate;
 // HH:mm:ss
