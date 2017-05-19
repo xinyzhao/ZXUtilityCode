@@ -1,5 +1,5 @@
 //
-// ZXRefreshProgressHeader.h
+// ZXCircularProgressView.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,18 +22,34 @@
 // THE SOFTWARE.
 //
 
-#import "ZXRefreshHeaderView.h"
+#import <UIKit/UIKit.h>
 
-/// 环形进度视图
-@class ZXCircularProgressView;
+/**
+ 进度风格
 
-/// 进度刷新视图
-@interface ZXRefreshProgressHeader : ZXRefreshHeaderView
-/// 环形进度视图
-@property (nonatomic, strong) ZXCircularProgressView *progressView;
-/// 环形半径, 默认 16
-@property (nonatomic, assign) CGFloat circularRadius;
-/// 动画时间, 默认 0.8秒
-@property (nonatomic, assign) CGFloat animationDuration;
+ - ZXCircularProgressViewStylePie: 饼状图
+ - ZXCircularProgressViewStyleRing: 环形图
+ */
+typedef NS_ENUM(NSUInteger, ZXCircularProgressViewStyle) {
+    ZXCircularProgressViewStylePie,
+    ZXCircularProgressViewStyleRing,
+};
+
+/// 进度图
+@interface ZXCircularProgressView : UIView
+/// 进度风格, 默认 ZXCircularProgressViewStylePie
+@property (nonatomic, assign) ZXCircularProgressViewStyle progressViewStyle;
+/// 顺时针方向, 默认 YES
+@property (nonatomic, assign) BOOL clockwise;
+/// 闭合完整度，范围 0.0 - 1.0，默认 1.0
+@property (nonatomic, assign) float integrity;
+/// 线宽，默认 0.f
+@property (nonatomic, assign) float lineWidth;
+/// 进度，范围 0.0 - 1.0, 默认 0.0
+@property (nonatomic, assign) float progress;
+/// 进度颜色，默认 [UIColor greenColor]
+@property (nonatomic, strong) UIColor *progressTintColor;
+/// 轨道颜色，默认 nil
+@property (nonatomic, strong) UIColor *trackTintColor;
 
 @end
