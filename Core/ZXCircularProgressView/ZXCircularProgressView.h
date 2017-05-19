@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, ZXCircularProgressViewStyle) {
 @property (nonatomic, assign) float lineWidth;
 /// 进度，范围 0.0 - 1.0, 默认 0.0
 @property (nonatomic, assign) float progress;
-/// 进度颜色，默认 [UIColor greenColor]
+/// 进度颜色，默认 [UIView tintColor]
 @property (nonatomic, strong) UIColor *progressTintColor;
 /// 轨道颜色，默认 nil
 @property (nonatomic, strong) UIColor *trackTintColor;
