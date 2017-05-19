@@ -50,6 +50,7 @@
     //
     if (self.progressView == nil) {
         self.progressView = [[ZXCircularProgressView alloc] initWithFrame:rect];
+        self.progressView.progressViewStyle = ZXCircularProgressViewStyleRing;
         self.progressView.integrity = 0.8;
         self.progressView.lineWidth = 1.5;
         [self addSubview:self.progressView];
