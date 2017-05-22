@@ -55,11 +55,18 @@
  Create or got exist download task with URL
 
  @param URL The URL
+ @return ZXDownloadTask
+ */
+- (ZXDownloadTask *_Nullable)downloadTaskWithURL:(NSURL *_Nonnull)URL;
+
+/**
+ Create or got exist download task with URL
+ 
+ @param URL The URL
  @param path The save directory, Ignore saveInDirectory if setted.
  @param backgroundMode Downloads in the background or not.
  @return ZXDownloadTask
  */
-- (ZXDownloadTask *_Nullable)downloadTaskWithURL:(NSURL *_Nonnull)URL;
 - (ZXDownloadTask *_Nullable)downloadTaskWithURL:(NSURL *_Nonnull)URL inDirectory:(NSString *_Nullable)path inBackground:(BOOL)backgroundMode;
 
 /**

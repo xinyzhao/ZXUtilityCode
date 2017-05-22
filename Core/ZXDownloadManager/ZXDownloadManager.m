@@ -23,6 +23,7 @@
 //
 
 #import "ZXDownloadManager.h"
+#import "NSString+HashValue.h"
 
 @interface ZXDownloadManager () <NSURLSessionDelegate, NSURLSessionDataDelegate>
 @property (nonatomic, strong) NSURLSession *session;
