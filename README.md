@@ -52,6 +52,7 @@ pod "ZXUtilityCode"
 * ZXAuthorizationManager
 * ZXBadgeLabel
 * ZXCircularProgressView
+* ZXDownloadManager
 * ZXDrawingView
 * ZXHTTPClient
 * ZXImageView
