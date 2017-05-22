@@ -114,7 +114,7 @@ typedef NS_ENUM(NSInteger, ZXDownloadTaskState) {
  */
 - (void)addObserver:(NSObject *_Nonnull)observer
               state:(void(^_Nullable)(ZXDownloadTaskState state))state
-           progress:(void(^_Nullable)(NSUInteger receivedSize, NSUInteger expectedSize, CGFloat progress))progress
+           progress:(void(^_Nullable)(int64_t receivedSize, int64_t expectedSize, CGFloat progress))progress
          completion:(void(^_Nullable)(BOOL completed, NSString *_Nullable filePath, NSError *_Nullable error))completion;
 
 /**

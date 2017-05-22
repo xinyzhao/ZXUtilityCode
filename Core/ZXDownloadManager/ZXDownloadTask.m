@@ -28,7 +28,7 @@
 @interface ZXDownloadTaskObserver : NSObject
 @property (nonatomic, weak) NSObject *observer;
 @property (nonatomic, copy) void(^state)(ZXDownloadTaskState state);
-@property (nonatomic, copy) void(^progress)(NSUInteger receivedSize, NSUInteger expectedSize, CGFloat progress);
+@property (nonatomic, copy) void(^progress)(int64_t receivedSize, int64_t expectedSize, CGFloat progress);
 @property (nonatomic, copy) void(^completion)(BOOL completed, NSString *filePath, NSError *error);
 
 @end
@@ -85,7 +85,7 @@
 
 - (void)addObserver:(NSObject *)observer
               state:(void(^)(ZXDownloadTaskState state))state
-           progress:(void(^)(NSUInteger receivedSize, NSUInteger expectedSize, CGFloat progress))progress
+           progress:(void(^)(int64_t receivedSize, int64_t expectedSize, CGFloat progress))progress
          completion:(void(^)(BOOL completed, NSString *filePath, NSError *error))completion {
     ZXDownloadTaskObserver *taskObserver = [[ZXDownloadTaskObserver alloc] init];
     taskObserver.observer = observer;
