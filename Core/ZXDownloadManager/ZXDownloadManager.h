@@ -52,6 +52,11 @@
 @property (nonatomic, assign) BOOL breakpointResume;
 
 /**
+ Set in [UIApplicationDelegate application:handleEventsForBackgroundURLSession:completionHandler:]
+ */
+@property (nonatomic, strong, nullable) void(^backgroundCompletionHandler)();
+
+/**
  Create or got exist download task with URL
 
  @param URL The URL

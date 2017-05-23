@@ -49,12 +49,15 @@
         self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
                                                      delegate:self
                                                 delegateQueue:[[NSOperationQueue alloc] init]];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         NSURLSessionConfiguration *backgroundConfiguration = nil;
         if (NSFoundationVersionNumber < NSFoundationVersionNumber_iOS_8_0) {
             backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[[NSBundle mainBundle] bundleIdentifier]];
         } else {
             backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
         }
+#pragma clang diagnostic pop
         self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration
                                                                delegate:self
                                                           delegateQueue:nil];
@@ -231,63 +234,32 @@
     }
 }
 
-#pragma makr <NSURLSessionDownloadDelegate>
-
-/* Sent when a download task that has completed a download.  The delegate should
- * copy or move the file at the given location to a new location as it will be
- * removed when the delegate message returns. URLSession:task:didCompleteWithError: will
- * still be called.
- */
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-didFinishDownloadingToURL:(NSURL *)location {
-    NSLogA(@"%@", location.absoluteString);
-//    ZXDownloadTask *task = [self downloadTaskForURL:downloadTask.originalRequest.URL];
-}
-
-/* Sent periodically to notify the delegate of download progress. */
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-      didWriteData:(int64_t)bytesWritten
- totalBytesWritten:(int64_t)totalBytesWritten
-totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    NSLogA(@">>>%lld/%lld", totalBytesWritten, totalBytesExpectedToWrite);
-}
-
-/* Sent when a download has been resumed. If a download failed with an
- * error, the -userInfo dictionary of the error will contain an
- * NSURLSessionDownloadTaskResumeData key, whose value is the resume
- * data.
- */
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
- didResumeAtOffset:(int64_t)fileOffset
-expectedTotalBytes:(int64_t)expectedTotalBytes {
-    NSLogA(@">>>%lld/%lld", fileOffset, expectedTotalBytes);
-}
-
-#pragma mark - Background download
+#pragma mark <NSURLSessionDelegate>
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
     // Check if all download tasks have been finished.
-//    [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-//        if ([downloadTasks count] == 0) {
-//            if (self.backgroundTransferCompletionHandler != nil) {
-//                // Copy locally the completion handler.
-//                void(^completionHandler)() = self.backgroundTransferCompletionHandler;
-//                
-//                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-//                    // Call the completion handler to tell the system that there are no other background transfers.
-//                    completionHandler();
-//                    
-//                    // Show a local notification when all downloads are over.
-//                    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-//                    localNotification.alertBody = @"All files have been downloaded!";
-//                    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
-//                }];
-//                
-//                // Make nil the backgroundTransferCompletionHandler.
-//                self.backgroundTransferCompletionHandler = nil;
-//            }
-//        }
-//    }];
+    __weak typeof(self) weakSelf = self;
+    [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        if ([downloadTasks count] == 0) {
+            if (weakSelf.backgroundCompletionHandler != nil) {
+                // Copy locally the completion handler.
+                void(^completionHandler)() = weakSelf.backgroundCompletionHandler;
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    // Call the completion handler to tell the system that there are no other background transfers.
+                    completionHandler();
+                    
+                    // Show a local notification when all downloads are over.
+                    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+                    localNotification.alertBody = @"All files have been downloaded!";
+                    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+                }];
+                
+                // Make nil the backgroundCompletionHandler.
+                weakSelf.backgroundCompletionHandler = nil;
+            }
+        }
+    }];
 }
 
 @end
