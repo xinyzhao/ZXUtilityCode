@@ -82,14 +82,9 @@
         [self setHidden:NO];
         //
         __weak typeof(self) weakSelf = self;
-        [UIView animateWithDuration:_presentingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:_presentingDuration animations:^{
             weakSelf.backgroundColor = weakSelf.presentedBackgroundColor;
             weakSelf.presentedView.frame = _toFrame;
-            //
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
-            tap.delegate = self;
-            [weakSelf addGestureRecognizer:tap];
-            
         } completion:^(BOOL finished) {
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(dismiss)];
             tap.delegate = weakSelf;
@@ -101,7 +96,7 @@
 - (void)dismiss {
     _isPresented = NO;
     __weak typeof(self) weakSelf = self;
-    [UIView animateWithDuration:_dismissingDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
+    [UIView animateWithDuration:_dismissingDuration animations:^{
         weakSelf.backgroundColor = [UIColor clearColor];
         weakSelf.presentedView.frame = _fromFrame;
     } completion:^(BOOL finished) {
