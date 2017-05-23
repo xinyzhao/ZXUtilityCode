@@ -230,6 +230,7 @@
         if ([obj respondsToSelector:@selector(URLSession:task:didCompleteWithError:)]) {
             [obj URLSession:session task:task didCompleteWithError:error];
         }
+        [self.downloadTasks removeObjectForKey:obj.taskIdentifier];
         [self resumeNextDowloadTask];
     }
 }

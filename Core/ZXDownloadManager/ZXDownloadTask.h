@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, ZXDownloadTaskState) {
 @property (nonatomic, copy, nonnull) NSString *taskIdentifier;
 
 /**
- The local path of downloaded URL.
+ The local file path for this task
  */
 @property (nonatomic, copy, nonnull) NSString *filePath;
 
