@@ -25,56 +25,51 @@
 #import <Foundation/Foundation.h>
 
 /**
- ZXDownloadTaskState
+ ZXDownloadState
  */
-typedef NS_ENUM(NSInteger, ZXDownloadTaskState) {
-    ZXDownloadTaskStateUnknown,
-    ZXDownloadTaskStateWaiting,
-    ZXDownloadTaskStateRunning,
-    ZXDownloadTaskStateSuspended,
-    ZXDownloadTaskStateCancelled,
-    ZXDownloadTaskStateCompleted,
+typedef NS_ENUM(NSInteger, ZXDownloadState) {
+    ZXDownloadStateUnknown,
+    ZXDownloadStateWaiting,
+    ZXDownloadStateRunning,
+    ZXDownloadStateSuspended,
+    ZXDownloadStateCancelled,
+    ZXDownloadStateCompleted,
 };
 
 /**
  ZXDownloadTask
  */
-@interface ZXDownloadTask : NSObject <NSURLSessionTaskDelegate>
+@interface ZXDownloadTask : NSObject <NSURLSessionDataDelegate>
 
 /**
  The URL of this task
  */
-@property (nonatomic, copy, nonnull) NSURL *taskURL;
+@property (nonatomic, readonly, nonnull) NSURL *taskURL;
 
 /**
  Identifier for this task
  */
-@property (nonatomic, copy, nonnull) NSString *taskIdentifier;
+@property (nonatomic, readonly, nonnull) NSString *taskIdentifier;
 
 /**
  The local file path for this task
  */
-@property (nonatomic, copy, nonnull) NSString *filePath;
+@property (nonatomic, readonly, nonnull) NSString *localFilePath;
 
 /**
  The download task in the backgournd or not
  */
-@property (nonatomic, assign) BOOL backgroundMode;
+@property (nonatomic, readonly) BOOL backgroundMode;
 
 /**
  The current state of the task
  */
-@property (nonatomic, assign) ZXDownloadTaskState taskState;
+@property (nonatomic, assign) ZXDownloadState state;
 
 /**
  The download data task
  */
 @property (nonatomic, strong, nullable) NSURLSessionDataTask *dataTask;
-
-/**
- Write datas to the file
- */
-@property (nonatomic, strong, nullable) NSOutputStream *outputStream;
 
 /**
  Total bytes written
@@ -113,9 +108,9 @@ typedef NS_ENUM(NSInteger, ZXDownloadTaskState) {
  @param completion A block object to be executed when the download completion.
  */
 - (void)addObserver:(NSObject *_Nonnull)observer
-              state:(void(^_Nullable)(ZXDownloadTaskState state))state
+              state:(void(^_Nullable)(ZXDownloadState state))state
            progress:(void(^_Nullable)(int64_t receivedSize, int64_t expectedSize, CGFloat progress))progress
-         completion:(void(^_Nullable)(BOOL completed, NSString *_Nullable filePath, NSError *_Nullable error))completion;
+         completion:(void(^_Nullable)(BOOL completed, NSString *_Nullable localFilePath, NSError *_Nullable error))completion;
 
 /**
  Remove observer

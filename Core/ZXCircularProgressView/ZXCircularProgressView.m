@@ -83,7 +83,7 @@
     CGFloat endAngle = startAngle + M_PI * 2 * progress * _integrity;
     CGFloat trackAngle = startAngle + M_PI * 2 * (_clockwise ? _integrity : -_integrity);
     //
-    if (_progress > 1.f) {
+    if (_progress > 1.f && _progressViewStyle == ZXCircularProgressViewStyleRing) {
         progress = _progress - 1.f;
         startAngle += M_PI * 2 * progress * _integrity;
         endAngle += M_PI * 2 * progress * _integrity;

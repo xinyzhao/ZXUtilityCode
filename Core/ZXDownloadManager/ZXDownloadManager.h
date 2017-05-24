@@ -42,14 +42,14 @@
 @property (nonatomic, copy, nonnull) NSString *localPath;
 
 /**
- The count of maximum concurrent downloads, default is 0 which means no limit.
+ Maximum number of concurrent downloads, default is 0 which means no limit.
  */
-@property (nonatomic, assign) NSInteger maximumConcurrentCount;
+@property (nonatomic, assign) NSInteger maximumConcurrent;
 
 /**
- Break point resume enabled or not, maybe not work, default is YES
+ Resume broken download enabled or not, default is YES, maybe not work!
  */
-@property (nonatomic, assign) BOOL breakpointResume;
+@property (nonatomic, assign) BOOL resumeBrokenEnabled;
 
 /**
  Set in [UIApplicationDelegate application:handleEventsForBackgroundURLSession:completionHandler:]
@@ -68,8 +68,8 @@
  Create or got exist download task with URL
  
  @param URL The URL
- @param path The save directory, Ignore saveInDirectory if setted.
- @param backgroundMode Downloads in the background or not.
+ @param path The save directory, Ignore localPath if setted.
+ @param backgroundMode Downloads in background or not.
  @return ZXDownloadTask
  */
 - (ZXDownloadTask *_Nullable)downloadTaskWithURL:(NSURL *_Nonnull)URL inDirectory:(NSString *_Nullable)path inBackground:(BOOL)backgroundMode;
@@ -77,7 +77,7 @@
 /**
  Suspend download for URL
 
- @param URL URL
+ @param URL The URL
  */
 - (void)suspendDownloadForURL:(NSURL *_Nonnull)URL;
 
@@ -94,22 +94,22 @@
 - (void)suspendAllDownloads;
 
 /**
- Resume download for URL
+ Resume or start download for URL
 
- @param URL URL
+ @param URL The URL
  */
 - (void)resumeDownloadForURL:(NSURL *_Nonnull)URL;
 
 /**
- Resume the download task
+ Resume or start download task
 
- @param task The download task
+ @param task The task
  @return True resume success
  */
 - (BOOL)resumeDownloadTask:(ZXDownloadTask *_Nonnull)task;
 
 /**
- Resume all downloads
+ Resume or start all downloads
  */
 - (void)resumeAllDownloads;
 

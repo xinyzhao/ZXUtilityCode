@@ -25,22 +25,23 @@
 #import "ZXDownloadTask.h"
 #import "NSString+HashValue.h"
 
-@interface ZXDownloadTaskObserver : NSObject
+@interface ZXDownloadObserver : NSObject
 @property (nonatomic, weak) NSObject *observer;
-@property (nonatomic, copy) void(^state)(ZXDownloadTaskState state);
+@property (nonatomic, copy) void(^state)(ZXDownloadState state);
 @property (nonatomic, copy) void(^progress)(int64_t receivedSize, int64_t expectedSize, CGFloat progress);
-@property (nonatomic, copy) void(^completion)(BOOL completed, NSString *filePath, NSError *error);
+@property (nonatomic, copy) void(^completion)(BOOL completed, NSString *localFilePath, NSError *error);
 
 @end
 
-@implementation ZXDownloadTaskObserver
+@implementation ZXDownloadObserver
 
 @end
 
 @interface ZXDownloadTask ()
 @property (nonatomic, strong) NSMutableDictionary *observers;
 @property (nonatomic, assign) CGFloat progress;
-@property (nonatomic, copy) NSString *tempPath;
+@property (nonatomic, strong) NSString *streamFilePath;
+@property (nonatomic, strong) NSOutputStream *outputStream;
 
 @end
 
@@ -53,14 +54,10 @@
 - (instancetype)initWithURL:(NSURL *)URL localPath:(NSString *)path backgroundMode:(BOOL)backgroundMode {
     self = [super init];
     if (self) {
-        self.taskURL = URL;
-        self.taskIdentifier = [URL.absoluteString SHA1String];
-        self.backgroundMode = backgroundMode;
-        self.observers = [[NSMutableDictionary alloc] init];
-        //
-        _taskState = 0;
-        _totalBytesWritten = 0;
-        _totalBytesExpectedToWrite = 0;
+        _observers = [[NSMutableDictionary alloc] init];
+        _taskURL = [URL copy];
+        _taskIdentifier = [URL.absoluteString SHA1String];
+        _backgroundMode = backgroundMode;
         //
         BOOL isDirectory = NO;
         if (path == nil) {
@@ -71,23 +68,25 @@
             [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
         }
         //
-        self.filePath = [path stringByAppendingPathComponent:[URL lastPathComponent]];
-        self.tempPath = [path stringByAppendingPathComponent:self.taskIdentifier];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:self.filePath]) {
-            self.taskState = ZXDownloadTaskStateCompleted;
+        _state = ZXDownloadStateUnknown;
+        _totalBytesWritten = 0;
+        _totalBytesExpectedToWrite = 0;
+        _localFilePath = [path stringByAppendingPathComponent:[URL lastPathComponent]];
+        _streamFilePath = [path stringByAppendingPathComponent:_taskIdentifier];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:_localFilePath]) {
+            self.state = ZXDownloadStateCompleted;
         } else {
-            self.totalBytesWritten = [self fileSizeAtPath:self.tempPath];
-            self.outputStream = [NSOutputStream outputStreamToFileAtPath:self.tempPath append:YES];
+            self.totalBytesWritten = [self fileSizeAtPath:_streamFilePath];
         }
     }
     return self;
 }
 
 - (void)addObserver:(NSObject *)observer
-              state:(void(^)(ZXDownloadTaskState state))state
+              state:(void(^)(ZXDownloadState state))state
            progress:(void(^)(int64_t receivedSize, int64_t expectedSize, CGFloat progress))progress
          completion:(void(^)(BOOL completed, NSString *filePath, NSError *error))completion {
-    ZXDownloadTaskObserver *taskObserver = [[ZXDownloadTaskObserver alloc] init];
+    ZXDownloadObserver *taskObserver = [[ZXDownloadObserver alloc] init];
     taskObserver.observer = observer;
     taskObserver.state = state;
     taskObserver.progress = progress;
@@ -113,38 +112,39 @@
 
 #pragma mark Properties
 
-- (void)setTaskState:(ZXDownloadTaskState)taskState {
-    _taskState = taskState;
+- (void)setState:(ZXDownloadState)state {
+    _state = state;
     //
-    switch (_taskState) {
-        case ZXDownloadTaskStateUnknown:
+    switch (_state) {
+        case ZXDownloadStateUnknown:
             return;
 
-        case ZXDownloadTaskStateRunning:
+        case ZXDownloadStateRunning:
             [self.dataTask resume];
             break;
             
-        case ZXDownloadTaskStateSuspended:
+        case ZXDownloadStateSuspended:
             [self.dataTask suspend];
             break;
             
-        case ZXDownloadTaskStateCancelled:
-            [self.outputStream close];
+        case ZXDownloadStateCancelled:
             [self.dataTask cancel];
+            [self closeOutputStream];
             break;
             
-        case ZXDownloadTaskStateCompleted:
-            [self.outputStream close];
+        case ZXDownloadStateCompleted:
+            [self closeOutputStream];
             break;
             
         default:
             break;
     }
+    //
     NSArray *observers = [self.observers allValues];
     dispatch_async(dispatch_get_main_queue(), ^{
-        for (ZXDownloadTaskObserver *observer in observers) {
+        for (ZXDownloadObserver *observer in observers) {
             if (observer.state) {
-                observer.state(_taskState);
+                observer.state(_state);
             }
         }
     });
@@ -173,7 +173,7 @@
     //
     NSArray *observers = [self.observers allValues];
     dispatch_async(dispatch_get_main_queue(), ^{
-        for (ZXDownloadTaskObserver *observer in observers) {
+        for (ZXDownloadObserver *observer in observers) {
             if (observer.progress) {
                 observer.progress(_totalBytesWritten, _totalBytesExpectedToWrite, _progress);
             }
@@ -181,26 +181,64 @@
     });
 }
 
+#pragma mark Output Stream
+
+- (void)openOutputStreamWithAppend:(BOOL)append {
+    _outputStream = [NSOutputStream outputStreamToFileAtPath:_streamFilePath append:append];
+    [_outputStream open];
+}
+
+- (void)closeOutputStream {
+    if (_outputStream) {
+        if (_outputStream.streamStatus > NSStreamStatusNotOpen && _outputStream.streamStatus < NSStreamStatusClosed) {
+            [_outputStream close];
+        }
+        _outputStream = nil;
+    }
+}
+
+#pragma mark <NSURLSessionDataDelegate>
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
+    //
+    BOOL append = NO;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *http = (NSHTTPURLResponse *)response;
+        append = http.statusCode == 206;
+    }
+    //
+    _totalBytesExpectedToWrite = response.expectedContentLength;
+    if (append) {
+        _totalBytesExpectedToWrite += _totalBytesWritten;
+    }
+    //
+    [self openOutputStreamWithAppend:append];
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+    if (data) {
+        [_outputStream write:data.bytes maxLength:data.length];
+        self.totalBytesWritten += (int64_t)data.length;
+    }
+}
+
 #pragma mark <NSURLSessionTaskDelegate>
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    BOOL completed = NO;
-    NSString *filePath = nil;
     if (self.totalBytesWritten == self.totalBytesExpectedToWrite) {
-        self.taskState = ZXDownloadTaskStateCompleted;
-        completed = YES;
-        filePath = self.filePath;
-        //
-        [[NSFileManager defaultManager] moveItemAtPath:self.tempPath
-                                                toPath:self.filePath
+        [[NSFileManager defaultManager] moveItemAtPath:_streamFilePath
+                                                toPath:_localFilePath
                                                  error:(error == nil ? &error : nil)];
+        self.state = ZXDownloadStateCompleted;
     }
     //
     NSArray *observers = [self.observers allValues];
     dispatch_async(dispatch_get_main_queue(), ^{
-        for (ZXDownloadTaskObserver *observer in observers) {
+        BOOL completed = _state == ZXDownloadStateCompleted;
+        NSString *path = completed ? _localFilePath : nil;
+        for (ZXDownloadObserver *observer in observers) {
             if (observer.completion) {
-                observer.completion(completed, filePath, error);
+                observer.completion(completed, path, error);
             }
         }
     });

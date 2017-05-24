@@ -63,8 +63,8 @@
                                                           delegateQueue:nil];
         self.downloadTasks = [[NSMutableDictionary alloc] init];
         self.localPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:NSStringFromClass([self class])];
-        self.maximumConcurrentCount = 0;
-        self.breakpointResume = YES;
+        self.maximumConcurrent = 0;
+        self.resumeBrokenEnabled = YES;
     }
     return self;
 }
@@ -77,13 +77,13 @@
     ZXDownloadTask *task = [self downloadTaskForURL:URL];
     if (task == nil) {
         task = [[ZXDownloadTask alloc] initWithURL:URL localPath:(path ? path : self.localPath) backgroundMode:backgroundMode];
-        if (task.taskState != ZXDownloadTaskStateCompleted) {
+        if (task.state != ZXDownloadStateCompleted) {
             // Range
             // bytes=x-y ==  x byte ~ y byte
             // bytes=x-  ==  x byte ~ end
             // bytes=-y  ==  head ~ y byte
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-            if (self.breakpointResume) {
+            if (self.resumeBrokenEnabled) {
                 [request setValue:[NSString stringWithFormat:@"bytes=%lld-", task.totalBytesWritten] forHTTPHeaderField:@"Range"];
             }
             task.dataTask = [self.session dataTaskWithRequest:request];
@@ -108,55 +108,50 @@
 
 - (void)suspendDownloadTask:(ZXDownloadTask *)task {
     if (task) {
-        task.taskState = ZXDownloadTaskStateSuspended;
+        task.state = ZXDownloadStateSuspended;
         [self resumeNextDowloadTask];
     }
 }
 
 - (void)suspendAllDownloads {
     for (ZXDownloadTask *task in [self.downloadTasks allValues]) {
-        task.taskState = ZXDownloadTaskStateSuspended;
+        task.state = ZXDownloadStateSuspended;
     }
 }
 
 #pragma mark Resume
 
 - (BOOL)resumeDownloadTask:(ZXDownloadTask *)task {
-    if (task.taskState == ZXDownloadTaskStateRunning ||
-        task.taskState == ZXDownloadTaskStateCancelled ||
-        task.taskState == ZXDownloadTaskStateCompleted) {
+    if (task.state == ZXDownloadStateRunning ||
+        task.state == ZXDownloadStateCancelled ||
+        task.state == ZXDownloadStateCompleted) {
         return NO;
     }
     //
-    if (self.maximumConcurrentCount > 0) {
+    if (self.maximumConcurrent > 0) {
         __block NSUInteger count = 0;
         [self.downloadTasks enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
             ZXDownloadTask *task = obj;
-            if (task.taskState == ZXDownloadTaskStateRunning) {
+            if (task.state == ZXDownloadStateRunning) {
                 ++count;
             }
         }];
-        if (count >= self.maximumConcurrentCount) {
-            if (task.taskState == ZXDownloadTaskStateSuspended) {
-                task.taskState = ZXDownloadTaskStateWaiting;
-            }
+        if (count >= self.maximumConcurrent) {
+            task.state = ZXDownloadStateWaiting;
             return NO;
         }
     }
     //
     if (task) {
-        task.taskState = ZXDownloadTaskStateRunning;
+        task.state = ZXDownloadStateRunning;
     }
     //
     return YES;
 }
 
 - (void)resumeNextDowloadTask {
-    if (self.maximumConcurrentCount == 0) { // no limit so no waiting for download models
-        return;
-    }
     for (ZXDownloadTask *task in [self.downloadTasks allValues]) {
-        if (task.taskState == ZXDownloadTaskStateWaiting) {
+        if (task.state == ZXDownloadStateWaiting) {
             [self resumeDownloadTask:task];
             break;
         }
@@ -172,7 +167,7 @@
 
 - (void)resumeAllDownloads {
     for (ZXDownloadTask *task in [self.downloadTasks allValues]) {
-        if (task.taskState == ZXDownloadTaskStateSuspended) {
+        if (task.state == ZXDownloadStateSuspended) {
             [self resumeDownloadTask:task];
         }
     }
@@ -187,7 +182,7 @@
 
 - (void)cancelDownloadTask:(ZXDownloadTask *)task {
     if (task) {
-        task.taskState = ZXDownloadTaskStateCancelled;
+        task.state = ZXDownloadStateCancelled;
         [self.downloadTasks removeObjectForKey:task.taskIdentifier];
         [self resumeNextDowloadTask];
     }
@@ -195,7 +190,7 @@
 
 - (void)cancelAllDownloads {
     for (ZXDownloadTask *task in [self.downloadTasks allValues]) {
-        task.taskState = ZXDownloadTaskStateCancelled;
+        task.state = ZXDownloadStateCancelled;
     }
     [self.downloadTasks removeAllObjects];
 }
@@ -205,8 +200,7 @@
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
     ZXDownloadTask *task = [self downloadTaskForURL:dataTask.originalRequest.URL];
     if (task) {
-        [task.outputStream open];
-        task.totalBytesExpectedToWrite = response.expectedContentLength + task.totalBytesWritten;
+        [task URLSession:session dataTask:dataTask didReceiveResponse:response completionHandler:completionHandler];
     }
     completionHandler(NSURLSessionResponseAllow);
 }
@@ -214,8 +208,7 @@
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     ZXDownloadTask *task = [self downloadTaskForURL:dataTask.originalRequest.URL];
     if (task) {
-        [task.outputStream write:data.bytes maxLength:data.length];
-        task.totalBytesWritten += (int64_t)data.length;
+        [task URLSession:session dataTask:dataTask didReceiveData:data];
     }
 }
 
