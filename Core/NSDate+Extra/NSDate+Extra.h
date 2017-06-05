@@ -24,6 +24,13 @@
 
 #import <Foundation/Foundation.h>
 
+// yyyy-MM-dd HH:mm:ss
+extern NSString *const NSDateExtraFormatDateTime;
+// yyyy-MM-dd
+extern NSString *const NSDateExtraFormatDate;
+// HH:mm:ss
+extern NSString *const NSDateExtraFormatTime;
+
 /// NSDate (Extra)
 @interface NSDate (Extra)
 
@@ -53,10 +60,8 @@
 
 @end
 
-// yyyy-MM-dd HH:mm:ss
-extern NSString *const NSDateExtraFormatDateTime;
-// yyyy-MM-dd
-extern NSString *const NSDateExtraFormatDate;
-// HH:mm:ss
-extern NSString *const NSDateExtraFormatTime;
+@interface NSDateFormatter (Extra)
 
++ (instancetype)defaultFormatter;
+
+@end

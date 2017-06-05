@@ -30,42 +30,15 @@ NSString *const NSDateExtraFormatTime       = @"HH:mm:ss";
 
 @implementation NSDate (Extra)
 
-static NSCalendar *_currentCalendar = nil;
-static NSCache *_dateFormatterCache = nil;
-
-+ (NSCalendar *)currentCalendar {
-    if (_currentCalendar == nil) {
-        _currentCalendar = [NSCalendar currentCalendar];
-    }
-    return _currentCalendar;
-}
-
-+ (NSDateFormatter *)dateFormatterForDateFormat:(NSString *)dateFormat {
-    if (_dateFormatterCache == nil) {
-        _dateFormatterCache = [[NSCache alloc] init];
-    }
-    NSDateFormatter *dateFormatter = nil;
-    if (dateFormat) {
-        dateFormatter = [_dateFormatterCache objectForKey:dateFormat];
-        if (dateFormatter == nil) {
-            dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en"]];
-            [dateFormatter setDateFormat:dateFormat];
-            [_dateFormatterCache setObject:dateFormatter forKey:dateFormat];
-        }
-    }
-    return dateFormatter;
-}
-
 + (NSDate *)dateWithString:(NSString *)string format:(NSString *)format {
-    NSString *key = format ? format : NSDateExtraFormatDateTime;
-    NSDateFormatter *dateFormatter = [NSDate dateFormatterForDateFormat:key];
+    NSDateFormatter *dateFormatter = [NSDateFormatter defaultFormatter];
+    [dateFormatter setDateFormat:format ? format : NSDateExtraFormatDateTime];
     return [dateFormatter dateFromString:string];
 }
 
 - (NSString *)stringWithFormat:(NSString *)format {
-    NSString *key = format ? format : NSDateExtraFormatDateTime;
-    NSDateFormatter *dateFormatter = [NSDate dateFormatterForDateFormat:key];
+    NSDateFormatter *dateFormatter = [NSDateFormatter defaultFormatter];
+    [dateFormatter setDateFormat:format ? format : NSDateExtraFormatDateTime];
     return [dateFormatter stringFromDate:self];
 }
 
@@ -90,7 +63,7 @@ static NSCache *_dateFormatterCache = nil;
 }
 
 - (NSDate *)prevMonthDate {
-    NSDateComponents *components = [[NSDate currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
     if (components.month > 1) {
         [components setYear:0];
     } else {
@@ -98,13 +71,13 @@ static NSCache *_dateFormatterCache = nil;
     }
     [components setMonth:-1];
     [components setDay:0];
-    return [[NSDate currentCalendar] dateByAddingComponents:components
+    return [[NSCalendar currentCalendar] dateByAddingComponents:components
                                                          toDate:self
                                                         options:NSCalendarWrapComponents];
 }
 
 - (NSDate *)nextMonthDate {
-    NSDateComponents *components = [[NSDate currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
     if (components.month < 12) {
         [components setYear:0];
     } else {
@@ -112,7 +85,7 @@ static NSCache *_dateFormatterCache = nil;
     }
     [components setMonth:1];
     [components setDay:0];
-    return [[NSDate currentCalendar] dateByAddingComponents:components
+    return [[NSCalendar currentCalendar] dateByAddingComponents:components
                                                          toDate:self
                                                         options:NSCalendarWrapComponents];
 }
@@ -159,17 +132,30 @@ static NSCache *_dateFormatterCache = nil;
                             NSCalendarUnitNanosecond |
                             NSCalendarUnitCalendar |
                             NSCalendarUnitTimeZone);
-    return [[NSDate currentCalendar] components:units fromDate:self];
+    return [[NSCalendar currentCalendar] components:units fromDate:self];
 }
 
 - (NSDate *)firstDayOfMonthDate {
-    NSDateComponents *components = [[NSDate currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
     components.day = 1;
-    return [[NSDate currentCalendar] dateFromComponents:components];
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
 }
 
 - (NSInteger)numberOfDaysInMonth {
-    return [[NSDate currentCalendar] rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:self].length;
+    return [[NSCalendar currentCalendar] rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:self].length;
+}
+
+@end
+
+@implementation NSDateFormatter (Extra)
+
++ (instancetype)defaultFormatter {
+    static NSDateFormatter *defaultFormatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultFormatter = [[NSDateFormatter alloc] init];
+    });
+    return defaultFormatter;
 }
 
 @end
