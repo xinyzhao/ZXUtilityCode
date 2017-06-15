@@ -60,10 +60,10 @@
 - (ZXImageViewCell *)dequeueReusableCellForItemAtIndex:(NSInteger)index;
 
 /**
- <#Description#>
+ Get the cell for index
 
- @param index <#index description#>
- @return <#return value description#>
+ @param index The index
+ @return ZXImageViewCell
  */
 - (ZXImageViewCell *)cellForItemAtIndex:(NSInteger)index;
 

@@ -211,6 +211,7 @@
                 view = [_delegate pageView:self subviewForPageAtIndex:pageIndex];
             }
             if (view) {
+                view.tag = index;
                 [self.pageViews setObject:view forKey:@(index)];
                 [self addSubview:view];
             }
@@ -261,35 +262,39 @@
     if (_numberOfPages > 0) {
         NSInteger currentPage = [self contentPage];
         //
-        CGRect currentFrame = self.frame;
-        if (_direction == ZXPageViewDirectionHorizontal) {
-            currentFrame.origin = CGPointMake(currentPage * self.frame.size.width, 0);
-        } else {
-            currentFrame.origin = CGPointMake(0, currentPage * self.frame.size.height);
-        }
-        self.currentView.frame = currentFrame;
+        [self setFrame:currentPage forPageAtIndex:self.currentPage];
         //
         if (_numberOfPages > 1) {
             NSInteger prevPage = currentPage - 1;
             NSInteger nextPage = currentPage + 1;
             //
-            CGRect prevFrame = self.frame;
-            CGRect nextFrame = self.frame;
+            [self setFrame:prevPage forPageAtIndex:self.prevPage];
+            [self setFrame:nextPage forPageAtIndex:self.nextPage];
             //
-            if (_direction == ZXPageViewDirectionHorizontal) {
-                prevFrame.origin = CGPointMake(prevPage * self.frame.size.width, 0);
-                nextFrame.origin = CGPointMake(nextPage * self.frame.size.width, 0);
-            } else {
-                prevFrame.origin = CGPointMake(0, prevPage * self.frame.size.height);
-                nextFrame.origin = CGPointMake(0, nextPage * self.frame.size.height);
+            if (_numberOfPages == 2) {
+                NSInteger index = _currentPage == 0 ? 2 : -1;
+                NSInteger page = index < 0 ? prevPage - 1 : nextPage + 1;
+                [self setFrame:page forPageAtIndex:index];
             }
-            //
-            self.prevView.frame = prevFrame;
-            self.nextView.frame = nextFrame;
             //
             _timestamp = [[NSDate date] timeIntervalSince1970];
         }
+        //
+        for (UIView *subview in self.subviews) {
+            NSLog(@">>>%ld:%@", subview.tag, NSStringFromCGPoint(subview.frame.origin));
+        }
     }
+}
+
+- (void)setFrame:(NSInteger)page forPageAtIndex:(NSInteger)index {
+    CGRect frame = self.frame;
+    if (_direction == ZXPageViewDirectionHorizontal) {
+        frame.origin = CGPointMake(page * self.frame.size.width, 0);
+    } else {
+        frame.origin = CGPointMake(0, page * self.frame.size.height);
+    }
+    UIView *view = [self subviewForPageAtIndex:index];
+    view.frame = frame;
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset {
