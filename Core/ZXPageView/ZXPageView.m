@@ -279,10 +279,6 @@
             //
             _timestamp = [[NSDate date] timeIntervalSince1970];
         }
-        //
-        for (UIView *subview in self.subviews) {
-            NSLog(@">>>%ld:%@", subview.tag, NSStringFromCGPoint(subview.frame.origin));
-        }
     }
 }
 
