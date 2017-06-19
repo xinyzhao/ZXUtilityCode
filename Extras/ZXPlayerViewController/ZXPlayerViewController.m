@@ -434,21 +434,19 @@
     if ([keyPath isEqualToString:@"status"]) {
         AVPlayerStatus status = [[change objectForKey:@"new"] intValue];
         if (status == AVPlayerStatusReadyToPlay) {
-            self.playButton.enabled = YES;
-            self.progressSlider.enabled = YES;
+            _playButton.enabled = YES;
+            _progressSlider.hidden = NO;
             [self setCurrentTime:self.currentTime];
-            [self play];
-        } else if (status == AVPlayerStatusFailed) {
-            NSLog(@"AVPlayerStatusFailed");
-        } else {
-            NSLog(@"AVPlayerStatusUnknown");
+        }
+        if (_playerStatus) {
+            _playerStatus(status, _playerItem.error);
         }
         
     } else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
         CMTimeRange timeRange = [_playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
         NSTimeInterval loaded = CMTimeGetSeconds(timeRange.start) + CMTimeGetSeconds(timeRange.duration);
         NSTimeInterval duration = self.duration;
-        self.loadedProgressView.progress = loaded / duration;
+        _loadedProgressView.progress = loaded / duration;
     }
 }
 

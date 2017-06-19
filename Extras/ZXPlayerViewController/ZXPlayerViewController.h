@@ -30,6 +30,7 @@
 @property (nonatomic, readonly) BOOL isReadToPlay;
 @property (nonatomic, readonly) BOOL isPlaying;
 @property (nonatomic, readonly) BOOL isSeeking;
+@property (nonatomic, copy) void (^playerStatus)(AVPlayerStatus status, NSError *error);
 
 - (instancetype)initWithURL:(NSURL *)URL;
 
