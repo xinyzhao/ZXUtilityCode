@@ -136,7 +136,7 @@
         [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
         [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
         [_playerItem addObserver:self forKeyPath:@"playbackLikelyToKeepUp" options:NSKeyValueObservingOptionNew context:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlayToEndTime:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerItemDidReachEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     }
     if (_playerItem) {
         __weak typeof(self) weakSelf = self;
@@ -424,7 +424,7 @@
 
 #pragma mark Notifications
 
-- (void)didPlayToEndTime:(NSNotification *)notification {
+- (void)playerItemDidReachEnd:(NSNotification *)notification {
     [self pause];
 }
 
