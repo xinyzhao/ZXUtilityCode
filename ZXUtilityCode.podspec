@@ -199,6 +199,11 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/ZXNetworkTrafficMonitor/*.h"
   end
 
+  s.subspec "ZXPageIndicatorView" do |ss|
+    ss.source_files  = "Core/ZXPageIndicatorView/*.{h,m}"
+    ss.public_header_files = "Core/ZXPageIndicatorView/*.h"
+  end
+
   s.subspec "ZXPageView" do |ss|
     ss.source_files  = "Core/ZXPageView/*.{h,m}"
     ss.public_header_files = "Core/ZXPageView/*.h"

@@ -57,6 +57,7 @@ pod "ZXUtilityCode"
 * ZXHTTPClient
 * ZXImageView
 * ZXNetworkTrafficMonitor
+* ZXPageIndicatorView
 * ZXPageView
 * ZXPhotoLibrary
 * ZXPopoverWindow
