@@ -472,15 +472,15 @@
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [self swizzleMethod:@selector(supportedInterfaceOrientationsForWindow:) with:@selector(supportedInterfaceOrientationsForPTVideoPlayerViewController:)];
+        [self swizzleMethod:@selector(supportedInterfaceOrientationsForWindow:) with:@selector(supportedInterfaceOrientationsForPlayerViewController:)];
     });
 }
 
-- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForPTVideoPlayerViewController:(nullable UIWindow *)window {
+- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForPlayerViewController:(nullable UIWindow *)window {
     if ([window.rootViewController.topLevelViewController isKindOfClass:[ZXPlayerViewController class]]) {
         return UIInterfaceOrientationMaskAllButUpsideDown;
     }
-    return [self supportedInterfaceOrientationsForPTVideoPlayerViewController:window];
+    return [self supportedInterfaceOrientationsForPlayerViewController:window];
 }
 
 @end
