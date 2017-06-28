@@ -60,6 +60,7 @@ pod "ZXUtilityCode"
 * ZXPageIndicatorView
 * ZXPageView
 * ZXPhotoLibrary
+* ZXPlayerViewController
 * ZXPopoverWindow
 * ZXRefreshView
 * ZXTabBarController

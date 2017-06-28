@@ -64,6 +64,7 @@
 #import "ZXPageIndicatorView.h"
 #import "ZXPageView.h"
 #import "ZXPhotoLibrary.h"
+#import "ZXPlayerViewController.h"
 #import "ZXPopoverWindow.h"
 #import "ZXRefreshView.h"
 #import "ZXTabBarController.h"

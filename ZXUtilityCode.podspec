@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.5.7"
+  s.version      = "1.5.8"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -214,6 +214,14 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/ZXPhotoLibrary/*.h"
     ss.frameworks = "AssetsLibrary", "CoreGraphics", "ImageIO"
     ss.weak_framework = "Photos"
+  end
+
+  s.subspec "ZXPlayerViewController" do |ss|
+    ss.dependency 'ZXUtilityCode/NSObject+Extra'
+    ss.dependency 'ZXUtilityCode/UIViewController+Extra'
+    ss.source_files  = "Core/ZXPlayerViewController/*.{h,m}"
+    ss.public_header_files = "Core/ZXPlayerViewController/*.h"
+    ss.frameworks = "AVFoundation", "MediaPlayer"
   end
 
   s.subspec "ZXPopoverWindow" do |ss|
