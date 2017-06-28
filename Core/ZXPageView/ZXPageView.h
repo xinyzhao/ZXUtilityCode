@@ -49,14 +49,24 @@
  @param index The index of page
  */
 - (void)pageView:(ZXPageView *)pageView willDisplaySubview:(UIView *)subview forPageAtIndex:(NSInteger)index;
+
 @end
 
 /**
- ZXPageViewDirection Scrolling direction
+ Direction of scrolling
  */
 typedef NS_ENUM(NSInteger, ZXPageViewDirection) {
     ZXPageViewDirectionHorizontal,
     ZXPageViewDirectionVertical,
+};
+
+/**
+ Orientation of scrolling
+ */
+typedef NS_ENUM(NSInteger, ZXPageViewOrientation) {
+    ZXPageViewOrientationEndless, // End to end, both of orientation
+    ZXPageViewOrientationForward, // Left to right on horizontal, up to down on vertical
+    //ZXPageViewOrientationReverse, // Right to left on horizontal, down to up on vertical, doesn't yet support
 };
 
 /**
@@ -83,6 +93,10 @@ typedef NS_ENUM(NSInteger, ZXPageViewDirection) {
  Time interval for auto-paging, default 0 mean no auto-paging
  */
 @property (nonatomic, assign) NSTimeInterval timeInterval;
+/**
+ Orientation, default ZXPageViewOrientationEndless
+ */
+@property (nonatomic, assign) ZXPageViewOrientation orientation;
 
 /**
  Set current page with animated
