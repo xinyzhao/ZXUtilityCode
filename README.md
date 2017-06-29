@@ -72,7 +72,6 @@ pod "ZXUtilityCode"
 * BDLocationManager
 * Coordinates
 * ZXColorPickerController
-* ZXPlayerViewController
 
 ## License
 
