@@ -88,7 +88,6 @@
 
 - (void)setDirection:(ZXPageViewDirection)direction {
     _direction = direction;
-    [self resetEdgeInset];
     [self setNeedsLayout];
 }
 
@@ -96,7 +95,6 @@
 
 - (void)setOrientation:(ZXPageViewOrientation)orientation {
     _orientation = orientation;
-    [self resetEdgeInset];
     [self setNeedsLayout];
 }
 
@@ -163,7 +161,6 @@
 
 - (void)setNumberOfPages:(NSInteger)numberOfPages {
     _numberOfPages = numberOfPages;
-    [self resetEdgeInset];
     [self setNeedsLayout];
 }
 
@@ -271,6 +268,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    [self resetEdgeInset];
     //
     if (_numberOfPages > 0) {
         NSInteger currentPage = [self contentPage];
