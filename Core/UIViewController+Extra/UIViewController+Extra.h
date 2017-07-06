@@ -25,6 +25,11 @@
 #import <UIKit/UIKit.h>
 
 @interface UIViewController (Extra) <UIGestureRecognizerDelegate>
+@property(nonatomic, readonly) UIViewController *topViewController; // The top view controller on the stack.
+@property(nonatomic, readonly) UIViewController *visibleViewController; // Return modal view controller if it exists. Otherwise the top view controller.
+
+- (UIViewController *)endViewController; // Implementation of topViewController
+- (UIViewController *)topmostViewController; // Implementation of visibleViewController
 
 - (void)setBackItemTitle:(NSString *)title;
 
@@ -39,13 +44,10 @@
 - (void)setTitleFont:(UIFont *)font;
 - (void)setTitleColor:(UIColor *)color;
 
-- (UIViewController *)topLevelViewController;
-
 @end
 
 @interface UINavigationController (Extra)
-
-- (UIViewController *)prevViewController;
-- (UIViewController *)rootViewController;
+@property(nonatomic, readonly) UIViewController *prevViewController;
+@property(nonatomic, readonly) UIViewController *rootViewController;
 
 @end

@@ -322,7 +322,7 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForPlayerViewController:(nullable UIWindow *)window {
-    if ([window.rootViewController.topLevelViewController isKindOfClass:[ZXPlayerViewController class]]) {
+    if ([window.rootViewController.topmostViewController isKindOfClass:[ZXPlayerViewController class]]) {
         return UIInterfaceOrientationMaskAllButUpsideDown;
     }
     return [self supportedInterfaceOrientationsForPlayerViewController:window];

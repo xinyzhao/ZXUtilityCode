@@ -125,21 +125,48 @@
     self.navigationController.navigationBar.titleTextAttributes = attributes;
 }
 
-#pragma mark - Top-Level View Controller
+#pragma mark View Controller
 
-- (UIViewController *)topLevelViewController {
-    if ([self isKindOfClass:[UINavigationController class]]) {
-        return ((UINavigationController *)self).topViewController.topLevelViewController;
-    } else if ([self isKindOfClass:[UITabBarController class]]) {
-        return ((UITabBarController *)self).selectedViewController.topLevelViewController;
+- (UIViewController *)topViewController {
+    return [self endViewController];
+}
+
+- (UIViewController *)visibleViewController {
+    return [self topmostViewController];
+}
+
+- (UIViewController *)endViewController {
+    UIViewController *vc = self;
+    if ([self isKindOfClass:[UITabBarController class]]) {
+        vc = ((UITabBarController *)self).selectedViewController;
+        vc = [vc endViewController];
+    } else if ([self isKindOfClass:[UINavigationController class]]) {
+        vc = ((UINavigationController *)self).topViewController;
+        vc = [vc endViewController];
+    } else if (self.presentingViewController) {
+        vc = self.presentingViewController;
+        vc = [vc endViewController];
+    }
+    return vc;
+}
+
+- (UIViewController *)topmostViewController {
+    UIViewController *vc = self;
+    if ([self isKindOfClass:[UITabBarController class]]) {
+        vc = ((UITabBarController *)self).selectedViewController;
+        vc = [vc topmostViewController];
+    } else if ([self isKindOfClass:[UINavigationController class]]) {
+        vc = ((UINavigationController *)self).topViewController;
+        vc = [vc topmostViewController];
     } else if (self.presentedViewController) {
         if ([self.presentedViewController isBeingDismissed] ||
             [self.presentedViewController isMovingFromParentViewController]) {
             return self;
         }
-        return [self.presentedViewController topLevelViewController];
+        vc = self.presentedViewController;
+        vc = [vc topmostViewController];
     }
-    return self;
+    return vc;
 }
 
 #pragma mark Target Actions
