@@ -1,5 +1,5 @@
 //
-// ZXAuthorizationManager.m
+// ZXAuthorizationHelper.m
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,11 +22,11 @@
 // THE SOFTWARE.
 //
 
-#import "ZXAuthorizationManager.h"
+#import "ZXAuthorizationHelper.h"
 
 typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 
-@interface ZXAuthorizationManager () <CLLocationManagerDelegate>
+@interface ZXAuthorizationHelper () <CLLocationManagerDelegate>
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, copy) CLAuthorizationHandler locationHandler;
 
@@ -34,18 +34,18 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 
 @end
 
-@implementation ZXAuthorizationManager
+@implementation ZXAuthorizationHelper
 
 + (instancetype)defaultManager {
-    static ZXAuthorizationManager *authManager = nil;
+    static ZXAuthorizationHelper *authManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        authManager = [[ZXAuthorizationManager alloc] init];
+        authManager = [[ZXAuthorizationHelper alloc] init];
     });
     return authManager;
 }
 
-+ (void)authorizationForCamera:(void(^)(AVAuthorizationStatus status))handler {
++ (void)requestAuthorizationForCamera:(void(^)(AVAuthorizationStatus status))handler {
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0) {
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
         if (status == AVAuthorizationStatusNotDetermined) {
@@ -62,7 +62,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     }
 }
 
-+ (void)authorizationForContacts:(void(^)(AVAuthorizationStatus status))handler {
++ (void)requestAuthorizationForContacts:(void(^)(AVAuthorizationStatus status))handler {
     if ([[UIDevice currentDevice].systemVersion floatValue] < 9.0) {
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
@@ -90,12 +90,12 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     }
 }
 
-+ (void)authorizationForLocation:(BOOL)always handler:(void(^)(CLAuthorizationStatus status))handler {
++ (void)requestAuthorizationForLocation:(BOOL)always handler:(void(^)(CLAuthorizationStatus status))handler {
     if ([CLLocationManager locationServicesEnabled]) {
         CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
         if (status == kCLAuthorizationStatusNotDetermined) {
             if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
-                ZXAuthorizationManager *manager = [ZXAuthorizationManager defaultManager];
+                ZXAuthorizationHelper *manager = [ZXAuthorizationHelper defaultManager];
                 if (manager.locationManager == nil) {
                     manager.locationManager = [[CLLocationManager alloc] init];
                 }
@@ -114,7 +114,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     }
 }
 
-+ (void)authorizationForMicrophone:(void(^)(BOOL granted))handler {
++ (void)requestAuthorizationForMicrophone:(void(^)(BOOL granted))handler {
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0) {
         [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
             if (handler) {
@@ -126,7 +126,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     }
 }
 
-+ (void)authorizationForPhotoLibrary:(void(^)(NSInteger status))handler {
++ (void)requestAuthorizationForPhotoLibrary:(void(^)(NSInteger status))handler {
     if ([[UIDevice currentDevice].systemVersion floatValue] < 8.0) {
         ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
         if (handler) {

@@ -1,5 +1,5 @@
 //
-// ZXAuthorizationManager.h
+// ZXAuthorizationHelper.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -31,7 +31,7 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
-@interface ZXAuthorizationManager : NSObject
+@interface ZXAuthorizationHelper : NSObject
 
 /**
  相机权限
@@ -39,7 +39,7 @@
 
  @param handler Authorization handler
  */
-+ (void)authorizationForCamera:(void(^)(AVAuthorizationStatus status))handler;
++ (void)requestAuthorizationForCamera:(void(^)(AVAuthorizationStatus status))handler;
 
 /**
  通讯录权限
@@ -47,7 +47,7 @@
 
  @param handler Authorization handler
  */
-+ (void)authorizationForContacts:(void(^)(AVAuthorizationStatus status))handler;
++ (void)requestAuthorizationForContacts:(void(^)(AVAuthorizationStatus status))handler;
 
 /**
  位置权限
@@ -56,7 +56,7 @@
  @param always Request always authorization
  @param handler Authorization handler
  */
-+ (void)authorizationForLocation:(BOOL)always handler:(void(^)(CLAuthorizationStatus status))handler;
++ (void)requestAuthorizationForLocation:(BOOL)always handler:(void(^)(CLAuthorizationStatus status))handler;
 
 /**
  麦克风权限
@@ -64,7 +64,7 @@
 
  @param handler Authorization handler
  */
-+ (void)authorizationForMicrophone:(void(^)(BOOL granted))handler;
++ (void)requestAuthorizationForMicrophone:(void(^)(BOOL granted))handler;
 
 /**
  相册权限
@@ -72,6 +72,6 @@
 
  @param handler Authorization handler
  */
-+ (void)authorizationForPhotoLibrary:(void(^)(NSInteger status))handler;
++ (void)requestAuthorizationForPhotoLibrary:(void(^)(NSInteger status))handler;
 
 @end

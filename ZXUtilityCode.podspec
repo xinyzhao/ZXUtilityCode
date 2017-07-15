@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.6.1"
+  s.version      = "1.6.2"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -155,9 +155,9 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/ZXAlertView/*.h"
   end
 
-  s.subspec "ZXAuthorizationManager" do |ss|
-    ss.source_files  = "Core/ZXAuthorizationManager/*.{h,m}"
-    ss.public_header_files = "Core/ZXAuthorizationManager/*.h"
+  s.subspec "ZXAuthorizationHelper" do |ss|
+    ss.source_files  = "Core/ZXAuthorizationHelper/*.{h,m}"
+    ss.public_header_files = "Core/ZXAuthorizationHelper/*.h"
     ss.frameworks = "AddressBook", "AssetsLibrary", "AVFoundation", "CoreLocation"
     ss.weak_framework = "Contacts", "CoreTelephony", "Photos"
   end

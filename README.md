@@ -49,7 +49,7 @@ pod "ZXUtilityCode"
 * UIView+Snapshot
 * UIViewController+Extra
 * ZXAlertView
-* ZXAuthorizationManager
+* ZXAuthorizationHelper
 * ZXBadgeLabel
 * ZXCircularProgressView
 * ZXDownloadManager
