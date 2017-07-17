@@ -30,14 +30,10 @@
 @interface UIApplicationIdleTimer : NSObject
 
 /**
- Same as [UIApplication sharedApplication].idleTimerDisabled
+ Opposite value of [UIApplication sharedApplication].idleTimerDisabled
+ Want to auto-lock screen, set to YES
  */
-@property(nonatomic, getter=isDisabled) BOOL disabled; // default is NO
-
-/**
- Opposite value of disabled
- */
-@property(nonatomic, getter=isEnabled) BOOL enabled; // default is YES
+@property(nonatomic, getter=isEnabled) BOOL enabled;
 
 @end
 

@@ -24,46 +24,61 @@
 
 #import "UIApplicationIdleTimer.h"
 
+@interface UIApplicationIdleTimer ()
+@property(nonatomic, getter=isDisabled) BOOL disabled;
+
+@end
+
 @implementation UIApplicationIdleTimer
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        self.disabled = [UIApplication sharedApplication].idleTimerDisabled;
+        _disabled = [UIApplication sharedApplication].idleTimerDisabled;
+        _enabled = !_disabled;
+        //
+        [[UIApplication sharedApplication] addObserver:self forKeyPath:@"idleTimerDisabled" options:NSKeyValueObservingOptionNew context:NULL];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     }
     return self;
 }
 
-- (void)setDisabled:(BOOL)disabled {
-    if (_disabled != disabled) {
-        _disabled = disabled;
-        if (!disabled) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        } else {
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
-        }
-    }
-    [UIApplication sharedApplication].idleTimerDisabled = disabled;
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setEnabled:(BOOL)enabled {
-    self.disabled = !enabled;
-}
-
-- (BOOL)isEnabled {
-    return !self.disabled;
+    if (_enabled != enabled) {
+        _enabled = enabled;
+    }
+    if ([UIApplication sharedApplication].idleTimerDisabled == _enabled) {
+        [UIApplication sharedApplication].idleTimerDisabled = !_enabled;
+    }
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    // 不自动锁屏
-    [UIApplication sharedApplication].idleTimerDisabled = self.disabled;
+    if ([UIApplication sharedApplication].idleTimerDisabled == _enabled) {
+        [UIApplication sharedApplication].idleTimerDisabled = !_enabled;
+    }
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification {
-    // 自动锁屏
-    [UIApplication sharedApplication].idleTimerDisabled = NO;
+    if ([UIApplication sharedApplication].idleTimerDisabled != _disabled) {
+        [UIApplication sharedApplication].idleTimerDisabled = _disabled;
+    }
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey, id> *)change context:(nullable void *)context {
+    if ([keyPath isEqualToString:@"idleTimerDisabled"]) {
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+            if ([UIApplication sharedApplication].idleTimerDisabled == _enabled) {
+                [UIApplication sharedApplication].idleTimerDisabled = !_enabled;
+            }
+        }
+    }
 }
 
 @end
