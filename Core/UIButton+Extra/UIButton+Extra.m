@@ -27,6 +27,8 @@
 
 @interface UIButton (_Extra)
 @property (nonatomic, assign) NSTimeInterval acceptEventTime;
+@property (nonatomic, assign) BOOL acceptEventDisabled;
+@property (nonatomic, assign) BOOL acceptEventEnabled;
 
 @end
 
@@ -41,6 +43,24 @@
     return number ? [number doubleValue] : 0.f;
 }
 
+- (void)setAcceptEventEnabled:(BOOL)acceptEventEnabled {
+    objc_setAssociatedObject(self, @selector(acceptEventEnabled), @(acceptEventEnabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)acceptEventEnabled {
+    NSNumber *number = objc_getAssociatedObject(self, @selector(acceptEventEnabled));
+    return number ? [number boolValue] : NO;
+}
+
+- (void)setAcceptEventDisabled:(BOOL)acceptEventDisabled {
+    objc_setAssociatedObject(self, @selector(acceptEventDisabled), @(acceptEventDisabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)acceptEventDisabled {
+    NSNumber *number = objc_getAssociatedObject(self, @selector(acceptEventDisabled));
+    return number ? [number boolValue] : NO;
+}
+
 @end
 
 @implementation UIButton (Extra)
@@ -50,9 +70,16 @@
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        SEL originalSelector = @selector(sendAction:to:forEvent:);
-        SEL swizzledSelector = @selector(extra_sendAction:to:forEvent:);
-        [self swizzleMethod:originalSelector with:swizzledSelector];
+        {
+            SEL originalSelector = @selector(sendAction:to:forEvent:);
+            SEL swizzledSelector = @selector(extra_sendAction:to:forEvent:);
+            [self swizzleMethod:originalSelector with:swizzledSelector];
+        }
+        {
+            SEL originalSelector = @selector(setEnabled:);
+            SEL swizzledSelector = @selector(extra_setEnabled:);
+            [self swizzleMethod:originalSelector with:swizzledSelector];
+        }
     });
 }
 
@@ -63,8 +90,25 @@
     }
     if (self.acceptEventInterval > 0.f) {
         self.acceptEventTime = time;
+        self.acceptEventEnabled = self.enabled;
+        self.acceptEventDisabled = YES;
+        [self extra_setEnabled:NO];
+        //
+        __weak typeof(self) weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.acceptEventInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            weakSelf.acceptEventDisabled = NO;
+            weakSelf.enabled = weakSelf.acceptEventEnabled;
+        });
     }
     [self extra_sendAction:action to:target forEvent:event];
+}
+
+- (void)extra_setEnabled:(BOOL)enabled {
+    if (self.acceptEventDisabled) {
+        self.acceptEventEnabled = enabled;
+    } else {
+        [self extra_setEnabled:enabled];
+    }
 }
 
 #pragma mark Setter & Getter
