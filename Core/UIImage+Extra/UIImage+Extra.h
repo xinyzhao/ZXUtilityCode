@@ -26,84 +26,63 @@
 #import <ImageIO/ImageIO.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-/// 根据颜色创建图像
-UIKIT_EXTERN UIImage *UIImageFromColor(UIColor *color, CGSize size);
-
 /// 压缩
-UIKIT_EXTERN NSData *UIImageCompress(UIImage *image, NSUInteger length);
+UIKIT_EXTERN NSData *UIImageCompressToData(UIImage *image, NSUInteger length);
 
 /// 裁剪
-UIKIT_EXTERN UIImage *UIImageCropping(UIImage *image, CGRect rect);
+UIKIT_EXTERN UIImage *UIImageCropToRect(UIImage *image, CGRect rect);
 
-/// 按比例缩放
-UIKIT_EXTERN UIImage *UIImageScaling(UIImage *image, CGFloat scale);
-
-/// 缩放到指定大小
-UIKIT_EXTERN UIImage *UIImageResizing(UIImage *image, CGSize size);
-
-/// 缩略图
-UIKIT_EXTERN UIImage *UIImageThumbnail(UIImage *image, CGSize size, BOOL aspectFill);
-
-/// 正向图
-UIKIT_EXTERN UIImage *UIImageCorrectOrientation(UIImage *image);
-
-/// 灰度图
-UIKIT_EXTERN UIImage *UIImageGrayscale(UIImage *image);
+/// 根据颜色创建图像
+UIKIT_EXTERN UIImage *UIImageFromColor(UIColor *color, CGSize size);
 
 /// 高斯模糊
 UIKIT_EXTERN UIImage *UIImageGaussianBlur(UIImage *image, CGFloat radius);
 
+/// 正向图
+UIKIT_EXTERN UIImage *UIImageOrientationToUp(UIImage *image);
+
+/// 缩放
+UIKIT_EXTERN UIImage *UIImageScaleToSize(UIImage *image, CGSize size);
+
+/// 灰度图
+UIKIT_EXTERN UIImage *UIImageToGrayscale(UIImage *image);
+
+/// 缩略图
+UIKIT_EXTERN UIImage *UIImageToThumbnail(UIImage *image, CGSize size, BOOL scaleAspectFill);
+
 /// 图像尺寸
 UIKIT_EXTERN CGSize UIImageSizeForScale(UIImage *image, CGFloat scale);
-UIKIT_EXTERN CGSize UIImageSizeForWidth(UIImage *image, CGFloat width);
-UIKIT_EXTERN CGSize UIImageSizeForHeight(UIImage *image, CGFloat height);
-
-/// 屏幕尺寸
 UIKIT_EXTERN CGSize UIImageSizeForScreenScale(UIImage *image);
-UIKIT_EXTERN CGSize UIImageSizeForScreenWidth(UIImage *image);
-UIKIT_EXTERN CGSize UIImageSizeForScreenHeight(UIImage *image);
+
 
 /// UIImage (Extra)
 @interface UIImage (Extra)
-
-/// 从.bundle内加载图片，不能用imageNamed:inBundle:，和CameraKit.framework冲突
-+ (UIImage *)imageNamed:(NSString *)name bundleNamed:(NSString *)bundle;
 
 /// 根据颜色创建图像
 + (UIImage *)imageWithColor:(UIColor *)color;
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size;
 
+/// 高斯模糊
+- (UIImage *)blurImage:(CGFloat)radius;
+
 /// 压缩
-- (NSData *)compressedData:(NSUInteger)length;
+- (NSData *)compressToData:(NSUInteger)length;
 
 /// 裁剪
-- (UIImage *)imageWithRect:(CGRect)rect;
-
-/// 缩放
-- (UIImage *)imageWithScale:(CGFloat)scale;
-- (UIImage *)imageWithSize:(CGSize)size;
-
-/// 缩略图
-- (UIImage *)thumbnailWithSize:(CGSize)size aspectFill:(BOOL)aspectFill;
-
-/// 正向图
-- (UIImage *)correctOrientationImage;
+- (UIImage *)cropToRect:(CGRect)rect;
 
 /// 灰度图
 - (UIImage *)grayscaleImage;
 
-/// 高斯模糊
-- (UIImage *)imageWithBlurRadius:(CGFloat)radius;
+/// 正向图
+- (UIImage *)orientationToUp;
 
-/// 图像尺寸
-- (CGSize)sizeForScale:(CGFloat)scale;
-- (CGSize)sizeForWidth:(CGFloat)width;
-- (CGSize)sizeForHeight:(CGFloat)height;
+/// 缩放
+- (UIImage *)scaleTo:(CGFloat)scale;
+- (UIImage *)scaleToSize:(CGSize)size;
 
-/// 屏幕尺寸
-- (CGSize)sizeForScreenScale;
-- (CGSize)sizeForScreenWidth;
-- (CGSize)sizeForScreenHeight;
+/// 缩略图
+- (UIImage *)thumbnailImage:(CGSize)size aspect:(BOOL)fill;
 
 @end
 

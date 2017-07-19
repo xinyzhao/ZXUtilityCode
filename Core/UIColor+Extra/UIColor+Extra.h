@@ -48,7 +48,7 @@ UIKIT_EXTERN UIColor* UIColorFromRGB(NSInteger value, CGFloat alpha);
  Return the HEX string of the color with prefix
  
  @param color UIColor
- @param prefix Prefix of color
+ @param prefix Prefix of color string, eg '#'
  @return HEX string of the color with prefix
  */
 UIKIT_EXTERN NSString *UIColorToHEX(UIColor *color, NSString *prefix);

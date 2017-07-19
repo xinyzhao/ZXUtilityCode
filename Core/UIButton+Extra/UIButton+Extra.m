@@ -106,9 +106,8 @@
 - (void)extra_setEnabled:(BOOL)enabled {
     if (self.acceptEventDisabled) {
         self.acceptEventEnabled = enabled;
-    } else {
-        [self extra_setEnabled:enabled];
     }
+    [self extra_setEnabled:enabled];
 }
 
 #pragma mark Setter & Getter
