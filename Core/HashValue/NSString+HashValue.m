@@ -41,7 +41,7 @@
     //
     NSMutableString *string = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
     for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [string appendFormat:@"%02x", bytes[i]];
+        [string appendFormat:@"%02X", bytes[i]];
     }
     return string;
 }
@@ -60,7 +60,7 @@
     //
     NSMutableString *string = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
     for(int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
-        [string appendFormat:@"%02x", bytes[i]];
+        [string appendFormat:@"%02X", bytes[i]];
     }
     return string;
 }

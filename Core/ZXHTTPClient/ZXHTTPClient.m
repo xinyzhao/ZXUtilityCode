@@ -59,7 +59,7 @@
 
 #pragma mark HTTP Request
 
-+ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers body:(NSData *)body success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
++ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params body:(NSData *)body requestHandler:(void(^)(NSMutableURLRequest *request))requestHandler completionHandler:(void(^)(NSURLSessionDataTask *task, NSData *data, NSError *error))completionHandler {
     // parameters
     if (params.count > 0) {
         NSMutableArray *pairs = [[NSMutableArray alloc] init];
@@ -77,37 +77,29 @@
     NSMutableURLRequest *reqeust = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString]];
     reqeust.HTTPMethod = method;
     reqeust.HTTPBody = body;
-    // HTTP header fields
-    [headers enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        [reqeust setValue:obj forHTTPHeaderField:key];
-    }];
+    // URL request handler
+    if (requestHandler) {
+        requestHandler(reqeust);
+    }
     // data task
     __block NSURLSessionDataTask *task = [[ZXHTTPClient URLSession] dataTaskWithRequest:reqeust completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (failure) {
-                    failure(task, error);
-                }
-            });
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (success) {
-                    success(task, data);
-                }
-            });
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completionHandler) {
+                completionHandler(task, data, error);
+            }
+        });
     }];
     [task resume];
     // return
     return task;
 }
 
-+ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers formData:(NSArray<ZXHTTPFormData *> *)formData success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
++ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params formData:(NSArray<ZXHTTPFormData *> *)formData requestHandler:(void(^)(NSMutableURLRequest *request))requestHandler completionHandler:(void(^)(NSURLSessionDataTask *task, NSData *data, NSError *error))completionHandler {
     // boundary
     static NSString *boundary = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        boundary = [[NSUUID UUID] UUIDString];
+        boundary = [NSString stringWithFormat:@"Boundary+%08X%08X", arc4random(), arc4random()];
     });
     // form data
     NSMutableData *bodyData = [NSMutableData data];
@@ -139,51 +131,49 @@
         NSString *endBoundary = [NSString stringWithFormat:@"\r\n--%@--\r\n", boundary];
         [bodyData appendData:[endBoundary dataUsingEncoding:NSUTF8StringEncoding]];
     }
-    // header fields
-    NSMutableDictionary *headerFields = [headers mutableCopy];
-    if (headerFields == nil) {
-        headerFields = [[NSMutableDictionary alloc] init];
-    }
-    [headerFields setObject:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forKey:@"Content-Type"];
-    [headerFields setObject:[NSString stringWithFormat:@"%llu", (uint64_t)bodyData.length] forKey:@"Content-Length"];
     // HTTP request
-    return [ZXHTTPClient requestWithURLString:URLString method:method params:params headers:headerFields body:bodyData success:success failure:failure];
+    return [ZXHTTPClient requestWithURLString:URLString method:method params:params body:bodyData requestHandler:^(NSMutableURLRequest *request) {
+        [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
+        [request setValue:[NSString stringWithFormat:@"%llu", (uint64_t)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+        if (requestHandler) {
+            requestHandler(request);
+        }
+    } completionHandler:completionHandler];
 }
 
-+ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params headers:(NSDictionary *)headers jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
++ (NSURLSessionDataTask *)requestWithURLString:(NSString *)URLString method:(NSString *)method params:(NSDictionary *)params jsonObject:(id)jsonObject requestHandler:(void(^)(NSMutableURLRequest *request))requestHandler completionHandler:(void(^)(NSURLSessionDataTask *task, NSData *data, NSError *error))completionHandler {
     // JSON data
     NSError *error;
     NSData *bodyData = [NSJSONSerialization dataWithJSONObject:jsonObject options:kNilOptions error:&error];
     if (bodyData) {
-        // header fields
-        NSMutableDictionary *headerFields = [headers mutableCopy];
-        if (headerFields == nil) {
-            headerFields = [[NSMutableDictionary alloc] init];
-        }
-        [headerFields setObject:@"application/json; charset=utf-8" forKey:@"Content-Type"];
-        [headerFields setObject:[NSString stringWithFormat:@"%llu", (uint64_t)bodyData.length] forKey:@"Content-Length"];
         // HTTP request
-        return [ZXHTTPClient requestWithURLString:URLString method:method params:params headers:headerFields body:bodyData success:success failure:failure];
+        return [ZXHTTPClient requestWithURLString:URLString method:method params:params body:bodyData requestHandler:^(NSMutableURLRequest *request) {
+            [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+            [request setValue:[NSString stringWithFormat:@"%llu", (uint64_t)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+            if (requestHandler) {
+                requestHandler(request);
+            }
+        } completionHandler:completionHandler];
     }
-    // failure
-    if (failure) {
-        failure(nil, error);
+    // failed
+    if (completionHandler) {
+        completionHandler(nil, nil, error);
     }
     return nil;
 }
 
 #pragma mark HTTP Methods
 
-+ (NSURLSessionDataTask *)GET:(NSString *)URLString params:(NSDictionary *)params success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
-    return [ZXHTTPClient requestWithURLString:URLString method:@"GET" params:params headers:nil body:nil success:success failure:failure];
++ (NSURLSessionDataTask *)GET:(NSString *)URLString params:(NSDictionary *)params requestHandler:(void(^)(NSMutableURLRequest *request))requestHandler completionHandler:(void(^)(NSURLSessionDataTask *task, NSData *data, NSError *error))completionHandler {
+    return [ZXHTTPClient requestWithURLString:URLString method:@"GET" params:params body:nil requestHandler:requestHandler completionHandler:completionHandler];
 }
 
-+ (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params formData:(NSArray<ZXHTTPFormData *> *)formData success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
-    return [ZXHTTPClient requestWithURLString:URLString method:@"POST" params:params headers:nil formData:formData success:success failure:failure];
++ (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params formData:(NSArray<ZXHTTPFormData *> *)formData requestHandler:(void(^)(NSMutableURLRequest *request))requestHandler completionHandler:(void(^)(NSURLSessionDataTask *task, NSData *data, NSError *error))completionHandler {
+    return [ZXHTTPClient requestWithURLString:URLString method:@"POST" params:params formData:formData requestHandler:requestHandler completionHandler:completionHandler];
 }
 
-+ (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params jsonObject:(id)jsonObject success:(ZXHTTPRequestSuccess)success failure:(ZXHTTPRequestFailure)failure {
-    return [ZXHTTPClient requestWithURLString:URLString method:@"POST" params:params headers:nil jsonObject:jsonObject success:success failure:failure];
++ (NSURLSessionDataTask *)POST:(NSString *)URLString params:(NSDictionary *)params jsonObject:(id)jsonObject requestHandler:(void(^)(NSMutableURLRequest *request))requestHandler completionHandler:(void(^)(NSURLSessionDataTask *task, NSData *data, NSError *error))completionHandler {
+    return [ZXHTTPClient requestWithURLString:URLString method:@"POST" params:params jsonObject:jsonObject requestHandler:requestHandler completionHandler:completionHandler];
 }
 
 @end
