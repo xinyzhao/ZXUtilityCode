@@ -88,7 +88,11 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 
 - (void)dealloc
 {
-    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+    if (_IOS_8_OR_EARLY_) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    } else {
+        [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+    }
 }
 
 #pragma mark Funcitons
