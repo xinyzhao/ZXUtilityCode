@@ -32,6 +32,15 @@
 
 @implementation ZXDrawingPath
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
+
 @end
 
 @interface ZXDrawingView ()
