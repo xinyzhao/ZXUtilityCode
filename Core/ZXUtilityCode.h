@@ -26,7 +26,6 @@
 #define ZXUtilityCode_h
 
 #import "AVAudioProximityDetector.h"
-#import "dispatch_queue.h"
 #import "JSONObject.h"
 #import "NSArray+Extra.h"
 #import "NSData+Base64Encoding.h"
@@ -45,7 +44,6 @@
 #import "QRCodeReader.h"
 #import "QRCodeScanner.h"
 #import "UIApplicationIdleTimer.h"
-#import "UIButton+Extra.h"
 #import "UIColor+Extra.h"
 #import "UIImage+Extra.h"
 #import "UINetworkActivityIndicator.h"

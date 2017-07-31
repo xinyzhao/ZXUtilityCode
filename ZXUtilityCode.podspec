@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.6.7"
+  s.version      = "1.6.8"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -29,11 +29,6 @@ Pod::Spec.new do |s|
   s.subspec "Base64Encoding" do |ss|
     ss.source_files  = "Core/Base64Encoding/*.{h,m}"
     ss.public_header_files = "Core/Base64Encoding/*.h"
-  end
-
-  s.subspec "DispatchQueue" do |ss|
-    ss.source_files  = "Core/DispatchQueue/*.{h,m}"
-    ss.public_header_files = "Core/DispatchQueue/*.h"
   end
 
   s.subspec "HashValue" do |ss|
@@ -111,12 +106,6 @@ Pod::Spec.new do |s|
   s.subspec "UIApplicationIdleTimer" do |ss|
     ss.source_files  = "Core/UIApplicationIdleTimer/*.{h,m}"
     ss.public_header_files = "Core/UIApplicationIdleTimer/*.h"
-  end
-
-  s.subspec "UIButton+Extra" do |ss|
-    ss.dependency 'ZXUtilityCode/NSObject+Extra'
-    ss.source_files  = "Core/UIButton+Extra/*.{h,m}"
-    ss.public_header_files = "Core/UIButton+Extra/*.h"
   end
 
   s.subspec "UIColor+Extra" do |ss|

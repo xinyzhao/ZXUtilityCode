@@ -25,7 +25,6 @@ pod "ZXUtilityCode"
 
 * AVAudioProximityDetector
 * Base64Encoding
-* DispatchQueue
 * HashValue
 * JSONObject
 * NSArray+Extra
@@ -41,7 +40,6 @@ pod "ZXUtilityCode"
 * QRCodeReader
 * QRCodeScanner
 * UIApplicationIdleTimer
-* UIButton+Extra
 * UIColor+Extra
 * UIImage+Extra
 * UINetworkActivityIndicator
