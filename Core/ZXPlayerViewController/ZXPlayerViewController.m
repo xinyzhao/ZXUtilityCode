@@ -167,6 +167,7 @@
         [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
         [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
         [_playerItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp"];
+        _playerItem = nil;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
