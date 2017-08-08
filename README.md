@@ -64,7 +64,7 @@ pod "ZXUtilityCode"
 * ZXTabBarController
 * ZXTagView
 
-### Extras
+### Not in pods
 
 * AMRPlayer
 * BDLocationManager

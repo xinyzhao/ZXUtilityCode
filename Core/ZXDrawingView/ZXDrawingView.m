@@ -28,12 +28,25 @@
 @property (nonatomic, strong) UIColor *lineColor;
 @property (nonatomic, assign) BOOL isEraser;
 
+/**
+ NOTES: The series of bezierPath/bezierPathXXX class methods,
+        CRASHED for sub-class of UIBezierPath in iOS 8.
+ */
+
 @end
 
 @implementation ZXDrawingPath
 
 - (instancetype)init
 {
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super init];
     if (self) {
         
@@ -101,7 +114,8 @@
 
 - (void)addPoint:(CGPoint)point toNewLine:(BOOL)newLine{
     if (newLine) {
-        ZXDrawingPath *path = [ZXDrawingPath bezierPath];
+        // The class method bezierPath crash in iOS 8.x
+        ZXDrawingPath *path = [[ZXDrawingPath alloc] init];
         path.isEraser = self.eraserEnabled;
         if (path.isEraser) {
             path.lineColor = [UIColor clearColor];
@@ -124,7 +138,8 @@
 
 - (void)addPoints:(NSArray *)points toNewLine:(BOOL)newLine {
     if (newLine) {
-        ZXDrawingPath *path = [ZXDrawingPath bezierPath];
+        // The class method bezierPath crash in iOS 8.x
+        ZXDrawingPath *path = [[ZXDrawingPath alloc] init];
         path.isEraser = self.eraserEnabled;
         if (path.isEraser) {
             path.lineColor = [UIColor clearColor];
