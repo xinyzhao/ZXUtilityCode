@@ -38,3 +38,13 @@ IB_DESIGNABLE
 
 @end
 
+@interface UITabBarController (SetSelectedAnimated)
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated;
+- (void)setSelectedIndex:(NSUInteger)selectedIndex duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options completion:(void (^)(BOOL finished))completion;
+
+- (void)setSelectedViewController:(__kindof UIViewController *)selectedViewController animated:(BOOL)animated;
+- (void)setSelectedViewController:(__kindof UIViewController *)selectedViewController duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options completion:(void (^)(BOOL finished))completion;
+
+@end
+

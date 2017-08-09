@@ -88,3 +88,87 @@
 }
 
 @end
+
+
+@implementation UITabBarController (SetSelectedAnimated)
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated {
+    if (animated && selectedIndex != self.selectedIndex) {
+        NSTimeInterval duration = 0.5f;
+        NSUInteger options = UIViewAnimationOptionTransitionCrossDissolve;
+        if (self.selectedIndex < selectedIndex) {
+            options = UIViewAnimationOptionTransitionFlipFromLeft;
+        } else if (self.selectedIndex > selectedIndex) {
+            options = UIViewAnimationOptionTransitionFlipFromRight;
+        }
+        [self setSelectedIndex:selectedIndex duration:duration options:options completion:nil];
+    } else {
+        [self setSelectedIndex:selectedIndex];
+    }
+}
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options completion:(void (^)(BOOL finished))completion {
+    if (duration > 0.f && selectedIndex != self.selectedIndex) {
+        __weak typeof(self) weakSelf = self;
+        UIView *fromView = [self.selectedViewController view];
+        UIView *toView = [[self.viewControllers objectAtIndex:selectedIndex] view];
+        [UIView transitionFromView:fromView toView:toView duration:duration options:options completion:^(BOOL finished) {
+            if (finished) {
+                [weakSelf setSelectedIndex:selectedIndex];
+            }
+            if (completion) {
+                completion(finished);
+            }
+        }];
+    } else {
+        [self setSelectedIndex:selectedIndex];
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
+- (void)setSelectedViewController:(UIViewController *)selectedViewController animated:(BOOL)animated {
+    if (animated && selectedViewController != self.selectedViewController) {
+        __block NSUInteger selectedIndex = self.selectedIndex;
+        [self.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj == selectedViewController) {
+                selectedIndex = idx;
+                *stop = YES;
+            }
+        }];
+        NSTimeInterval duration = 0.5f;
+        NSUInteger options = UIViewAnimationOptionTransitionCrossDissolve;
+        if (self.selectedIndex < selectedIndex) {
+            options = UIViewAnimationOptionTransitionFlipFromLeft;
+        } else if (self.selectedIndex > selectedIndex) {
+            options = UIViewAnimationOptionTransitionFlipFromRight;
+        }
+        [self setSelectedViewController:selectedViewController duration:duration options:options completion:nil];
+    } else {
+        [self setSelectedViewController:selectedViewController];
+    }
+}
+
+- (void)setSelectedViewController:(UIViewController *)selectedViewController duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options completion:(void (^)(BOOL finished))completion {
+    if (duration > 0.f && selectedViewController != self.selectedViewController) {
+        __weak typeof(self) weakSelf = self;
+        UIView *fromView = [self.selectedViewController view];
+        UIView *toView = [selectedViewController view];
+        [UIView transitionFromView:fromView toView:toView duration:duration options:options completion:^(BOOL finished) {
+            if (finished) {
+                [weakSelf setSelectedViewController:selectedViewController];
+            }
+            if (completion) {
+                completion(finished);
+            }
+        }];
+    } else {
+        [self setSelectedViewController:selectedViewController];
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
+@end
