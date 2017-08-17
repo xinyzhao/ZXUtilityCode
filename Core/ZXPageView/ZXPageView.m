@@ -326,7 +326,9 @@
 
 - (void)cache:(NSCache *)cache willEvictObject:(id)obj {
     UIView *pageView = obj;
-    [pageView removeFromSuperview];
+    if (pageView.superview) {
+        [pageView removeFromSuperview];
+    }
 }
 
 @end
