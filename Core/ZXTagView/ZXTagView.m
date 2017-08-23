@@ -126,7 +126,7 @@
     if (self.tagLabels == nil) {
         self.tagLabels = [NSMutableArray array];
     }
-    if (tag) {
+    if ([tag isKindOfClass:[NSString class]]) {
         ZXTagLabel *label = [[ZXTagLabel alloc] initWithText:tag];
         if (option) {
             option(label);
@@ -144,7 +144,7 @@
 }
 
 - (void)insertTag:(NSString *)tag atIndex:(NSUInteger)index option:(ZXTagOption)option action:(ZXTagAction)action {
-    if (tag) {
+    if ([tag isKindOfClass:[NSString class]]) {
         ZXTagLabel *label = [[ZXTagLabel alloc] initWithText:tag];
         if (option) {
             option(label);

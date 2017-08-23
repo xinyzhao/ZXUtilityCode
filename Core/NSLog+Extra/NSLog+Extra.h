@@ -30,13 +30,13 @@
 #endif
 
 // NSLogA will always output like NSLog
-#define NSLogA(fmt, ...) NSLog((@"%s(%s:%d) " fmt), __FUNCTION__, __FILENAME__, __LINE__, ##__VA_ARGS__)
+#define NSLogA(format, ...) NSLog(@"%@\n%s (%s:%d)", [NSString stringWithFormat:format, ##__VA_ARGS__], __FUNCTION__, __FILENAME__, __LINE__)
 
 // NSLogD will output like NSLog only when the DEBUG variable is set
 #ifdef DEBUG
-#define NSLogD(fmt, ...) NSLogA(fmt, ##__VA_ARGS__)
+#define NSLogD(format, ...) NSLogA(format, ##__VA_ARGS__)
 #else
-#define NSLogD(fmt, ...)
+#define NSLogD(format, ...)
 #endif
 
 #endif //__OBJC__
