@@ -63,6 +63,7 @@ pod "ZXUtilityCode"
 * ZXRefreshView
 * ZXTabBarController
 * ZXTagView
+* ZXToastView
 
 ### Not in pods
 

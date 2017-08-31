@@ -67,5 +67,6 @@
 #import "ZXRefreshView.h"
 #import "ZXTabBarController.h"
 #import "ZXTagView.h"
+#import "ZXToastView.h"
 
 #endif /* ZXUtilityCode_h */
