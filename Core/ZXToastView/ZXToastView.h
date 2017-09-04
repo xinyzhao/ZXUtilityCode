@@ -65,32 +65,7 @@ typedef NS_ENUM(NSInteger, ZXToastPosition) {
 @property (nonatomic, readonly) UIImageView *imageView;
 
 /**
- All touchs locked in toast views, default is YES
- */
-@property (nonatomic, getter=isTouchsLocked) BOOL touchsLocked;
-
-/**
- Tap to dismiss on toast views, default is YES
- */
-@property (nonatomic, getter=isTapToDismiss) BOOL tapToDismiss;
-
-/**
- The toast duration, default is 3 sec.
- */
-@property (nonatomic, assign) NSTimeInterval duration;
-
-/**
- The toast position, default is ZXToastViewPositionCenter
- */
-@property (nonatomic, assign) ZXToastPosition position;
-
-/**
- The fade in/out animation duration. Default is 0.2.
- */
-@property (nonatomic, assign) NSTimeInterval fadeDuration;
-
-/**
- Toast content insets, default is {64.0, 44.0, 64.0, 44.0} of screen width equal 320.0
+ Toast content insets, default is {64.0, 44.0, 64.0, 44.0}
  */
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 
@@ -103,6 +78,31 @@ typedef NS_ENUM(NSInteger, ZXToastPosition) {
  Toast content padding, default 8.0
  */
 @property (nonatomic, assign) CGFloat contentPadding;
+
+/**
+ The toast duration, default is 3 sec.
+ */
+@property (nonatomic, assign) NSTimeInterval duration;
+
+/**
+ The fade in/out animation duration. Default is 0.2.
+ */
+@property (nonatomic, assign) NSTimeInterval fadeDuration;
+
+/**
+ The toast position, default is ZXToastViewPositionCenter
+ */
+@property (nonatomic, assign) ZXToastPosition position;
+
+/**
+ Tap to dismiss on toast views, default is YES
+ */
+@property (nonatomic, getter=isTapToDismiss) BOOL tapToDismiss;
+
+/**
+ All touchs locked in toast views, default is YES
+ */
+@property (nonatomic, getter=isTouchsLocked) BOOL touchsLocked;
 
 /**
  Init toast activity view
@@ -125,25 +125,21 @@ typedef NS_ENUM(NSInteger, ZXToastPosition) {
 
  @param message The message to be displayed
  @param duration The toast duration
- @param position The toast position
  @return The instance
  */
 - (instancetype)initWithMessage:(NSString *)message
-                       duration:(NSTimeInterval)duration
-                       position:(ZXToastPosition)position;
+                       duration:(NSTimeInterval)duration;
 
 /**
  Creates a new toast view
 
  @param message The message to be displayed
  @param duration The toast duration
- @param position The toast position
  @param image The image
  @return The instance
  */
 - (instancetype)initWithMessage:(NSString *)message
                        duration:(NSTimeInterval)duration
-                       position:(ZXToastPosition)position
                           image:(UIImage *)image;
 
 /**

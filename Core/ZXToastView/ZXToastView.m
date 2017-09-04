@@ -48,14 +48,14 @@
 {
     self = [super init];
     if (self) {
-        self.touchsLocked = YES;
-        self.tapToDismiss = YES;
-        self.duration = 3.0;
-        self.position = ZXToastPositionCenter;
-        self.fadeDuration = 0.2;
         self.contentInset = UIEdgeInsetsMake(64.0, ZXToastViewMagicWidth, 64.0, ZXToastViewMagicWidth);
         self.contentMargin = 20.0;
         self.contentPadding = 8.0;
+        self.duration = 3.0;
+        self.fadeDuration = 0.2;
+        self.position = ZXToastPositionCenter;
+        self.tapToDismiss = YES;
+        self.touchsLocked = YES;
         //
         _bubbleView = [[UIView alloc] initWithFrame:CGRectZero];
         _bubbleView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.8];
@@ -90,21 +90,18 @@
 }
 
 - (instancetype)initWithMessage:(NSString *)message
-                       duration:(NSTimeInterval)duration
-                       position:(ZXToastPosition)position {
+                       duration:(NSTimeInterval)duration {
     self = [self initWithMessage:message];
     if (self) {
         self.duration = duration;
-        self.position = position;
     }
     return self;
 }
 
 - (instancetype)initWithMessage:(NSString *)message
                        duration:(NSTimeInterval)duration
-                       position:(ZXToastPosition)position
                           image:(UIImage *)image {
-    self = [self initWithMessage:message duration:duration position:position];
+    self = [self initWithMessage:message duration:duration];
     if (self) {
         if (image) {
             _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 40.0, 40.0)];
