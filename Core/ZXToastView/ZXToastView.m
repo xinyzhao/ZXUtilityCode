@@ -123,16 +123,12 @@
         return;
     }
     //
-    self.alpha = 0.0;
-    self.frame = view.bounds;
-    [view addSubview:self];
-    //
     _bubbleView.layer.cornerRadius = _contentMargin / 2;
     _bubbleView.layer.masksToBounds = YES;
     //
     if (self.messageLabel) {
-        CGFloat width = self.bounds.size.width - (_contentInset.left + _contentInset.right);
-        CGFloat height = self.bounds.size.height - (_contentInset.top + _contentInset.bottom);
+        CGFloat width = view.bounds.size.width - (_contentInset.left + _contentInset.right);
+        CGFloat height = view.bounds.size.height - (_contentInset.top + _contentInset.bottom);
         CGSize maxSize = CGSizeMake(width - _contentMargin * 2, height - _contentMargin * 2);
         CGSize msgSize = [self.messageLabel sizeThatFits:maxSize];
         // UILabel can return a size larger than the max size when the number of lines is 1
@@ -161,43 +157,50 @@
     //
     switch (self.position) {
         case ZXToastPositionTop:
-            toastFrame.origin.x = (self.bounds.size.width - toastFrame.size.width) / 2;
+            toastFrame.origin.x = (view.bounds.size.width - toastFrame.size.width) / 2;
             toastFrame.origin.y = _contentInset.top;
             break;
         case ZXToastPositionBottom:
-            toastFrame.origin.x = (self.bounds.size.width - toastFrame.size.width) / 2;
-            toastFrame.origin.y = self.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
+            toastFrame.origin.x = (view.bounds.size.width - toastFrame.size.width) / 2;
+            toastFrame.origin.y = view.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
             break;
         case ZXToastPositionLeft:
             toastFrame.origin.x = _contentInset.left;
-            toastFrame.origin.y = (self.bounds.size.height - toastFrame.size.height) / 2;
+            toastFrame.origin.y = (view.bounds.size.height - toastFrame.size.height) / 2;
             break;
         case ZXToastPositionRight:
-            toastFrame.origin.x = self.bounds.size.width - toastFrame.size.width - _contentInset.right;
-            toastFrame.origin.y = (self.bounds.size.height - toastFrame.size.height) / 2;
+            toastFrame.origin.x = view.bounds.size.width - toastFrame.size.width - _contentInset.right;
+            toastFrame.origin.y = (view.bounds.size.height - toastFrame.size.height) / 2;
             break;
         case ZXToastPositionTopLeft:
             toastFrame.origin.x = _contentInset.left;
             toastFrame.origin.y = _contentInset.top;
             break;
         case ZXToastPositionTopRight:
-            toastFrame.origin.x = self.bounds.size.width - toastFrame.size.width - _contentInset.right;
+            toastFrame.origin.x = view.bounds.size.width - toastFrame.size.width - _contentInset.right;
             toastFrame.origin.y = _contentInset.top;
             break;
         case ZXToastPositionBottomLeft:
             toastFrame.origin.x = _contentInset.left;
-            toastFrame.origin.y = self.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
+            toastFrame.origin.y = view.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
             break;
         case ZXToastPositionBottomRight:
-            toastFrame.origin.x = self.bounds.size.width - toastFrame.size.width - _contentInset.right;
-            toastFrame.origin.y = self.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
+            toastFrame.origin.x = view.bounds.size.width - toastFrame.size.width - _contentInset.right;
+            toastFrame.origin.y = view.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
             break;
         default:
-            toastFrame.origin.x = (self.bounds.size.width - toastFrame.size.width) / 2;
-            toastFrame.origin.y = (self.bounds.size.height - toastFrame.size.height) / 2;
+            toastFrame.origin.x = (view.bounds.size.width - toastFrame.size.width) / 2;
+            toastFrame.origin.y = (view.bounds.size.height - toastFrame.size.height) / 2;
             break;
     }
-    self.bubbleView.frame = toastFrame;
+    //
+    if (self.touchsLocked) {
+        self.frame = view.bounds;
+        self.bubbleView.frame = toastFrame;
+    } else {
+        self.frame = toastFrame;
+        self.bubbleView.frame = self.bounds;
+    }
     //
     if (self.activityView) {
         self.activityView.center = CGPointMake(toastFrame.size.width / 2, _contentMargin + self.activityView.bounds.size.height / 2);
@@ -217,19 +220,18 @@
         self.messageLabel.frame = frame;
     }
     //
-    if (self.touchsLocked) {
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLocked:)];
-        self.gestureRecognizers = @[tap];
-        self.exclusiveTouch = YES;
-        self.userInteractionEnabled = YES;
-    }
-    //
     if (self.isTapToDismiss && self.activityView == nil) {
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onBubble:)];
         self.bubbleView.gestureRecognizers = @[tap];
         self.bubbleView.exclusiveTouch = YES;
         self.bubbleView.userInteractionEnabled = YES;
+    } else {
+        self.bubbleView.userInteractionEnabled = NO;
     }
+    //
+    self.alpha = 0.0;
+    self.userInteractionEnabled = self.touchsLocked || self.bubbleView.userInteractionEnabled;
+    [view addSubview:self];
     //
     ZXToastView *toastView = [[ZXToastView toastQueue] firstObject];
     if ([ZXToastView toastQueue].count > 1) {
@@ -326,12 +328,6 @@
 }
 
 #pragma mark Touchs
-
-- (IBAction)onLocked:(id)sender {
-#ifdef DEBUG
-    NSLog(@"Touchs is locked, set touchsLocked = NO to unlocked");
-#endif
-}
 
 - (IBAction)onBubble:(id)sender {
     [self hide];
