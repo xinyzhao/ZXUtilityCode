@@ -34,12 +34,25 @@
         Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
         Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
         method_exchangeImplementations(originalMethod, swizzledMethod);
+        //
+        if ([[UIDevice currentDevice].systemVersion floatValue] >= 11.0) {
+            Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndexedSubscript:));
+            Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndexedSubscript:));
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+        }
     });
 }
 
 - (id)objectByIndex:(NSUInteger)index {
     if (index < self.count) {
         return [self objectByIndex:index];
+    }
+    return nil;
+}
+
+- (id)objectByIndexedSubscript:(NSUInteger)idx {
+    if (idx < self.count) {
+        return [self objectByIndexedSubscript:idx];
     }
     return nil;
 }
@@ -55,12 +68,25 @@
         Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndex:));
         Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
         method_exchangeImplementations(originalMethod, swizzledMethod);
+        //
+        if ([[UIDevice currentDevice].systemVersion floatValue] >= 11.0) {
+            Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndexedSubscript:));
+            Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndexedSubscript:));
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+        }
     });
 }
 
 - (id)objectByIndex:(NSUInteger)index {
     if (index < self.count) {
         return [self objectByIndex:index];
+    }
+    return nil;
+}
+
+- (id)objectByIndexedSubscript:(NSUInteger)idx {
+    if (idx < self.count) {
+        return [self objectByIndexedSubscript:idx];
     }
     return nil;
 }

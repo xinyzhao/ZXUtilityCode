@@ -29,6 +29,9 @@
 /// Same as [NSArray objectAtIndex:]
 - (id)objectByIndex:(NSUInteger)index;
 
+/// Same as [NSArray objectAtIndexedSubscript:]
+- (id)objectByIndexedSubscript:(NSUInteger)idx;
+
 @end
 
 @interface NSMutableArray (Extra)
