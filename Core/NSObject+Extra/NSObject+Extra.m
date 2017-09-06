@@ -62,21 +62,27 @@
 }
 
 - (void)performMethod:(SEL)selector {
-    IMP imp = [self methodForSelector:selector];
-    void (*func)(id, SEL) = (void *)imp;
-    func(self, selector);
+    if ([self respondsToMethod:selector]) {
+        IMP imp = [self methodForSelector:selector];
+        void (*func)(id, SEL) = (void *)imp;
+        func(self, selector);
+    }
 }
 
 - (void)performMethod:(SEL)selector withObject:(id)object {
-    IMP imp = [self methodForSelector:selector];
-    void (*func)(id, SEL, id) = (void *)imp;
-    func(self, selector, object);
+    if ([self respondsToMethod:selector]) {
+        IMP imp = [self methodForSelector:selector];
+        void (*func)(id, SEL, id) = (void *)imp;
+        func(self, selector, object);
+    }
 }
 
-- (void)performMethod:(SEL)selector withObject:(id)object1 withObject2:(id)object2 {
-    IMP imp = [self methodForSelector:selector];
-    void (*func)(id, SEL, id, id) = (void *)imp;
-    func(self, selector, object1, object2);
+- (void)performMethod:(SEL)selector withObject:(id)object1 withObject:(id)object2 {
+    if ([self respondsToMethod:selector]) {
+        IMP imp = [self methodForSelector:selector];
+        void (*func)(id, SEL, id, id) = (void *)imp;
+        func(self, selector, object1, object2);
+    }
 }
 
 @end

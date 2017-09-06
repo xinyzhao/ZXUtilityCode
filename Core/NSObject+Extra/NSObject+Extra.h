@@ -34,6 +34,6 @@
 
 - (void)performMethod:(SEL)selector;
 - (void)performMethod:(SEL)selector withObject:(id)object;
-- (void)performMethod:(SEL)selector withObject:(id)object1 withObject2:(id)object2;
+- (void)performMethod:(SEL)selector withObject:(id)object1 withObject:(id)object2;
 
 @end
