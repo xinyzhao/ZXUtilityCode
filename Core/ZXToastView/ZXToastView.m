@@ -272,7 +272,7 @@
                      animations:^{
                          weakSelf.alpha = 1.0;
                      } completion:^(BOOL finished) {
-                         if (weakSelf.activityView == nil) {
+                         if (weakSelf && weakSelf.activityView == nil) {
                              weakSelf.timer = [NSTimer timerWithTimeInterval:weakSelf.duration target:weakSelf selector:@selector(hideTimer:) userInfo:nil repeats:NO];
                              [[NSRunLoop mainRunLoop] addTimer:weakSelf.timer forMode:NSRunLoopCommonModes];
                          }

@@ -28,6 +28,8 @@
 
 + (NSString *)stringByReplacingUnicodeString:(NSString *)string;
 
+- (NSUInteger)lengthOfUnicode;
+
 @end
 
 @interface NSArray (Unicode)

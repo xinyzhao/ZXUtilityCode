@@ -1,3 +1,13 @@
+## 1.7.7 (2017-09-07)
+
+##### Enhancements
+
+* Add lengthOfUnicode to NSString
+
+##### Bug Fixes
+
+* Fixed ZXToastView showing crash
+
 ## 1.7.6 (2017-09-06)
 
 ##### Enhancements

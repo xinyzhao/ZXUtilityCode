@@ -37,6 +37,10 @@
     return string;
 }
 
+- (NSUInteger)lengthOfUnicode {
+    return [self lengthOfBytesUsingEncoding:NSUTF32StringEncoding] / 4;
+}
+
 @end
 
 @implementation NSArray (Unicode)
