@@ -114,23 +114,35 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     }
 }
 
-+ (void)requestAuthorizationForMicrophone:(void(^)(BOOL granted))handler {
++ (void)requestAuthorizationForMicrophone:(void(^)(AVAuthorizationStatus status))handler {
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0) {
-        [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-            if (handler) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    handler(granted);
-                });
-            }
-        }];
+        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+        if (status == AVAuthorizationStatusNotDetermined) {
+            [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+                if (handler) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                    });
+                }
+            }];
+//            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+//                if (handler) {
+//                    dispatch_async(dispatch_get_main_queue(), ^{
+//                        handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+//                    });
+//                }
+//            }];
+        } else if (handler) {
+            handler(status);
+        }
     }
 }
 
-+ (void)requestAuthorizationForPhotoLibrary:(void(^)(NSInteger status))handler {
++ (void)requestAuthorizationForPhotoLibrary:(void(^)(AVAuthorizationStatus status))handler {
     if ([[UIDevice currentDevice].systemVersion floatValue] < 8.0) {
         ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
         if (handler) {
-            handler(status);
+            handler((NSInteger)status);
         }
     } else {
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
@@ -138,12 +150,12 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
                 if (handler) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        handler(status);
+                        handler((NSInteger)status);
                     });
                 }
             }];
         } else if (handler) {
-           handler(status);
+           handler((NSInteger)status);
         }
     }
 }

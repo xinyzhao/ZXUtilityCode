@@ -64,7 +64,7 @@
 
  @param handler Authorization handler
  */
-+ (void)requestAuthorizationForMicrophone:(void(^)(BOOL granted))handler;
++ (void)requestAuthorizationForMicrophone:(void(^)(AVAuthorizationStatus status))handler;
 
 /**
  相册权限
@@ -72,6 +72,6 @@
 
  @param handler Authorization handler
  */
-+ (void)requestAuthorizationForPhotoLibrary:(void(^)(NSInteger status))handler;
++ (void)requestAuthorizationForPhotoLibrary:(void(^)(AVAuthorizationStatus status))handler;
 
 @end

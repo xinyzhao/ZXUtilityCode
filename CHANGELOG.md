@@ -1,3 +1,13 @@
+## 1.7.8 (2017-09-08)
+
+##### Enhancements
+
+* Modify requestAuthorizationForMicrophone:
+
+##### Bug Fixes
+
+* None.
+
 ## 1.7.7 (2017-09-07)
 
 ##### Enhancements
