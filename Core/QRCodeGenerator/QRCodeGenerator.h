@@ -25,19 +25,29 @@
 #import <UIKit/UIKit.h>
 
 /**
+ Correction Level
+ */
+UIKIT_EXTERN NSString *const QRCodeCorrectionLevelLow;      // 7%
+UIKIT_EXTERN NSString *const QRCodeCorrectionLevelMedium;   // 15%
+UIKIT_EXTERN NSString *const QRCodeCorrectionLevelQuarter;  // 25%
+UIKIT_EXTERN NSString *const QRCodeCorrectionLevelHigh;     // 30%
+
+/**
  QRCodeGenerator
  */
 @interface QRCodeGenerator : NSObject
 
 /**
- * @brief Make QRCode image from data
+ Make QRCode image from data
+ 
  * @param data Source data
  * @return The QRCode image
  */
 + (UIImage *)imageWithData:(NSData *)data;
 
 /**
- * @brief Make QRCode image from data
+ Make QRCode image from data
+ 
  * @param data Source data
  * @param size QRCode image size
  * @return The QRCode image
@@ -45,7 +55,8 @@
 + (UIImage *)imageWithData:(NSData *)data size:(CGSize)size;
 
 /**
- * @brief Make QRCode image from data
+ Make QRCode image from data
+ 
  * @param data Source data
  * @param size QRCode image size
  * @param color QRCode image tint color
@@ -55,14 +66,28 @@
 + (UIImage *)imageWithData:(NSData *)data size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
 
 /**
- * @brief Make QRCode image from data
+ Make QRCode image from data
+ 
+ * @param data Source data
+ * @param size QRCode image size
+ * @param color QRCode image tint color
+ * @param backgroundColor QRCode background color
+ * @param correctionLevel with corresponding error resilience levels
+ * @return The QRCode image
+ */
++ (UIImage *)imageWithData:(NSData *)data size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor correctionLevel:(NSString *)correctionLevel;
+
+/**
+ Make QRCode image from text
+ 
  * @param text Source text string
  * @return The QRCode image
  */
 + (UIImage *)imageWithText:(NSString *)text;
 
 /**
- * @brief Make QRCode image from data
+ Make QRCode image from text
+ 
  * @param text Source text string
  * @param size QRCode image size
  * @return The QRCode image
@@ -70,7 +95,8 @@
 + (UIImage *)imageWithText:(NSString *)text size:(CGSize)size;
 
 /**
- * @brief Make QRCode image from data
+ Make QRCode image from text
+ 
  * @param text Source text string
  * @param size QRCode image size
  * @param color QRCode image tint color
@@ -78,5 +104,17 @@
  * @return The QRCode image
  */
 + (UIImage *)imageWithText:(NSString *)text size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
+
+/**
+ Make QRCode image from text
+ 
+ * @param text Source text
+ * @param size QRCode image size
+ * @param color QRCode image tint color
+ * @param backgroundColor QRCode background color
+ * @param correctionLevel with corresponding error resilience levels
+ * @return The QRCode image
+ */
++ (UIImage *)imageWithText:(NSString *)text size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor correctionLevel:(NSString *)correctionLevel;
 
 @end

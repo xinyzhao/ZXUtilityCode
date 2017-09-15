@@ -1,3 +1,14 @@
+
+## 1.7.9 (2017-09-15)
+
+##### Enhancements
+
+* add Correction Level for QRCodeGenerator
+
+##### Bug Fixes
+
+* None.
+
 ## 1.7.8 (2017-09-08)
 
 ##### Enhancements

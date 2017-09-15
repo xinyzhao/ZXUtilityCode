@@ -27,6 +27,11 @@
 #define QRCodeForegroundColor [UIColor blackColor]
 #define QRCodeBackgroundColor [UIColor whiteColor]
 
+NSString *const QRCodeCorrectionLevelLow        = @"L";
+NSString *const QRCodeCorrectionLevelMedium     = @"M";
+NSString *const QRCodeCorrectionLevelQuarter    = @"Q";
+NSString *const QRCodeCorrectionLevelHigh       = @"H";
+
 @implementation QRCodeGenerator
 
 + (UIImage *)imageWithData:(NSData *)data {
@@ -38,45 +43,50 @@
 }
 
 + (UIImage *)imageWithData:(NSData *)data size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor {
+    return [QRCodeGenerator imageWithData:data size:size color:color backgroundColor:backgroundColor correctionLevel:nil];
+}
+
++ (UIImage *)imageWithData:(NSData *)data size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor correctionLevel:(NSString *)correctionLevel {
     if (data.length > 0) {
         // 生成
         CIFilter *qrcodeFilter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
         [qrcodeFilter setValue:data forKey:@"inputMessage"];
-        [qrcodeFilter setValue:@"M" forKey:@"inputCorrectionLevel"];
+        [qrcodeFilter setValue:correctionLevel?:@"M" forKey:@"inputCorrectionLevel"];
         // 上色
         CIImage *colorImage = qrcodeFilter.outputImage;
         if (color || backgroundColor) {
-            if (color == nil) {
-                color = QRCodeForegroundColor;
-            }
-            if (backgroundColor == nil) {
-                backgroundColor = QRCodeBackgroundColor;
-            }
+            UIColor *inputColor0 = color ?: QRCodeForegroundColor;
+            UIColor *inputColor1 = backgroundColor ?: QRCodeBackgroundColor;
             CIFilter *colorFilter = [CIFilter filterWithName:@"CIFalseColor"
                                                keysAndValues:
                                      @"inputImage", colorImage,
-                                     @"inputColor0", [CIColor colorWithCGColor:color.CGColor],
-                                     @"inputColor1", [CIColor colorWithCGColor:backgroundColor.CGColor],
+                                     @"inputColor0", [CIColor colorWithCGColor:inputColor0.CGColor],
+                                     @"inputColor1", [CIColor colorWithCGColor:inputColor1.CGColor],
                                      nil];
-            colorImage = colorFilter.outputImage;
+            if (colorFilter.outputImage) {
+                colorImage = colorFilter.outputImage;
+            }
         }
         // 绘制
-        if (CGSizeEqualToSize(CGSizeZero, size)) {
-            size = colorImage.extent.size;
-            size.width -= colorImage.extent.origin.x;
-            size.height -= colorImage.extent.origin.y;
+        if (colorImage) {
+            if (CGSizeEqualToSize(CGSizeZero, size)) {
+                size = colorImage.extent.size;
+                size.width -= colorImage.extent.origin.x;
+                size.height -= colorImage.extent.origin.y;
+            }
+            //
+            CGImageRef imageRef = [[CIContext contextWithOptions:nil] createCGImage:colorImage fromRect:colorImage.extent];
+            UIGraphicsBeginImageContext(size);
+            CGContextRef contextRef = UIGraphicsGetCurrentContext();
+            CGContextSetInterpolationQuality(contextRef, kCGInterpolationNone);
+            CGContextScaleCTM(contextRef, 1.0, -1.0);
+            CGContextDrawImage(contextRef, CGContextGetClipBoundingBox(contextRef), imageRef);
+            UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            CGImageRelease(imageRef);
+            //
+            return finalImage;
         }
-        CGImageRef imageRef = [[CIContext contextWithOptions:nil] createCGImage:colorImage fromRect:colorImage.extent];
-        UIGraphicsBeginImageContext(size);
-        CGContextRef contextRef = UIGraphicsGetCurrentContext();
-        CGContextSetInterpolationQuality(contextRef, kCGInterpolationNone);
-        CGContextScaleCTM(contextRef, 1.0, -1.0);
-        CGContextDrawImage(contextRef, CGContextGetClipBoundingBox(contextRef), imageRef);
-        UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        CGImageRelease(imageRef);
-        //
-        return finalImage;
     }
     return nil;
 }
@@ -90,8 +100,12 @@
 }
 
 + (UIImage *)imageWithText:(NSString *)text size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor {
+    return [QRCodeGenerator imageWithText:text size:size color:color backgroundColor:backgroundColor correctionLevel:nil];
+}
+
++ (UIImage *)imageWithText:(NSString *)text size:(CGSize)size color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor correctionLevel:(NSString *)correctionLevel {
     NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
-    return [QRCodeGenerator imageWithData:data size:size color:color backgroundColor:backgroundColor];
+    return [QRCodeGenerator imageWithData:data size:size color:color backgroundColor:backgroundColor correctionLevel:correctionLevel];
 }
 
 @end
