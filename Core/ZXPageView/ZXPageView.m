@@ -256,7 +256,7 @@
                 self.currentPage = self.contentPage + 1;
             }
         }
-        [self autoPaging:0.1];
+        [self autoPaging:_timeInterval];
     }
 }
 

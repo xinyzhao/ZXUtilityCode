@@ -1,3 +1,12 @@
+## 1.8.0 (2017-09-20)
+
+##### Enhancements
+
+* None.
+
+##### Bug Fixes
+
+* ZXPageView time interval of auto-paging
 
 ## 1.7.9 (2017-09-15)
 
