@@ -54,6 +54,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    _shouldAutorotate = YES;
+    _supportedInterfaceOrientations = UIInterfaceOrientationMaskAllButUpsideDown;
+    //
     _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPanGestureRecognizer:)];
     [self.view addGestureRecognizer:_panGestureRecognizer];
     _velocityOfSeeking = 1.f;
@@ -74,25 +77,52 @@
 #pragma mark Orientation
 
 - (BOOL)shouldAutorotate {
-    return YES;
+    return _shouldAutorotate;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return _shouldAutorotate ? _supportedInterfaceOrientations : UIInterfaceOrientationMaskPortrait;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
     UIInterfaceOrientation orientation = UIInterfaceOrientationPortrait;
-    switch ([UIDevice currentDevice].orientation) {
-        case UIDeviceOrientationLandscapeLeft:
-            orientation = UIInterfaceOrientationLandscapeRight;
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            orientation = UIInterfaceOrientationLandscapeLeft;
-            break;
-        default:
-            break;
+    if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskPortrait) {
+        orientation = UIInterfaceOrientationPortrait;
+    } else if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskLandscapeLeft) {
+        orientation = UIInterfaceOrientationLandscapeLeft;
+    } else if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskLandscapeRight) {
+        orientation = UIInterfaceOrientationLandscapeRight;
+    } else if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskPortraitUpsideDown) {
+        orientation = UIInterfaceOrientationPortraitUpsideDown;
     }
+    //
+    if (_shouldAutorotate) {
+        switch ([UIDevice currentDevice].orientation) {
+            case UIDeviceOrientationPortrait:
+                if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskPortrait) {
+                    orientation = UIInterfaceOrientationPortrait;
+                }
+                break;
+            case UIDeviceOrientationPortraitUpsideDown:
+                if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskPortraitUpsideDown) {
+                    orientation = UIInterfaceOrientationPortraitUpsideDown;
+                }
+                break;
+            case UIDeviceOrientationLandscapeLeft:
+                if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskLandscapeLeft) {
+                    orientation = UIInterfaceOrientationLandscapeLeft;
+                }
+                break;
+            case UIDeviceOrientationLandscapeRight:
+                if (_supportedInterfaceOrientations & UIInterfaceOrientationMaskLandscapeRight) {
+                    orientation = UIInterfaceOrientationLandscapeRight;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    //
     return orientation;
 }
 
@@ -328,7 +358,7 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForPlayerViewController:(nullable UIWindow *)window {
     if ([window.rootViewController.topmostViewController isKindOfClass:[ZXPlayerViewController class]]) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
+        return window.rootViewController.topmostViewController.supportedInterfaceOrientations;
     }
     return [self supportedInterfaceOrientationsForPlayerViewController:window];
 }

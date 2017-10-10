@@ -41,8 +41,11 @@
 @property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
 @property (nonatomic, copy) void (^loadedTime)(NSTimeInterval time, NSTimeInterval duration);
 
-@property (nonatomic, assign) CGFloat velocityOfSeeking; // Default 1.0
-@property (nonatomic, assign) CGFloat velocityOfVolume; // Default 1.0
+@property (nonatomic, assign) CGFloat velocityOfSeeking; // Default is 1.0
+@property (nonatomic, assign) CGFloat velocityOfVolume; // Default is 1.0
+
+@property (nonatomic, assign) BOOL shouldAutorotate; // Default is YES
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // Default is UIInterfaceOrientationMaskAllButUpsideDown/UIInterfaceOrientationMaskPortrait when shouldAutorotate YES/NO
 
 - (instancetype)initWithURL:(NSURL *)URL;
 
