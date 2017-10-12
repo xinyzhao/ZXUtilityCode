@@ -64,8 +64,8 @@
     return self;
 }
 
-- (instancetype)initWithActivity:(NSString *)message {
-    self = [self initWithMessage:message];
+- (instancetype)initWithActivity:(NSString *)text {
+    self = [self initWithText:text];
     if (self) {
         _activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         [self.bubbleView addSubview:_activityView];
@@ -73,35 +73,35 @@
     return self;
 }
 
-- (instancetype)initWithMessage:(NSString *)message {
+- (instancetype)initWithText:(NSString *)text {
     self = [self init];
     if (self) {
-        if (message) {
-            _messageLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-            _messageLabel.font = [UIFont boldSystemFontOfSize:16.0];
-            _messageLabel.numberOfLines = 0;
-            _messageLabel.textAlignment = NSTextAlignmentLeft;
-            _messageLabel.textColor = [UIColor whiteColor];
-            _messageLabel.text = message;
-            [self.bubbleView addSubview:_messageLabel];
+        if (text) {
+            _textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+            _textLabel.font = [UIFont boldSystemFontOfSize:16.0];
+            _textLabel.numberOfLines = 0;
+            _textLabel.textAlignment = NSTextAlignmentLeft;
+            _textLabel.textColor = [UIColor whiteColor];
+            _textLabel.text = text;
+            [self.bubbleView addSubview:_textLabel];
         }
     }
     return self;
 }
 
-- (instancetype)initWithMessage:(NSString *)message
-                       duration:(NSTimeInterval)duration {
-    self = [self initWithMessage:message];
+- (instancetype)initWithText:(NSString *)text
+                    duration:(NSTimeInterval)duration {
+    self = [self initWithText:text];
     if (self) {
         self.duration = duration;
     }
     return self;
 }
 
-- (instancetype)initWithMessage:(NSString *)message
-                       duration:(NSTimeInterval)duration
-                          image:(UIImage *)image {
-    self = [self initWithMessage:message duration:duration];
+- (instancetype)initWithText:(NSString *)text
+                    duration:(NSTimeInterval)duration
+                       image:(UIImage *)image {
+    self = [self initWithText:text duration:duration];
     if (self) {
         if (image) {
             _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 40.0, 40.0)];
@@ -113,28 +113,19 @@
     return self;
 }
 
-#pragma mark Show
+#pragma mark Size
 
-- (void)showInView:(UIView *)view {
-    if (view == nil) {
-        return;
-    }
-    if (self.activityView == nil && self.messageLabel == nil && self.imageView == nil) {
-        return;
-    }
+- (void)sizeToFit:(CGSize)size {
     //
-    _bubbleView.layer.cornerRadius = _contentMargin / 2;
-    _bubbleView.layer.masksToBounds = YES;
-    //
-    if (self.messageLabel) {
-        CGFloat width = view.bounds.size.width - (_contentInset.left + _contentInset.right);
-        CGFloat height = view.bounds.size.height - (_contentInset.top + _contentInset.bottom);
+    if (self.textLabel) {
+        CGFloat width = size.width - (_contentInset.left + _contentInset.right);
+        CGFloat height = size.height - (_contentInset.top + _contentInset.bottom);
         CGSize maxSize = CGSizeMake(width - _contentMargin * 2, height - _contentMargin * 2);
-        CGSize msgSize = [self.messageLabel sizeThatFits:maxSize];
+        CGSize msgSize = [self.textLabel sizeThatFits:maxSize];
         // UILabel can return a size larger than the max size when the number of lines is 1
         msgSize = CGSizeMake(MIN(maxSize.width, msgSize.width),
                              MIN(maxSize.height, msgSize.height));
-        self.messageLabel.frame = CGRectMake(0.0, 0.0, msgSize.width, msgSize.height);
+        self.textLabel.frame = CGRectMake(0.0, 0.0, msgSize.width, msgSize.height);
     }
     //
     CGRect toastFrame = CGRectZero;
@@ -145,57 +136,57 @@
         toastFrame.size.width = _contentMargin * 2 + self.imageView.bounds.size.width;
         toastFrame.size.height = _contentMargin * 2 + self.imageView.bounds.size.height;
     }
-    if (self.messageLabel) {
-        CGFloat width = _contentMargin * 2 + self.messageLabel.bounds.size.width;
+    if (self.textLabel) {
+        CGFloat width = _contentMargin * 2 + self.textLabel.bounds.size.width;
         toastFrame.size.width = MAX(toastFrame.size.width, width);
         if (self.activityView || self.imageView) {
-            toastFrame.size.height += _contentPadding + self.messageLabel.bounds.size.height;
+            toastFrame.size.height += _contentPadding + self.textLabel.bounds.size.height;
         } else {
-            toastFrame.size.height = _contentMargin * 2 + self.messageLabel.bounds.size.height;
+            toastFrame.size.height = _contentMargin * 2 + self.textLabel.bounds.size.height;
         }
     }
     //
     switch (self.position) {
         case ZXToastPositionTop:
-            toastFrame.origin.x = (view.bounds.size.width - toastFrame.size.width) / 2;
+            toastFrame.origin.x = (size.width - toastFrame.size.width) / 2;
             toastFrame.origin.y = _contentInset.top;
             break;
         case ZXToastPositionBottom:
-            toastFrame.origin.x = (view.bounds.size.width - toastFrame.size.width) / 2;
-            toastFrame.origin.y = view.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
+            toastFrame.origin.x = (size.width - toastFrame.size.width) / 2;
+            toastFrame.origin.y = size.height - toastFrame.size.height - _contentInset.bottom;
             break;
         case ZXToastPositionLeft:
             toastFrame.origin.x = _contentInset.left;
-            toastFrame.origin.y = (view.bounds.size.height - toastFrame.size.height) / 2;
+            toastFrame.origin.y = (size.height - toastFrame.size.height) / 2;
             break;
         case ZXToastPositionRight:
-            toastFrame.origin.x = view.bounds.size.width - toastFrame.size.width - _contentInset.right;
-            toastFrame.origin.y = (view.bounds.size.height - toastFrame.size.height) / 2;
+            toastFrame.origin.x = size.width - toastFrame.size.width - _contentInset.right;
+            toastFrame.origin.y = (size.height - toastFrame.size.height) / 2;
             break;
         case ZXToastPositionTopLeft:
             toastFrame.origin.x = _contentInset.left;
             toastFrame.origin.y = _contentInset.top;
             break;
         case ZXToastPositionTopRight:
-            toastFrame.origin.x = view.bounds.size.width - toastFrame.size.width - _contentInset.right;
+            toastFrame.origin.x = size.width - toastFrame.size.width - _contentInset.right;
             toastFrame.origin.y = _contentInset.top;
             break;
         case ZXToastPositionBottomLeft:
             toastFrame.origin.x = _contentInset.left;
-            toastFrame.origin.y = view.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
+            toastFrame.origin.y = size.height - toastFrame.size.height - _contentInset.bottom;
             break;
         case ZXToastPositionBottomRight:
-            toastFrame.origin.x = view.bounds.size.width - toastFrame.size.width - _contentInset.right;
-            toastFrame.origin.y = view.bounds.size.height - toastFrame.size.height - _contentInset.bottom;
+            toastFrame.origin.x = size.width - toastFrame.size.width - _contentInset.right;
+            toastFrame.origin.y = size.height - toastFrame.size.height - _contentInset.bottom;
             break;
         default:
-            toastFrame.origin.x = (view.bounds.size.width - toastFrame.size.width) / 2;
-            toastFrame.origin.y = (view.bounds.size.height - toastFrame.size.height) / 2;
+            toastFrame.origin.x = (size.width - toastFrame.size.width) / 2;
+            toastFrame.origin.y = (size.height - toastFrame.size.height) / 2;
             break;
     }
     //
     if (self.touchsLocked) {
-        self.frame = view.bounds;
+        self.frame = CGRectMake(0, 0, size.width, size.height);
         self.bubbleView.frame = toastFrame;
     } else {
         self.frame = toastFrame;
@@ -207,8 +198,8 @@
     } else if (self.imageView) {
         self.imageView.center = CGPointMake(toastFrame.size.width / 2, _contentMargin + self.imageView.bounds.size.height / 2);
     }
-    if (self.messageLabel) {
-        CGRect frame = self.messageLabel.frame;
+    if (self.textLabel) {
+        CGRect frame = self.textLabel.frame;
         frame.origin.x = (toastFrame.size.width - frame.size.width) / 2;
         if (self.activityView) {
             frame.origin.y = _contentPadding + self.activityView.frame.origin.y + self.activityView.frame.size.height;
@@ -217,8 +208,24 @@
         } else {
             frame.origin.y = _contentMargin;
         }
-        self.messageLabel.frame = frame;
+        self.textLabel.frame = frame;
     }
+}
+
+#pragma mark Show
+
+- (void)showInView:(UIView *)view {
+    if (view == nil) {
+        return;
+    }
+    if (self.activityView == nil && self.textLabel == nil && self.imageView == nil) {
+        return;
+    }
+    //
+    _bubbleView.layer.cornerRadius = _contentMargin / 2;
+    _bubbleView.layer.masksToBounds = YES;
+    //
+    [self sizeToFit:view.bounds.size];
     //
     if (self.isTapToDismiss && self.activityView == nil) {
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onBubble:)];
@@ -252,6 +259,16 @@
         }
     } else {
         [self show];
+    }
+}
+
+- (void)showStatus:(NSString *)text {
+    if (self.textLabel) {
+        self.textLabel.text = text;
+        //
+        if (self.superview) {
+            [self sizeToFit:self.superview.bounds.size];
+        }
     }
 }
 

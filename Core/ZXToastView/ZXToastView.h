@@ -55,9 +55,9 @@ typedef NS_ENUM(NSInteger, ZXToastPosition) {
 @property (nonatomic, readonly) UIActivityIndicatorView *activityView;
 
 /**
- The message label
+ The text label
  */
-@property (nonatomic, readonly) UILabel *messageLabel;
+@property (nonatomic, readonly) UILabel *textLabel;
 
 /**
  The image view
@@ -107,40 +107,40 @@ typedef NS_ENUM(NSInteger, ZXToastPosition) {
 /**
  Init toast activity view
 
- @param message The message to be displayed
+ @param text The text to be displayed
  @return The instance
  */
-- (instancetype)initWithActivity:(NSString *)message;
+- (instancetype)initWithActivity:(NSString *)text;
 
 /**
  Creates a new toast view
 
- @param message The message to be displayed
+ @param text The text to be displayed
  @return The instance
  */
-- (instancetype)initWithMessage:(NSString *)message;
+- (instancetype)initWithText:(NSString *)text;
 
 /**
  Creates a new toast view
 
- @param message The message to be displayed
+ @param text The text to be displayed
  @param duration The toast duration
  @return The instance
  */
-- (instancetype)initWithMessage:(NSString *)message
-                       duration:(NSTimeInterval)duration;
+- (instancetype)initWithText:(NSString *)text
+                    duration:(NSTimeInterval)duration;
 
 /**
  Creates a new toast view
 
- @param message The message to be displayed
+ @param text The text to be displayed
  @param duration The toast duration
  @param image The image
  @return The instance
  */
-- (instancetype)initWithMessage:(NSString *)message
-                       duration:(NSTimeInterval)duration
-                          image:(UIImage *)image;
+- (instancetype)initWithText:(NSString *)text
+                    duration:(NSTimeInterval)duration
+                       image:(UIImage *)image;
 
 /**
  Show toast in view
@@ -148,6 +148,13 @@ typedef NS_ENUM(NSInteger, ZXToastPosition) {
  @param view The superview
  */
 - (void)showInView:(UIView *)view;
+
+/**
+ Show the status text
+ 
+ @param text The text to be displayed
+ */
+- (void)showStatus:(NSString *)text;
 
 /**
  Hide the toast
