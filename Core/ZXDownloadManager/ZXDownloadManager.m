@@ -237,7 +237,7 @@
         if ([downloadTasks count] == 0) {
             if (weakSelf.backgroundCompletionHandler != nil) {
                 // Copy locally the completion handler.
-                void(^completionHandler)() = weakSelf.backgroundCompletionHandler;
+                void(^completionHandler)(void) = weakSelf.backgroundCompletionHandler;
                 
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     // Call the completion handler to tell the system that there are no other background transfers.

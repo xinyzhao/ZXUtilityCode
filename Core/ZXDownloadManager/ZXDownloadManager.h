@@ -54,7 +54,7 @@
 /**
  Set in [UIApplicationDelegate application:handleEventsForBackgroundURLSession:completionHandler:]
  */
-@property (nonatomic, strong, nullable) void(^backgroundCompletionHandler)();
+@property (nonatomic, strong, nullable) void(^backgroundCompletionHandler)(void);
 
 /**
  Create or got exist download task with URL
