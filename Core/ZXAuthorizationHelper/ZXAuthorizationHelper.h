@@ -68,7 +68,7 @@
 
 /**
  相册权限
- Add NSPhotoLibraryUsageDescription to info.plist
+ Add NSPhotoLibraryAddUsageDescription/NSPhotoLibraryUsageDescription to info.plist
 
  @param handler Authorization handler
  */
