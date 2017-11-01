@@ -122,6 +122,11 @@ static NSString * const _reuseIdentifier = @"ZXImageViewCell";
     [self.collectionView reloadData];
 }
 
+- (NSInteger)indexForVisibleItem {
+    NSIndexPath *indexPath = [[self.collectionView indexPathsForVisibleItems] firstObject];
+    return indexPath ? indexPath.row : NSNotFound;
+}
+
 - (void)scrollToItemAtIndex:(NSUInteger)index animated:(BOOL)animated {
     if (index < self.numberOfItems) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];

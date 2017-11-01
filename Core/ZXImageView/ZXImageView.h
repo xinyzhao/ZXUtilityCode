@@ -80,6 +80,12 @@
 - (void)reloadData;
 
 /**
+ Get the index for visible item
+ @return The index
+ */
+- (NSInteger)indexForVisibleItem;
+
+/**
  Scroll to specified item
 
  @param index Index of item
