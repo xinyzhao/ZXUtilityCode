@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.8.4"
+  s.version      = "1.8.5"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -132,11 +132,6 @@ Pod::Spec.new do |s|
   s.subspec "UIView+Snapshot" do |ss|
     ss.source_files  = "Core/UIView+Snapshot/*.{h,m}"
     ss.public_header_files = "Core/UIView+Snapshot/*.h"
-  end
-  
-  s.subspec "UIViewController+Extra" do |ss|
-    ss.source_files  = "Core/UIViewController+Extra/*.{h,m}"
-    ss.public_header_files = "Core/UIViewController+Extra/*.h"
   end
 
   s.subspec "ZXAlertView" do |ss|

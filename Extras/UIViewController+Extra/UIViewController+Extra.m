@@ -29,7 +29,6 @@
 #pragma mark - Back Bar Button Item
 
 - (void)setBackItemImage:(UIImage *)image {
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image
                                                                              style:self.navigationItem.backBarButtonItem.style
                                                                             target:self
@@ -50,12 +49,10 @@
     [button setImageEdgeInsets:UIEdgeInsetsMake(0, -8, 0, 0)];
     [button addTarget:self action:@selector(onBack:) forControlEvents:UIControlEventTouchUpInside];
     //
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
 - (void)setBackItemTitle:(NSString *)title {
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:title
                                                                              style:self.navigationItem.backBarButtonItem.style
                                                                             target:self
