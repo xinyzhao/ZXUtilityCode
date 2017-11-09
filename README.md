@@ -45,6 +45,7 @@ pod "ZXUtilityCode"
 * UINetworkActivityIndicator
 * UITableViewCell+Separator
 * UIView+Snapshot
+* UIViewController+Extra
 * ZXAlertView
 * ZXAuthorizationHelper
 * ZXBadgeLabel
@@ -69,7 +70,6 @@ pod "ZXUtilityCode"
 * AMRPlayer
 * BDLocationManager
 * Coordinates
-* UIViewController+Extra
 * ZXColorPickerController
 
 ## License

@@ -134,6 +134,11 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/UIView+Snapshot/*.h"
   end
 
+  s.subspec "UIViewController+Extra" do |ss|
+    ss.source_files  = "Core/UIViewController+Extra/*.{h,m}"
+    ss.public_header_files = "Core/UIViewController+Extra/*.h"
+  end
+
   s.subspec "ZXAlertView" do |ss|
     ss.source_files  = "Core/ZXAlertView/*.{h,m}"
     ss.public_header_files = "Core/ZXAlertView/*.h"
