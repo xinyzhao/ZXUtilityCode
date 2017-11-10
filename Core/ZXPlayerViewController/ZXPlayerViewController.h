@@ -39,6 +39,7 @@
 
 @property (nonatomic, copy) void (^playerStatus)(AVPlayerStatus status, NSError *error);
 @property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
+@property (nonatomic, copy) void (^playbackDidEnd)(void);
 @property (nonatomic, copy) void (^loadedTime)(NSTimeInterval time, NSTimeInterval duration);
 
 @property (nonatomic, assign) CGFloat velocityOfSeeking; // Default is 1.0

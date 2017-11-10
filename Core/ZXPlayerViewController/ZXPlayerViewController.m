@@ -81,7 +81,7 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return _shouldAutorotate ? _supportedInterfaceOrientations : UIInterfaceOrientationMaskPortrait;
+    return _supportedInterfaceOrientations;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
@@ -318,6 +318,10 @@
 
 - (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
     [self pause];
+    //
+    if (_playbackDidEnd) {
+        _playbackDidEnd();
+    }
 }
 
 #pragma mark <NSKeyValueObserving>
