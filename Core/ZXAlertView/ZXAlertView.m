@@ -24,18 +24,6 @@
 
 #import "ZXAlertView.h"
 
-#ifndef _SYSTEM_VERSION_
-#define _SYSTEM_VERSION_    [[UIDevice currentDevice].systemVersion floatValue]
-#endif//_SYSTEM_VERSION_
-
-#ifndef _IOS_8_OR_EARLY_
-#define _IOS_8_OR_EARLY_    (_SYSTEM_VERSION_ <  8.0)
-#endif//_IOS_8_OR_EARLY_
-
-#ifndef _IOS_8_OR_LATER_
-#define _IOS_8_OR_LATER_    (_SYSTEM_VERSION_ >= 8.0)
-#endif//_IOS_8_OR_LATER_
-
 typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 
 @interface ZXAlertAction ()
@@ -62,7 +50,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 
 @interface ZXAlertView () <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) NSMutableArray *alertActions;
-@property (nonatomic, strong) UIAlertController *alertController;
+@property (nonatomic, strong) UIAlertController *alertController NS_AVAILABLE_IOS(8_0);
 @property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) UIActionSheet *actionSheet;
 @property (nonatomic, strong) NSMutableArray<UITextField *> *textFieldArray;
@@ -78,34 +66,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
         self.message = message;
         self.textFieldArray = [[NSMutableArray alloc] init];
         //
-        if (_IOS_8_OR_EARLY_) {
-            //
-            self.alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelAction.title otherButtonTitles:nil];
-            [self.alertView insertSubview:self atIndex:0];
-            //
-            self.alertActions = [NSMutableArray array];
-            if (cancelAction) {
-                [self.alertActions addObject:cancelAction];
-            }
-            //
-            if (otherActions) {
-                [self.alertActions addObject:otherActions];
-                [self.alertView addButtonWithTitle:otherActions.title ? otherActions.title : @""];
-                //
-                va_list vaList;
-                va_start(vaList, otherActions);
-                id obj;
-                while ((obj = va_arg(vaList, id))) {
-                    if ([obj isKindOfClass:[ZXAlertAction class]]) {
-                        ZXAlertAction *otherAction = obj;
-                        [self.alertActions addObject:obj];
-                        [self.alertView addButtonWithTitle:otherAction.title];
-                    }
-                }
-                va_end(vaList);
-            }
-            
-        } else {
+        if (@available(iOS 8.0, *)) {
             //
             self.alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
             if (cancelAction) {
@@ -141,6 +102,33 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
                 }
                 va_end(vaList);
             }
+            
+        } else {
+            //
+            self.alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelAction.title otherButtonTitles:nil];
+            [self.alertView insertSubview:self atIndex:0];
+            //
+            self.alertActions = [NSMutableArray array];
+            if (cancelAction) {
+                [self.alertActions addObject:cancelAction];
+            }
+            //
+            if (otherActions) {
+                [self.alertActions addObject:otherActions];
+                [self.alertView addButtonWithTitle:otherActions.title ? otherActions.title : @""];
+                //
+                va_list vaList;
+                va_start(vaList, otherActions);
+                id obj;
+                while ((obj = va_arg(vaList, id))) {
+                    if ([obj isKindOfClass:[ZXAlertAction class]]) {
+                        ZXAlertAction *otherAction = obj;
+                        [self.alertActions addObject:obj];
+                        [self.alertView addButtonWithTitle:otherAction.title];
+                    }
+                }
+                va_end(vaList);
+            }
         }
     }
     //
@@ -154,38 +142,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
         self.message = message;
         self.textFieldArray = [[NSMutableArray alloc] init];
         //
-        if (_IOS_8_OR_EARLY_) {
-            //
-            self.actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:cancelAction.title destructiveButtonTitle:destructiveAction.title otherButtonTitles:nil];
-            [self.actionSheet insertSubview:self atIndex:0];
-            //
-            self.alertActions = [NSMutableArray array];
-            if (destructiveAction) {
-                [self.alertActions addObject:destructiveAction];
-            }
-            //
-            if (otherActions) {
-                [self.alertActions addObject:otherActions];
-                [self.actionSheet addButtonWithTitle:otherActions.title ? otherActions.title : @""];
-                //
-                va_list vaList;
-                va_start(vaList, otherActions);
-                id obj;
-                while ((obj = va_arg(vaList, id))) {
-                    if ([obj isKindOfClass:[ZXAlertAction class]]) {
-                        ZXAlertAction *otherAction = obj;
-                        [self.alertActions addObject:obj];
-                        [self.actionSheet addButtonWithTitle:otherAction.title];
-                    }
-                }
-                va_end(vaList);
-            }
-            //
-            if (cancelAction) {
-                [self.alertActions addObject:cancelAction];
-            }
-            
-        } else {
+        if (@available(iOS 8.0, *)) {
             //
             self.alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleActionSheet];
             //
@@ -231,6 +188,37 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
                 }
                 va_end(vaList);
             }
+            
+        } else {
+            //
+            self.actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:cancelAction.title destructiveButtonTitle:destructiveAction.title otherButtonTitles:nil];
+            [self.actionSheet insertSubview:self atIndex:0];
+            //
+            self.alertActions = [NSMutableArray array];
+            if (destructiveAction) {
+                [self.alertActions addObject:destructiveAction];
+            }
+            //
+            if (otherActions) {
+                [self.alertActions addObject:otherActions];
+                [self.actionSheet addButtonWithTitle:otherActions.title ? otherActions.title : @""];
+                //
+                va_list vaList;
+                va_start(vaList, otherActions);
+                id obj;
+                while ((obj = va_arg(vaList, id))) {
+                    if ([obj isKindOfClass:[ZXAlertAction class]]) {
+                        ZXAlertAction *otherAction = obj;
+                        [self.alertActions addObject:obj];
+                        [self.actionSheet addButtonWithTitle:otherAction.title];
+                    }
+                }
+                va_end(vaList);
+            }
+            //
+            if (cancelAction) {
+                [self.alertActions addObject:cancelAction];
+            }
         }
     }
     //
@@ -238,15 +226,7 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 }
 
 - (void)addTextField:(void (^)(UITextField *textField))configurationHandler {
-    if (_IOS_8_OR_EARLY_) {
-        UITextField *textField = [self.alertView textFieldAtIndex:self.textFieldArray.count];
-        if (textField) {
-            [self.textFieldArray addObject:textField];
-        }
-        if (configurationHandler) {
-            configurationHandler(textField);
-        }
-    } else {
+    if (@available(iOS 8.0, *)) {
         __weak typeof(self) weakSelf = self;
         [self.alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
             [weakSelf.textFieldArray addObject:textField];
@@ -254,6 +234,15 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
                 configurationHandler(textField);
             }
         }];
+        
+    } else {
+        UITextField *textField = [self.alertView textFieldAtIndex:self.textFieldArray.count];
+        if (textField) {
+            [self.textFieldArray addObject:textField];
+        }
+        if (configurationHandler) {
+            configurationHandler(textField);
+        }
     }
 }
 
@@ -262,19 +251,21 @@ typedef void (^ZXAlertActionHandler)(ZXAlertAction *action);
 }
 
 - (void)showInViewController:(UIViewController *)viewController {
-    if (_IOS_8_OR_EARLY_) {
-        if (self.alertView) {
-            [self.alertView show];
+    if (@available(iOS 8.0, *)) {
+        if (self.alertController) {
+            [viewController presentViewController:self.alertController animated:YES completion:nil];
         }
-        if (self.actionSheet) {
-            if (viewController.tabBarController) {
-                [self.actionSheet showInView:[UIApplication sharedApplication].keyWindow];
-            } else {
-                [self.actionSheet showInView:viewController.view];
-            }
+        
+    } else if (self.actionSheet) {
+        if (viewController.tabBarController) {
+            [self.actionSheet showInView:[UIApplication sharedApplication].keyWindow];
+        } else {
+            [self.actionSheet showInView:viewController.view];
         }
-    } else if (self.alertController) {
-        [viewController presentViewController:self.alertController animated:YES completion:nil];
+
+    } else if (self.alertView) {
+        [self.alertView show];
+        
     }
 }
 

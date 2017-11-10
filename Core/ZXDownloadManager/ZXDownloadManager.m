@@ -52,10 +52,10 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         NSURLSessionConfiguration *backgroundConfiguration = nil;
-        if (NSFoundationVersionNumber < NSFoundationVersionNumber_iOS_8_0) {
-            backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[[NSBundle mainBundle] bundleIdentifier]];
-        } else {
+        if (@available(iOS 8.0, *)) {
             backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
+        } else {
+            backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[[NSBundle mainBundle] bundleIdentifier]];
         }
 #pragma clang diagnostic pop
         self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration

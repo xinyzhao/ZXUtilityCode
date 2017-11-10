@@ -29,7 +29,7 @@
 + (NSArray *)decodeQRCodeImage:(UIImage *)image {
     NSMutableArray *results = [NSMutableArray array];
     //
-    if ([UIDevice currentDevice].systemVersion.floatValue >= 8.f) {
+    if (@available(iOS 8.0, *)) {
         CIDetector *detector = [CIDetector detectorOfType:CIDetectorTypeQRCode context:nil options:@{CIDetectorAccuracy: CIDetectorAccuracyHigh}];
         NSArray *features = [detector featuresInImage:[CIImage imageWithCGImage:image.CGImage]];
         [features enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {

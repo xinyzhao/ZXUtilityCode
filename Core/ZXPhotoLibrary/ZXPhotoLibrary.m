@@ -24,18 +24,6 @@
 
 #import "ZXPhotoLibrary.h"
 
-#ifndef _SYSTEM_VERSION_
-#define _SYSTEM_VERSION_    [[UIDevice currentDevice].systemVersion floatValue]
-#endif//_SYSTEM_VERSION_
-
-#ifndef _IOS_8_OR_EARLY_
-#define _IOS_8_OR_EARLY_    (_SYSTEM_VERSION_ <  8.0)
-#endif//_IOS_8_OR_EARLY_
-
-#ifndef _IOS_8_OR_LATER_
-#define _IOS_8_OR_LATER_    (_SYSTEM_VERSION_ >= 8.0)
-#endif//_IOS_8_OR_LATER_
-
 @interface ZXPhotoLibrary () <PHPhotoLibraryChangeObserver>
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 @property (nonatomic, strong) NSMutableArray *changeObservers;
@@ -44,19 +32,19 @@
 
 @interface ZXPhotoGroup ()
 @property (nonatomic, strong) ALAssetsGroup *assetsGroup;
-@property (nonatomic, strong) PHAssetCollection *assetCollection;
+@property (nonatomic, strong) PHAssetCollection *assetCollection NS_AVAILABLE_IOS(8_0);
 
 - (instancetype)initWithAssetsGroup:(ALAssetsGroup *)assetsGroup;
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection NS_AVAILABLE_IOS(8_0);
 
 @end
 
 @interface ZXPhotoAsset ()
 @property (nonatomic, strong) ALAsset *alAsset;
-@property (nonatomic, strong) PHAsset *phAsset;
+@property (nonatomic, strong) PHAsset *phAsset NS_AVAILABLE_IOS(8_0);
 
 - (instancetype)initWithALAsset:(ALAsset *)asset;
-- (instancetype)initWithPHAsset:(PHAsset *)asset;
+- (instancetype)initWithPHAsset:(PHAsset *)asset NS_AVAILABLE_IOS(8_0);
 
 @end
 
@@ -77,10 +65,10 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 {
     self = [super init];
     if (self) {
-        if (_IOS_8_OR_EARLY_) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPhotoLibraryChanged:) name:ALAssetsLibraryChangedNotification object:nil];
-        } else {
+        if (@available(iOS 8.0, *)) {
             [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+        } else {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPhotoLibraryChanged:) name:ALAssetsLibraryChangedNotification object:nil];
         }
     }
     return self;
@@ -88,22 +76,17 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 
 - (void)dealloc
 {
-    if (_IOS_8_OR_EARLY_) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-    } else {
+    if (@available(iOS 8.0, *)) {
         [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
     }
 }
 
 #pragma mark Funcitons
 
 - (void)requestAuthorization:(void(^)(ZXAuthorizationStatus status))completion {
-    if (_IOS_8_OR_EARLY_) {
-        ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
-        if (completion) {
-            completion((NSInteger)status);
-        }
-    } else {
+    if (@available(iOS 8.0, *)) {
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         switch (status)
         {
@@ -129,6 +112,12 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
                 break;
             }
         }
+        
+    } else {
+        ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
+        if (completion) {
+            completion((NSInteger)status);
+        }
     }
 }
 
@@ -136,26 +125,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
     NSMutableArray<ZXPhotoGroup *> *groups = [NSMutableArray array];
     //
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
-            if (self.assetsLibrary == nil) {
-                self.assetsLibrary = [[ALAssetsLibrary alloc] init];
-            }
-            [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                if (group) {
-                    ZXPhotoGroup *obj = [[ZXPhotoGroup alloc] initWithAssetsGroup:group];
-                    if (allAlbums) {
-                        [groups addObject:obj];
-                    } else if (obj.numberOfAssets > 0) {
-                        [groups addObject:obj];
-                    }
-                } else if (completion) {
-                    completion(groups);
-                }
-            } failureBlock:^(NSError *error) {
-                NSLog(@"%s %@", __func__, error.localizedDescription);
-            }];
-            
-        } else {
+        if (@available(iOS 8.0, *)) {
             PHFetchResult<PHAssetCollection *> *smartAlbum = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
             [smartAlbum enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 ZXPhotoGroup *group = [[ZXPhotoGroup alloc] initWithAssetCollection:obj];
@@ -179,6 +149,25 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
             if (completion) {
                 completion(groups);
             }
+            
+        } else {
+            if (self.assetsLibrary == nil) {
+                self.assetsLibrary = [[ALAssetsLibrary alloc] init];
+            }
+            [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                if (group) {
+                    ZXPhotoGroup *obj = [[ZXPhotoGroup alloc] initWithAssetsGroup:group];
+                    if (allAlbums) {
+                        [groups addObject:obj];
+                    } else if (obj.numberOfAssets > 0) {
+                        [groups addObject:obj];
+                    }
+                } else if (completion) {
+                    completion(groups);
+                }
+            } failureBlock:^(NSError *error) {
+                NSLog(@"%s %@", __func__, error.localizedDescription);
+            }];
         }
     }
 }
@@ -187,21 +176,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
     NSMutableArray<ZXPhotoAsset *> *assets = [NSMutableArray array];
     //
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
-            [self fetchGroupsWithAllAlbums:NO completion:^(NSArray<ZXPhotoGroup *> *groups) {
-                [groups enumerateObjectsUsingBlock:^(ZXPhotoGroup * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    [obj fetchAssetsWithAscending:ascending completion:^(NSArray<ZXPhotoAsset *> *results) {
-                        [assets addObjectsFromArray:results];
-                    }];
-                }];
-                //
-                if (completion) {
-                    completion(assets);
-                }
-            }];
-            
-            
-        } else {
+        if (@available(iOS 8.0, *)) {
             PHFetchOptions *options = [[PHFetchOptions alloc] init];
             options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:ascending]];
             PHFetchResult *result = [PHAsset fetchAssetsWithOptions:options];
@@ -215,6 +190,20 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
             if (completion) {
                 completion(assets);
             }
+            
+        } else {
+            [self fetchGroupsWithAllAlbums:NO completion:^(NSArray<ZXPhotoGroup *> *groups) {
+                [groups enumerateObjectsUsingBlock:^(ZXPhotoGroup * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [obj fetchAssetsWithAscending:ascending completion:^(NSArray<ZXPhotoAsset *> *results) {
+                        [assets addObjectsFromArray:results];
+                    }];
+                }];
+                //
+                if (completion) {
+                    completion(assets);
+                }
+            }];
+            
         }
     }
 }
@@ -248,7 +237,7 @@ static ZXPhotoLibrary *_defaultLibrary = nil;
 
 #pragma mark <PHPhotoLibraryChangeObserver>
 
-- (void)photoLibraryDidChange:(PHChange *)changeInstance {
+- (void)photoLibraryDidChange:(PHChange *)changeInstance __IOS_AVAILABLE(8_0) {
     [self.changeObservers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj respondsToSelector:@selector(photoLibraryDidChange:)]) {
             [obj photoLibraryDidChange:changeInstance];
@@ -268,12 +257,7 @@ typedef void (^_saveImageBlock)(NSError *error);
         saveQueue = dispatch_queue_create("photo.library.save.queue", NULL);
     });
     //
-    if (_IOS_8_OR_EARLY_) {
-        __weak typeof(self) weakSelf = self;
-        dispatch_async(saveQueue, ^{
-            UIImageWriteToSavedPhotosAlbum(image, weakSelf, @selector(image:didFinishSavingWithError:contextInfo:), (__bridge void *)completion);
-        });
-    } else {
+    if (@available(iOS 9.0, *)) {
         void (^completionHandler)(NSError *error) = ^(NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completion) {
@@ -329,6 +313,12 @@ typedef void (^_saveImageBlock)(NSError *error);
                 completionHandler(error);
             };
         });
+        
+    } else {
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(saveQueue, ^{
+            UIImageWriteToSavedPhotosAlbum(image, weakSelf, @selector(image:didFinishSavingWithError:contextInfo:), (__bridge void *)completion);
+        });
     }
 }
 
@@ -364,10 +354,10 @@ typedef void (^_saveImageBlock)(NSError *error);
 }
 
 - (NSString *)groupName {
-    if (_IOS_8_OR_EARLY_) {
-        return [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName];
-    } else {
+    if (@available(iOS 8.0, *)) {
         return self.assetCollection.localizedTitle;
+    } else {
+        return [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName];
     }
 }
 
@@ -375,13 +365,7 @@ typedef void (^_saveImageBlock)(NSError *error);
     __block UIImage *image = nil;
     //
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
-            CGImageRef imageRef = [self.assetsGroup posterImage];
-            if (imageRef) {
-                image = [UIImage imageWithCGImage:[self.assetsGroup posterImage]];
-            }
-            
-        } else {
+        if (@available(iOS 8.0, *)) {
             PHFetchOptions *options = [[PHFetchOptions alloc] init];
             options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
             PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:options];
@@ -395,6 +379,12 @@ typedef void (^_saveImageBlock)(NSError *error);
                     *stop = YES;
                 }
             }];
+            
+        } else {
+            CGImageRef imageRef = [self.assetsGroup posterImage];
+            if (imageRef) {
+                image = [UIImage imageWithCGImage:[self.assetsGroup posterImage]];
+            }
         }
     }
     //
@@ -404,7 +394,13 @@ typedef void (^_saveImageBlock)(NSError *error);
 - (NSUInteger)numberOfAssetsWithMediaType:(ZXAssetMediaType)type {
     NSUInteger count = 0;
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
+        if (@available(iOS 8.0, *)) {
+            if (self.assetCollection) {
+                PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:nil];
+                count = [assets countOfAssetsWithMediaType:(NSInteger)type];
+            }
+
+        } else {
             ALAssetsFilter *filter = nil;
             if (type == ZXAssetMediaTypeImage) {
                 filter = [ALAssetsFilter allPhotos];
@@ -415,9 +411,6 @@ typedef void (^_saveImageBlock)(NSError *error);
                 [self.assetsGroup setAssetsFilter:filter];
                 count = [self.assetsGroup numberOfAssets];
             }
-        } else if (self.assetCollection) {
-            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:nil];
-            count = [assets countOfAssetsWithMediaType:(NSInteger)type];
         }
     }
     return count;
@@ -427,7 +420,18 @@ typedef void (^_saveImageBlock)(NSError *error);
     NSMutableArray<ZXPhotoAsset *> *assets = [NSMutableArray array];
     //
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
+        if (@available(iOS 8.0, *)) {
+            PHFetchOptions *options = [[PHFetchOptions alloc] init];
+            options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:ascending]];
+            PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:options];
+            [result enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                ZXPhotoAsset *asset = [[ZXPhotoAsset alloc] initWithPHAsset:obj];
+                if (asset.mediaType == ZXAssetMediaTypeImage || asset.mediaType == ZXAssetMediaTypeVideo) {
+                    [assets addObject:asset];
+                }
+            }];
+            
+        } else {
             [self.assetsGroup setAssetsFilter:[ALAssetsFilter allAssets]];
             if (ascending) {
                 [self.assetsGroup enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
@@ -449,16 +453,6 @@ typedef void (^_saveImageBlock)(NSError *error);
                 }];
             }
             
-        } else {
-            PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:ascending]];
-            PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:options];
-            [result enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                ZXPhotoAsset *asset = [[ZXPhotoAsset alloc] initWithPHAsset:obj];
-                if (asset.mediaType == ZXAssetMediaTypeImage || asset.mediaType == ZXAssetMediaTypeVideo) {
-                    [assets addObject:asset];
-                }
-            }];
         }
     }
     //
@@ -470,12 +464,15 @@ typedef void (^_saveImageBlock)(NSError *error);
 - (NSUInteger)numberOfAssets {
     NSInteger count = 0;
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
+        if (@available(iOS 8.0, *)) {
+            if (self.assetCollection) {
+                PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:nil];
+                count = assets.count;
+            }
+
+        } else {
             [self.assetsGroup setAssetsFilter:[ALAssetsFilter allAssets]];
             count = self.assetsGroup.numberOfAssets;
-        } else if (self.assetCollection) {
-            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:nil];
-            count = assets.count;
         }
     }
     return count;
@@ -504,7 +501,9 @@ typedef void (^_saveImageBlock)(NSError *error);
 }
 
 - (ZXAssetMediaType)mediaType {
-    if (_IOS_8_OR_EARLY_) {
+    if (@available(iOS 8.0, *)) {
+        return (NSInteger)self.phAsset.mediaType;
+    } else {
         NSString *type = [self.alAsset valueForProperty:ALAssetPropertyType];
         if ([type isEqualToString:ALAssetTypePhoto]) {
             return ZXAssetMediaTypeImage;
@@ -513,8 +512,6 @@ typedef void (^_saveImageBlock)(NSError *error);
         } else {
             return ZXAssetMediaTypeUnknown;
         }
-    } else {
-        return (NSInteger)self.phAsset.mediaType;
     }
 }
 
@@ -527,21 +524,21 @@ typedef void (^_saveImageBlock)(NSError *error);
 
 - (CGSize)pixelSize {
     CGSize size = CGSizeZero;
-    if (_IOS_8_OR_EARLY_) {
-        size = [self.alAsset defaultRepresentation].dimensions;
-    } else {
+    if (@available(iOS 8.0, *)) {
         size.width = self.phAsset.pixelWidth;
         size.height = self.phAsset.pixelHeight;
+    } else {
+        size = [self.alAsset defaultRepresentation].dimensions;
     }
     return size;
 }
 
 - (NSUInteger)numberOfBytes {
     NSUInteger bytes = 0;
-    if (_IOS_8_OR_EARLY_) {
-        bytes = [NSNumber numberWithLongLong:[self.alAsset defaultRepresentation].size].unsignedIntegerValue;
-    } else {
+    if (@available(iOS 8.0, *)) {
         bytes = self.imageData.length;
+    } else {
+        bytes = [NSNumber numberWithLongLong:[self.alAsset defaultRepresentation].size].unsignedIntegerValue;
     }
     return bytes;
 }
@@ -549,14 +546,16 @@ typedef void (^_saveImageBlock)(NSError *error);
 - (UIImageOrientation)orientation {
     UIImageOrientation orientation = UIImageOrientationUp;
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
+        if (@available(iOS 8.0, *)) {
+            if (self.phAsset) {
+                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+                options.synchronous = YES;
+                [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                    orientation = orientation;
+                }];
+            }
+        } else {
             orientation = (NSInteger)[self.alAsset defaultRepresentation].orientation;
-        } else if (self.phAsset) {
-            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-            options.synchronous = YES;
-            [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                orientation = orientation;
-            }];
         }
     }
     return orientation;
@@ -566,7 +565,16 @@ typedef void (^_saveImageBlock)(NSError *error);
     __block NSData *data = nil;
     //
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
+        if (@available(iOS 8.0, *)) {
+            if (self.phAsset) {
+                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+                options.synchronous = YES;
+                [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                    data = imageData;
+                }];
+            }
+            
+        } else {
             ALAssetRepresentation *rep = [self.alAsset defaultRepresentation];
             NSUInteger bytes = [NSNumber numberWithLongLong:rep.size].unsignedIntegerValue;
             uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t) * bytes);
@@ -576,12 +584,6 @@ typedef void (^_saveImageBlock)(NSError *error);
                 data = [NSData dataWithBytes:buffer length:length];
                 free(buffer);
             }
-        } else if (self.phAsset) {
-            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-            options.synchronous = YES;
-            [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                data = imageData;
-            }];
         }
     }
     //
@@ -607,7 +609,18 @@ typedef void (^_saveImageBlock)(NSError *error);
     }
     //
     @autoreleasepool {
-        if (_IOS_8_OR_EARLY_) {
+        if (@available(iOS 8.0, *)) {
+            if (self.phAsset) {
+                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+                options.synchronous = YES;
+                options.resizeMode = PHImageRequestOptionsResizeModeExact;
+                //
+                [[PHImageManager defaultManager] requestImageForAsset:self.phAsset targetSize:thumbSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                    image = result;
+                }];
+            }
+            
+        } else {
             NSData *imageData = self.imageData;
             if (imageData) {
                 CGImageSourceRef sourceRef = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
@@ -624,15 +637,6 @@ typedef void (^_saveImageBlock)(NSError *error);
                     CFRelease(sourceRef);
                 }
             }
-            
-        } else if (self.phAsset) {
-            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-            options.synchronous = YES;
-            options.resizeMode = PHImageRequestOptionsResizeModeExact;
-            //
-            [[PHImageManager defaultManager] requestImageForAsset:self.phAsset targetSize:thumbSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-                image = result;
-            }];
         }
     }
     //

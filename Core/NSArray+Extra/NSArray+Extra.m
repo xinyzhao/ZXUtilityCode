@@ -35,7 +35,7 @@
         Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
         method_exchangeImplementations(originalMethod, swizzledMethod);
         //
-        if ([[UIDevice currentDevice].systemVersion floatValue] >= 11.0) {
+        if (@available(iOS 11.0, *)) {
             Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndexedSubscript:));
             Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndexedSubscript:));
             method_exchangeImplementations(originalMethod, swizzledMethod);
@@ -69,7 +69,7 @@
         Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndex:));
         method_exchangeImplementations(originalMethod, swizzledMethod);
         //
-        if ([[UIDevice currentDevice].systemVersion floatValue] >= 11.0) {
+        if (@available(iOS 11.0, *)) {
             Method originalMethod = class_getInstanceMethod(class, @selector(objectAtIndexedSubscript:));
             Method swizzledMethod = class_getInstanceMethod(class, @selector(objectByIndexedSubscript:));
             method_exchangeImplementations(originalMethod, swizzledMethod);

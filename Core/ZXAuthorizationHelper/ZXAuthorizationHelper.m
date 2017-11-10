@@ -46,7 +46,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 }
 
 + (void)requestAuthorizationForCamera:(void(^)(AVAuthorizationStatus status))handler {
-    if ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0) {
+    if (@available(iOS 7.0, *)) {
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
         if (status == AVAuthorizationStatusNotDetermined) {
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
@@ -63,17 +63,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 }
 
 + (void)requestAuthorizationForContacts:(void(^)(AVAuthorizationStatus status))handler {
-    if ([[UIDevice currentDevice].systemVersion floatValue] < 9.0) {
-        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-            CFRelease(addressBook);
-            if (handler) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
-                });
-            }
-        });
-    } else {
+    if (@available(iOS 9.0, *)) {
         CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
         if (status == CNAuthorizationStatusNotDetermined) {
             CNContactStore *contactStore = [[CNContactStore alloc] init];
@@ -87,6 +77,16 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
         } else if (handler) {
             handler((NSInteger)status);
         }
+    } else {
+        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+            CFRelease(addressBook);
+            if (handler) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    handler(granted ? AVAuthorizationStatusAuthorized : AVAuthorizationStatusDenied);
+                });
+            }
+        });
     }
 }
 
@@ -94,7 +94,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
     if ([CLLocationManager locationServicesEnabled]) {
         CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
         if (status == kCLAuthorizationStatusNotDetermined) {
-            if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
+            if (@available(iOS 8.0, *)) {
                 ZXAuthorizationHelper *manager = [ZXAuthorizationHelper defaultManager];
                 if (manager.locationManager == nil) {
                     manager.locationManager = [[CLLocationManager alloc] init];
@@ -115,7 +115,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 }
 
 + (void)requestAuthorizationForMicrophone:(void(^)(AVAuthorizationStatus status))handler {
-    if ([[UIDevice currentDevice].systemVersion floatValue] >= 7.0) {
+    if (@available(iOS 7.0, *)) {
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
         if (status == AVAuthorizationStatusNotDetermined) {
             [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
@@ -139,12 +139,7 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
 }
 
 + (void)requestAuthorizationForPhotoLibrary:(void(^)(AVAuthorizationStatus status))handler {
-    if ([[UIDevice currentDevice].systemVersion floatValue] < 8.0) {
-        ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
-        if (handler) {
-            handler((NSInteger)status);
-        }
-    } else {
+    if (@available(iOS 8.0, *)) {
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         if (status == PHAuthorizationStatusNotDetermined) {
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
@@ -155,7 +150,12 @@ typedef void(^CLAuthorizationHandler)(CLAuthorizationStatus status);
                 }
             }];
         } else if (handler) {
-           handler((NSInteger)status);
+            handler((NSInteger)status);
+        }
+    } else {
+        ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
+        if (handler) {
+            handler((NSInteger)status);
         }
     }
 }
