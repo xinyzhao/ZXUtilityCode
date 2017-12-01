@@ -29,25 +29,65 @@
 #include <ifaddrs.h>
 #include <net/if_dl.h>
 
+@interface ZXNetworkTrafficData : NSObject
+@property (nonatomic, assign) int64_t WiFiSent;
+@property (nonatomic, assign) int64_t WiFiReceived;
+@property (nonatomic, assign) int64_t WWANSent;
+@property (nonatomic, assign) int64_t WWANReceived;
+
+@end
+
+@implementation ZXNetworkTrafficData
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _WiFiSent = 0;
+        _WiFiReceived = 0;
+        _WWANSent = 0;
+        _WWANReceived = 0;
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    ZXNetworkTrafficData *obj = [[[self class] allocWithZone:zone] init];
+    obj.WiFiSent = _WiFiSent;
+    obj.WiFiReceived = _WiFiReceived;
+    obj.WWANSent = _WWANSent;
+    obj.WWANReceived = _WWANReceived;
+    return obj;
+}
+
+@end
 
 @interface ZXNetworkTrafficMonitor ()
-@property (nonatomic, copy) ZXNetworkTrafficBlock trafficBlock;
-@property (nonatomic, strong) NSTimer *trafficTimer;
-@property (nonatomic, assign) NSUInteger trafficTimes;
+@property (nonatomic, copy) void(^trafficBlock)(ZXNetworkTrafficModel *WiFiSent, ZXNetworkTrafficModel *WiFiReceived, ZXNetworkTrafficModel *WWANSent, ZXNetworkTrafficModel *WWANReceived);
 
-@property (nonatomic, assign) NSUInteger WiFiSent;
-@property (nonatomic, assign) NSUInteger WiFiReceived;
-@property (nonatomic, assign) NSUInteger WWANSent;
-@property (nonatomic, assign) NSUInteger WWANReceived;
+@property (nonatomic, strong) ZXNetworkTrafficData *trafficData;
+@property (nonatomic, strong) NSTimer *trafficTimer;
+@property (nonatomic, assign) int64_t trafficTimes;
+
+@property (nonatomic, strong) ZXNetworkTrafficModel *WiFiSent;
+@property (nonatomic, strong) ZXNetworkTrafficModel *WiFiReceived;
+@property (nonatomic, strong) ZXNetworkTrafficModel *WWANSent;
+@property (nonatomic, strong) ZXNetworkTrafficModel *WWANReceived;
 
 @end
 
 @implementation ZXNetworkTrafficMonitor
 
-- (void)startMonitoring:(NSTimeInterval)timeInterval trafficBlock:(ZXNetworkTrafficBlock)trafficBlock {
+- (void)startMonitoring:(NSTimeInterval)timeInterval
+                traffic:(void(^)(ZXNetworkTrafficModel *WiFiSent, ZXNetworkTrafficModel *WiFiReceived, ZXNetworkTrafficModel *WWANSent, ZXNetworkTrafficModel *WWANReceived))trafficBlock {
     if (!self.isMonitoring) {
         _trafficBlock = [trafficBlock copy];
         _trafficTimes = 0;
+        //
+        _WiFiSent = [[ZXNetworkTrafficModel alloc] init];
+        _WiFiReceived = [[ZXNetworkTrafficModel alloc] init];
+        _WWANSent = [[ZXNetworkTrafficModel alloc] init];
+        _WWANReceived = [[ZXNetworkTrafficModel alloc] init];
         //
         self.trafficTimer = [NSTimer timerWithTimeInterval:timeInterval target:self selector:@selector(onTimer:) userInfo:nil repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:self.trafficTimer forMode:NSRunLoopCommonModes];
@@ -68,43 +108,40 @@
 }
 
 - (void)onTimer:(id)sender {
-    NSDictionary *dict = [self trafficData];
-    
-    NSUInteger WiFiSent = [dict[@"WiFiSent"] unsignedIntValue];
-    NSUInteger WiFiReceived = [dict[@"WiFiReceived"] unsignedIntValue];
-    NSUInteger WWANSent = [dict[@"WWANSent"] unsignedIntValue];
-    NSUInteger WWANReceived = [dict[@"WWANReceived"] unsignedIntValue];
-    
+    ZXNetworkTrafficData *trafficData = [self getTrafficData];
+    //
     if (_trafficTimes > 0) {
-        WiFiSent -= _WiFiSent;
-        WiFiReceived -= _WiFiReceived;
-        WWANSent -= _WWANSent;
-        WWANReceived -= _WWANReceived;
-        
+        int64_t WiFiSent = trafficData.WiFiSent - _trafficData.WiFiSent;
+        int64_t WiFiReceived = trafficData.WiFiReceived - _trafficData.WiFiReceived;
+        int64_t WWANSent = trafficData.WWANSent - _trafficData.WWANSent;
+        int64_t WWANReceived = trafficData.WWANReceived - _trafficData.WWANReceived;
+        //
+        [self setTrafficModel:_WiFiSent forBytes:WiFiSent];
+        [self setTrafficModel:_WiFiReceived forBytes:WiFiReceived];
+        [self setTrafficModel:_WWANSent forBytes:WWANSent];
+        [self setTrafficModel:_WWANReceived forBytes:WWANReceived];
+        //
         if (_trafficBlock) {
-            _trafficBlock(WiFiSent, WiFiReceived, WWANSent, WWANReceived);
+            _trafficBlock(_WiFiSent, _WiFiReceived, _WWANSent, _WWANReceived);
         }
     }
-    
+    //
+    self.trafficData = trafficData;
     _trafficTimes++;
-    _WiFiSent = [dict[@"WiFiSent"] unsignedIntValue];
-    _WiFiReceived = [dict[@"WiFiReceived"] unsignedIntValue];
-    _WWANSent = [dict[@"WWANSent"] unsignedIntValue];
-    _WWANReceived = [dict[@"WWANReceived"] unsignedIntValue];
 }
 
 /**
  Reference http://stackoverflow.com/questions/7946699/iphone-data-usage-tracking-monitoring
  */
-- (NSDictionary *)trafficData {
+- (ZXNetworkTrafficData *)getTrafficData {
     struct ifaddrs *addrs;
     const struct ifaddrs *cursor;
-    
+    //
     u_int32_t WiFiSent = 0;
     u_int32_t WiFiReceived = 0;
     u_int32_t WWANSent = 0;
     u_int32_t WWANReceived = 0;
-    
+    //
     if (getifaddrs(&addrs) == 0) {
         cursor = addrs;
         while (cursor != NULL) {
@@ -138,11 +175,46 @@
         
         freeifaddrs(addrs);
     }
-    
-    return @{@"WiFiSent":@(WiFiSent),
-             @"WiFiReceived":@(WiFiReceived),
-             @"WWANSent":@(WWANSent),
-             @"WWANReceived":@(WWANReceived)};
+    //
+    ZXNetworkTrafficData *trafficData = [[ZXNetworkTrafficData alloc] init];
+    trafficData.WiFiSent = WiFiSent;
+    trafficData.WiFiReceived = WiFiReceived;
+    trafficData.WWANSent = WWANSent;
+    trafficData.WWANReceived = WWANReceived;
+    return trafficData;
+}
+
+- (void)setTrafficModel:(ZXNetworkTrafficModel *)model forBytes:(int64_t)bytes {
+    model.range = bytes - model.bytes;
+    model.bytes = bytes;
+    model.total += ABS(model.range);
+    model.count++;
 }
 
 @end
+
+@implementation ZXNetworkTrafficModel
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _bytes = 0;
+        _range = 0;
+        _total = 0;
+        _count = 0;
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    ZXNetworkTrafficModel *obj = [[[self class] allocWithZone:zone] init];
+    obj.bytes = _bytes;
+    obj.range = _range;
+    obj.total = _total;
+    obj.count = _count;
+    return obj;
+}
+
+@end
+

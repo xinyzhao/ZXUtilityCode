@@ -24,10 +24,7 @@
 
 #import <Foundation/Foundation.h>
 
-/**
- ZXNetworkTrafficBlock
- */
-typedef void(^ZXNetworkTrafficBlock)(NSUInteger WiFiSent, NSUInteger WiFiReceived, NSUInteger WWANSent, NSUInteger WWANReceived);
+@class ZXNetworkTrafficModel;
 
 /**
  ZXNetworkTrafficMonitor
@@ -43,8 +40,9 @@ typedef void(^ZXNetworkTrafficBlock)(NSUInteger WiFiSent, NSUInteger WiFiReceive
  
  @param timeInterval Monitoring interval
  @param trafficBlock Traffic block
- */
-- (void)startMonitoring:(NSTimeInterval)timeInterval trafficBlock:(ZXNetworkTrafficBlock)trafficBlock;
+*/
+- (void)startMonitoring:(NSTimeInterval)timeInterval
+                traffic:(void(^)(ZXNetworkTrafficModel *WiFiSent, ZXNetworkTrafficModel *WiFiReceived, ZXNetworkTrafficModel *WWANSent, ZXNetworkTrafficModel *WWANReceived))trafficBlock;
 
 /**
  Stop Monitoring
@@ -52,3 +50,27 @@ typedef void(^ZXNetworkTrafficBlock)(NSUInteger WiFiSent, NSUInteger WiFiReceive
 - (void)stopMonitoring;
 
 @end
+
+/**
+ ZXNetworkTrafficModel
+ */
+@interface ZXNetworkTrafficModel : NSObject
+/**
+ Traffic bytes
+ */
+@property (nonatomic, assign) int64_t bytes;
+/**
+ True range
+ */
+@property (nonatomic, assign) int64_t range;
+/**
+ Sum of range
+ */
+@property (nonatomic, assign) int64_t total;
+/**
+ Range count
+ */
+@property (nonatomic, assign) int64_t count;
+
+@end
+
