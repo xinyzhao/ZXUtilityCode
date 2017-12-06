@@ -1,5 +1,5 @@
 //
-// ZXPlayerViewController.h
+// ZXPlayer.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,19 +22,41 @@
 // THE SOFTWARE.
 //
 
-#import "ZXPlayer.h"
+#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 
-@interface ZXPlayerViewController : UIViewController
-@property (nonatomic, strong) ZXPlayer *player;
+typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
+    ZXPlayerStatusUnknown = AVPlayerStatusUnknown,
+    ZXPlayerStatusReadyToPlay = AVPlayerStatusReadyToPlay,
+    ZXPlayerStatusFailed = AVPlayerStatusFailed,
+    ZXPlayerStatusPlaying,
+    ZXPlayerStatusPaused,
+    ZXPlayerStatusEnded,
+};
 
-@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+@interface ZXPlayer : NSObject
 
-@property (nonatomic, assign) CGFloat velocityOfSeeking; // Default is 1.0
-@property (nonatomic, assign) CGFloat velocityOfVolume; // Default is 1.0
+@property (nonatomic, readonly) BOOL isReadToPlay;
+@property (nonatomic, readonly) BOOL isPlaying;
+@property (nonatomic, readonly) BOOL isSeeking;
 
-@property (nonatomic, assign) BOOL shouldAutorotate; // Default is YES
-@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // Default is UIInterfaceOrientationMaskAllButUpsideDown/UIInterfaceOrientationMaskPortrait when shouldAutorotate YES/NO
+@property (nonatomic, readonly) NSTimeInterval currentTime;
+@property (nonatomic, readonly) NSTimeInterval duration;
+
+@property (nonatomic, readonly) AVPlayerLayer *playerLayer;
+
+@property (nonatomic, copy) void (^playerStatus)(ZXPlayerStatus status, NSError *error);
+@property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
+@property (nonatomic, copy) void (^loadedTime)(NSTimeInterval time, NSTimeInterval duration);
+
++ (instancetype)playerWithURL:(NSURL *)URL;
 
 - (instancetype)initWithURL:(NSURL *)URL;
+
+- (void)play;
+- (void)pause;
+- (void)remove; // stop & release
+
+- (void)seekToTime:(NSTimeInterval)time andPlay:(BOOL)play;
 
 @end

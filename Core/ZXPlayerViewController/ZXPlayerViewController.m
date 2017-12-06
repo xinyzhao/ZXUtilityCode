@@ -27,28 +27,25 @@
 #import "NSObject+Extra.h"
 
 @interface ZXPlayerViewController ()
-@property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) AVPlayerItem *playerItem;
-@property (nonatomic, strong) AVPlayerLayer *playerLayer;
-@property (nonatomic, strong) id playerObserver;
 @property (nonatomic, strong) UISlider *volumeSlider;
 
 @end
 
 @implementation ZXPlayerViewController
-@synthesize isPlaying = _isPlaying;
-@synthesize isSeeking = _isSeeking;
 
 - (instancetype)initWithURL:(NSURL *)URL {
     self = [super init];
     if (self) {
-        self.URL = URL;
+        self.player = [ZXPlayer playerWithURL:URL];
+        if (self.player.playerLayer) {
+            [self.view.layer insertSublayer:self.player.playerLayer atIndex:0];
+        }
     }
     return self;
 }
 
 - (void)dealloc {
-    [self stop];
+    [self.player remove];
 }
 
 - (void)viewDidLoad {
@@ -66,7 +63,7 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     //
-    self.playerLayer.frame = self.view.bounds;
+    _player.playerLayer.frame = self.view.bounds;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -126,121 +123,6 @@
     return orientation;
 }
 
-#pragma mark Properties
-
-- (void)setURL:(NSURL *)URL {
-    _URL = URL;
-    if (URL) {
-        _playerItem = [AVPlayerItem playerItemWithURL:URL];
-        [_playerItem addObserver:self forKeyPath:@"status" options:(NSKeyValueObservingOptionNew) context:nil];
-        [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
-        [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
-        [_playerItem addObserver:self forKeyPath:@"playbackLikelyToKeepUp" options:NSKeyValueObservingOptionNew context:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerItemDidPlayToEndTime:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
-    }
-    if (_playerItem) {
-        __weak typeof(self) weakSelf = self;
-        _player = [AVPlayer playerWithPlayerItem:_playerItem];
-        _playerObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, 30) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-            if (!weakSelf.isSeeking) {
-                if (weakSelf.playbackTime) {
-                    weakSelf.playbackTime(weakSelf.currentTime, weakSelf.duration);
-                }
-            }
-        }];
-    }
-    if (_player) {
-        _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-        [self.view.layer insertSublayer:_playerLayer atIndex:0];
-    }
-}
-
-#pragma mark Playing
-
-- (BOOL)isReadToPlay {
-    return _playerItem.status == AVPlayerItemStatusReadyToPlay;
-}
-
-- (BOOL)isPlaying {
-    return _isPlaying;
-}
-
-- (void)play {
-    if ([self isReadToPlay]) {
-        _isPlaying = YES;
-        //
-        if (self.duration - self.currentTime <= 0.f) {
-            [self seekToTime:0 andPlay:YES];
-        } else {
-            [self.player play];
-        }
-    }
-}
-
-- (void)pause {
-    if ([self isReadToPlay]) {
-        _isPlaying = NO;
-        [_player pause];
-    }
-}
-
-- (void)stop {
-    if (_player) {
-        [_player pause];
-        if (_playerObserver) {
-            [_player removeTimeObserver:_playerObserver];
-            _playerObserver = nil;
-        }
-    }
-    if (_playerItem) {
-        [_playerItem removeObserver:self forKeyPath:@"status"];
-        [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-        [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-        [_playerItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp"];
-        _playerItem = nil;
-    }
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark Time
-
-- (NSTimeInterval)currentTime {
-    if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        return CMTimeGetSeconds(_playerItem.currentTime);
-    }
-    return 0.f;
-}
-
-- (NSTimeInterval)duration {
-    if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        return CMTimeGetSeconds(_playerItem.duration);
-    }
-    return 0.f;
-}
-
-- (void)seekToTime:(NSTimeInterval)time andPlay:(BOOL)play {
-    if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        [self pause];
-        _isSeeking = !play;
-        //
-        NSTimeInterval duration = self.duration;
-        if (time > duration) {
-            time = duration;
-        }
-        CMTime toTime = CMTimeMakeWithSeconds(floor(time), 1);
-        //
-        __weak typeof(self) weakSelf = self;
-        [_playerItem seekToTime:toTime toleranceBefore:CMTimeMake(1,1) toleranceAfter:CMTimeMake(1,1) completionHandler:^(BOOL finished) {
-            if (weakSelf.playbackTime) {
-                weakSelf.playbackTime(time, duration);
-            }
-            if (!weakSelf.isSeeking) {
-                [weakSelf play];
-            }
-        }];
-    }
-}
-
 #pragma mark Volume
 
 - (UISlider *)volumeSlider {
@@ -283,9 +165,9 @@
             CGFloat y = fabs(velocityPoint.y);
             isSeeking = x > y;
             if (isSeeking) {
-                seekTime = self.currentTime;
+                seekTime = _player.currentTime;
             } else {
-                volumeValue = self.volumeSlider.value;
+                volumeValue = _volumeSlider.value;
             }
             break;
         }
@@ -299,47 +181,18 @@
                 if (time < 0) {
                     time = 0;
                 }
-                if (time > self.duration) {
-                    time = self.duration;
+                if (time > _player.duration) {
+                    time = _player.duration;
                 }
-                [self seekToTime:time andPlay:pan.state == UIGestureRecognizerStateEnded];
+                [_player seekToTime:time andPlay:pan.state == UIGestureRecognizerStateEnded];
             } else {
-                self.volumeSlider.value = volumeValue - (offset.y / (_velocityOfVolume * 80));
+                _volumeSlider.value = volumeValue - (offset.y / (_velocityOfVolume * 80));
             }
             break;
         }
 
         default:
             break;
-    }
-}
-
-#pragma mark Notifications
-
-- (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
-    [self pause];
-    //
-    if (_playbackDidEnd) {
-        _playbackDidEnd();
-    }
-}
-
-#pragma mark <NSKeyValueObserving>
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"status"]) {
-        AVPlayerStatus status = [[change objectForKey:@"new"] intValue];
-        if (_playerStatus) {
-            _playerStatus(status, _playerItem.error);
-        }
-        
-    } else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
-        CMTimeRange timeRange = [_playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
-        NSTimeInterval loaded = CMTimeGetSeconds(timeRange.start) + CMTimeGetSeconds(timeRange.duration);
-        NSTimeInterval duration = self.duration;
-        if (_loadedTime) {
-            _loadedTime(loaded, duration);
-        }
     }
 }
 
