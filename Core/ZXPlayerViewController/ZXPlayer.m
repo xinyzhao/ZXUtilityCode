@@ -54,6 +54,9 @@
         if (_playerItem) {
             __weak typeof(self) weakSelf = self;
             _player = [AVPlayer playerWithPlayerItem:_playerItem];
+            if (@available(iOS 10.0, *)) {
+                _player.automaticallyWaitsToMinimizeStalling = NO;
+            }
             _playerObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, 30) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
                 if (!weakSelf.isSeeking) {
                     if (weakSelf.playbackTime) {
