@@ -47,7 +47,6 @@ typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
 @property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
 @property (nonatomic, copy) void (^loadedTime)(NSTimeInterval time, NSTimeInterval duration);
 
-@property (nonatomic, readonly) AVPlayerLayer *playerLayer;
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic, readwrite) CGPoint panGestureRate; // Default is {0.5, 0.5}
 
@@ -56,6 +55,7 @@ typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
 - (instancetype)initWithURL:(NSURL *)URL;
 
 - (void)attachToView:(UIView *)view;
+- (void)detach;
 
 - (void)play;
 - (void)pause;

@@ -39,6 +39,7 @@
 
 - (void)dealloc {
     [self.player stop];
+    [self.player detach];
 }
 
 - (void)viewDidLoad {
@@ -46,12 +47,6 @@
     // Do any additional setup after loading the view from its nib.
     _shouldAutorotate = YES;
     _supportedInterfaceOrientations = UIInterfaceOrientationMaskAllButUpsideDown;
-}
-
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    //
-    _player.playerLayer.frame = self.view.bounds;
 }
 
 - (void)didReceiveMemoryWarning {

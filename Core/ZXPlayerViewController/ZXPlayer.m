@@ -28,9 +28,12 @@
 @interface ZXPlayer ()
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerItem *playerItem;
+@property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong) id playerObserver;
-@property (nonatomic, strong) UISlider *volumeSlider;
+
+@property (nonatomic, weak) UIView *attachView;
 @property (nonatomic, strong) ZXBrightnessView *brightnessView;
+@property (nonatomic, strong) UISlider *volumeSlider;
 
 @end
 
@@ -76,6 +79,7 @@
         _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPanGestureRecognizer:)];
         //
         _brightnessView = [ZXBrightnessView brightnessView];
+        [_brightnessView addObserver];
         //
         MPVolumeView *volumeView = [[MPVolumeView alloc] init];
         for (UIView *view in [volumeView subviews]){
@@ -88,15 +92,37 @@
     return self;
 }
 
+- (void)dealloc {
+    if (_brightnessView) {
+        [_brightnessView removeObserver];
+        _brightnessView = nil;
+    }
+    [self detach];
+    [self stop];
+}
+
+#pragma mark Attach & Detach
+
 - (void)attachToView:(UIView *)view {
-    if (view) {
+    _attachView = view;
+    if (_attachView) {
         if (_playerLayer) {
-            [view.layer insertSublayer:_playerLayer atIndex:0];
+            _playerLayer.frame = _attachView.bounds;
+            [_attachView.layer insertSublayer:_playerLayer atIndex:0];
+            [_attachView.layer addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionNew context:NULL];
         }
         if (_panGestureRecognizer) {
-            [view addGestureRecognizer:_panGestureRecognizer];
+            [_attachView addGestureRecognizer:_panGestureRecognizer];
         }
-        [_brightnessView attachToView:view];
+    }
+}
+
+- (void)detach {
+    if (_attachView) {
+        [_playerLayer removeFromSuperlayer];
+        [_attachView removeGestureRecognizer:_panGestureRecognizer];
+        [_attachView.layer removeObserver:self forKeyPath:@"bounds"];
+        _attachView = nil;
     }
 }
 
@@ -155,7 +181,6 @@
         _playerItem = nil;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [_brightnessView detach];
 }
 
 #pragma mark Time
@@ -218,7 +243,6 @@
         if (_playerStatus) {
             _playerStatus(status, _playerItem.error);
         }
-        
     } else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
         CMTimeRange timeRange = [_playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
         NSTimeInterval loaded = CMTimeGetSeconds(timeRange.start) + CMTimeGetSeconds(timeRange.duration);
@@ -226,6 +250,9 @@
         if (_loadedTime) {
             _loadedTime(loaded, duration);
         }
+    } else if ([keyPath isEqualToString:@"bounds"]) {
+        CGRect bounds = [[change objectForKey:@"new"] CGRectValue];
+        _playerLayer.frame = bounds;
     }
 }
 
@@ -233,7 +260,6 @@
 
 - (void)onPanGestureRecognizer:(id)sender {
     UIPanGestureRecognizer *pan = sender;
-    
     // 上下滑动：左侧亮度/右侧音量
     static BOOL isBrightness = NO;
     // 左右滑动：时间定位
@@ -250,7 +276,6 @@
     if (rate.y > 1.f) {
         rate.y = 1.f;
     }
-    
     // 判断是垂直移动还是水平移动
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:
@@ -301,7 +326,6 @@
             }
             break;
         }
-            
         default:
             break;
     }

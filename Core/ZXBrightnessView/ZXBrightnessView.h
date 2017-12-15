@@ -27,12 +27,7 @@
 @interface ZXBrightnessView : UIView
 @property (nonatomic, assign) CGFloat brightness;
 
-+ (instancetype)sharedBrightnessView;
-
 + (instancetype)brightnessView;
-
-- (void)attachToView:(UIView *)view;
-- (void)detach;
 
 - (void)addObserver;
 - (void)removeObserver;

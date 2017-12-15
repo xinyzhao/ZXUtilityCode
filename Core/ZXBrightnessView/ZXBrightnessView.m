@@ -26,7 +26,6 @@
 #import "UIColor+Extra.h"
 
 @interface ZXBrightnessView ()
-@property (nonatomic, strong) UIView *attachView;
 @property (nonatomic, strong) UIView *levelView;
 @property (nonatomic, strong) NSTimer *disappearTimer;
 @property (nonatomic, assign) BOOL willDisappear;
@@ -38,17 +37,13 @@
 #define ZXBrightnessBounds  CGRectMake(0.0, 0.0, 155.0, 155.0)
 #define ZXBrightnessColor   [UIColor colorWithString:@"#484848"]
 
-+ (instancetype)sharedBrightnessView {
++ (instancetype)brightnessView {
     static ZXBrightnessView *brightnessView;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        brightnessView = [ZXBrightnessView brightnessView];
+        brightnessView = [[ZXBrightnessView alloc] initWithFrame:ZXBrightnessBounds];
     });
     return brightnessView;
-}
-
-+ (instancetype)brightnessView {
-    return [[ZXBrightnessView alloc] initWithFrame:ZXBrightnessBounds];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -59,6 +54,7 @@
         self.layer.masksToBounds = YES;
         //
         UIToolbar *toolBar = [[UIToolbar alloc] initWithFrame:self.bounds];
+        toolBar.alpha = 0.99;
         [self addSubview:toolBar];
         //
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, self.bounds.size.width, 30)];
@@ -101,7 +97,16 @@
     [super layoutSubviews];
     //
     self.bounds = ZXBrightnessBounds;
-    self.center = CGPointMake(self.attachView.bounds.size.width / 2, self.attachView.bounds.size.height / 2);
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+            self.center = CGPointMake(self.window.bounds.size.width / 2, (self.window.bounds.size.height - 10) / 2);
+            break;
+        default:
+            self.center = CGPointMake(self.window.bounds.size.width / 2, self.window.bounds.size.height / 2);
+            break;
+    }
 }
 
 #pragma mark Brightness
@@ -114,40 +119,20 @@
     [UIScreen mainScreen].brightness = brightness;
 }
 
-#pragma mark Attach & Detach
-
-- (UIView *)attachView {
-    if (_attachView) {
-        return _attachView;
-    }
-    return [[UIApplication sharedApplication].windows firstObject];
-}
-
-- (void)attachToView:(UIView *)view {
-    self.attachView = view;
-    if (_attachView) {
-        [self addObserver];
-    }
-}
-
-- (void)detach {
-    if (_attachView) {
-        _attachView = nil;
-        [self removeObserver];
-    }
-    [self dismissView];
-}
-
 #pragma mark Observer
 
 - (void)addObserver {
     [[UIScreen mainScreen] addObserver:self
                             forKeyPath:@"brightness"
                                options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidChangeStatusBarOrientationNotification:) name:UIApplicationDidChangeStatusBarOrientationNotification
+                                               object:nil];
 }
 
 - (void)removeObserver {
     [[UIScreen mainScreen] removeObserver:self forKeyPath:@"brightness"];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -159,10 +144,14 @@
     [self updateBrightnessLevel:level];
 }
 
+- (void)applicationDidChangeStatusBarOrientationNotification:(id)sender {
+    [self setNeedsLayout];
+}
+
 #pragma mark Present
 
 - (void)presentViewAnimated {
-    if (self.superview != self.attachView) {
+    if (self.superview != self.window) {
         [self presentView];
         self.disappearTimer = [NSTimer timerWithTimeInterval:2.0
                                                       target:self
@@ -178,9 +167,7 @@
 
 - (void)presentView {
     self.alpha = 1.0;
-    self.bounds = ZXBrightnessBounds;
-    self.center = CGPointMake(self.attachView.bounds.size.width / 2, self.attachView.bounds.size.height / 2);
-    [self.attachView addSubview:self];
+    [self.window addSubview:self];
     self.willDisappear = YES;
 }
 
@@ -219,6 +206,12 @@
             view.hidden = view.tag > level;
         }
     }
+}
+
+#pragma mark Window
+
+- (UIWindow *)window {
+    return [[UIApplication sharedApplication] keyWindow];
 }
 
 @end
