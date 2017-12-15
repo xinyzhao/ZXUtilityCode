@@ -43,19 +43,23 @@ typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval duration;
 
-@property (nonatomic, readonly) AVPlayerLayer *playerLayer;
-
 @property (nonatomic, copy) void (^playerStatus)(ZXPlayerStatus status, NSError *error);
 @property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
 @property (nonatomic, copy) void (^loadedTime)(NSTimeInterval time, NSTimeInterval duration);
+
+@property (nonatomic, readonly) AVPlayerLayer *playerLayer;
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic, readwrite) CGPoint panGestureRate; // Default is {0.5, 0.5}
 
 + (instancetype)playerWithURL:(NSURL *)URL;
 
 - (instancetype)initWithURL:(NSURL *)URL;
 
+- (void)attachToView:(UIView *)view;
+
 - (void)play;
 - (void)pause;
-- (void)remove; // stop & release
+- (void)stop;
 
 - (void)seekToTime:(NSTimeInterval)time andPlay:(BOOL)play;
 

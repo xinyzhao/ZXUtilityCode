@@ -326,9 +326,11 @@
 
 - (void)cache:(NSCache *)cache willEvictObject:(id)obj {
     UIView *pageView = obj;
-    if (pageView.superview) {
-        [pageView removeFromSuperview];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (pageView.superview) {
+            [pageView removeFromSuperview];
+        }
+    });
 }
 
 @end

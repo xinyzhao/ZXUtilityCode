@@ -1,5 +1,5 @@
 //
-// ZXPlayerViewController.h
+// ZXBrightnessView.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,14 +22,22 @@
 // THE SOFTWARE.
 //
 
-#import "ZXPlayer.h"
+#import <UIKit/UIKit.h>
 
-@interface ZXPlayerViewController : UIViewController
-@property (nonatomic, strong) ZXPlayer *player;
+@interface ZXBrightnessView : UIView
+@property (nonatomic, assign) CGFloat brightness;
 
-@property (nonatomic, assign) BOOL shouldAutorotate; // Default is YES
-@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // Default is UIInterfaceOrientationMaskAllButUpsideDown/UIInterfaceOrientationMaskPortrait when shouldAutorotate YES/NO
++ (instancetype)sharedBrightnessView;
 
-- (instancetype)initWithURL:(NSURL *)URL;
++ (instancetype)brightnessView;
+
+- (void)attachToView:(UIView *)view;
+- (void)detach;
+
+- (void)addObserver;
+- (void)removeObserver;
+
+- (void)presentView;
+- (void)dismissView;
 
 @end

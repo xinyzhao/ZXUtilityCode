@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "1.9.0"
+  s.version      = "1.9.1"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -156,6 +156,13 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/ZXBadgeLabel/*.h"
   end
 
+  s.subspec "ZXBrightnessView" do |ss|
+  	ss.dependency 'ZXUtilityCode/UIColor+Extra'
+    ss.source_files  = "Core/ZXBrightnessView/*.{h,m}"
+    ss.public_header_files = "Core/ZXBrightnessView/*.h"
+    ss.resources = "Core/ZXBrightnessView/ZXBrightnessView.bundle"
+  end
+
   s.subspec "ZXCircularProgressView" do |ss|
     ss.source_files  = "Core/ZXCircularProgressView/*.{h,m}"
     ss.public_header_files = "Core/ZXCircularProgressView/*.h"
@@ -208,6 +215,7 @@ Pod::Spec.new do |s|
   s.subspec "ZXPlayerViewController" do |ss|
     ss.dependency 'ZXUtilityCode/NSObject+Extra'
     ss.dependency 'ZXUtilityCode/UIViewController+Extra'
+    ss.dependency 'ZXUtilityCode/ZXBrightnessView'
     ss.source_files  = "Core/ZXPlayerViewController/*.{h,m}"
     ss.public_header_files = "Core/ZXPlayerViewController/*.h"
     ss.frameworks = "AVFoundation", "MediaPlayer"

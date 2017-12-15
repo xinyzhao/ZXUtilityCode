@@ -53,6 +53,7 @@
 #import "ZXAlertView.h"
 #import "ZXAuthorizationHelper.h"
 #import "ZXBadgeLabel.h"
+#import "ZXBrightnessView.h"
 #import "ZXCircularProgressView.h"
 #import "ZXDownloadManager.h"
 #import "ZXDrawingView.h"

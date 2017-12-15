@@ -26,26 +26,19 @@
 #import "UIViewController+Extra.h"
 #import "NSObject+Extra.h"
 
-@interface ZXPlayerViewController ()
-@property (nonatomic, strong) UISlider *volumeSlider;
-
-@end
-
 @implementation ZXPlayerViewController
 
 - (instancetype)initWithURL:(NSURL *)URL {
     self = [super init];
     if (self) {
         self.player = [ZXPlayer playerWithURL:URL];
-        if (self.player.playerLayer) {
-            [self.view.layer insertSublayer:self.player.playerLayer atIndex:0];
-        }
+        [self.player attachToView:self.view];
     }
     return self;
 }
 
 - (void)dealloc {
-    [self.player remove];
+    [self.player stop];
 }
 
 - (void)viewDidLoad {
@@ -53,11 +46,6 @@
     // Do any additional setup after loading the view from its nib.
     _shouldAutorotate = YES;
     _supportedInterfaceOrientations = UIInterfaceOrientationMaskAllButUpsideDown;
-    //
-    _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPanGestureRecognizer:)];
-    [self.view addGestureRecognizer:_panGestureRecognizer];
-    _velocityOfSeeking = 1.f;
-    _velocityOfVolume = 1.f;
 }
 
 - (void)viewDidLayoutSubviews {
@@ -121,79 +109,6 @@
     }
     //
     return orientation;
-}
-
-#pragma mark Volume
-
-- (UISlider *)volumeSlider {
-    if (_volumeSlider == nil) {
-        MPVolumeView *volumeView = [[MPVolumeView alloc] init];
-        for (UIView *view in [volumeView subviews]){
-            if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
-                _volumeSlider = (UISlider *)view;
-                break;
-            }
-        }
-    }
-    return _volumeSlider;
-}
-
-#pragma mark Actions
-
-- (void)onPanGestureRecognizer:(id)sender {
-    UIPanGestureRecognizer *pan = sender;
-    
-    // 起始位置
-    static CGPoint startPoint = {0, 0};
-    // 移动方向: 横向定位/垂直音量
-    static BOOL isSeeking = NO;
-    // 定位时间
-    static NSTimeInterval seekTime = 0;
-    // 当前音量
-    static float volumeValue = 0;
-    
-    // 判断是垂直移动还是水平移动
-    switch (pan.state) {
-        case UIGestureRecognizerStateBegan:
-        {
-            startPoint = [pan translationInView:pan.view];
-            // 我们要响应水平移动和垂直移动
-            // 根据上次和本次移动的位置，算出一个速率的point
-            // 使用绝对值来判断移动的方向
-            CGPoint velocityPoint = [pan velocityInView:pan.view];
-            CGFloat x = fabs(velocityPoint.x);
-            CGFloat y = fabs(velocityPoint.y);
-            isSeeking = x > y;
-            if (isSeeking) {
-                seekTime = _player.currentTime;
-            } else {
-                volumeValue = _volumeSlider.value;
-            }
-            break;
-        }
-        case UIGestureRecognizerStateChanged:
-        case UIGestureRecognizerStateEnded:
-        {
-            CGPoint point = [pan translationInView:pan.view];
-            CGPoint offset = CGPointMake(point.x - startPoint.x, point.y - startPoint.y);
-            if (isSeeking) {
-                NSTimeInterval time = seekTime + (offset.x / (_velocityOfSeeking * 4));
-                if (time < 0) {
-                    time = 0;
-                }
-                if (time > _player.duration) {
-                    time = _player.duration;
-                }
-                [_player seekToTime:time andPlay:pan.state == UIGestureRecognizerStateEnded];
-            } else {
-                _volumeSlider.value = volumeValue - (offset.y / (_velocityOfVolume * 80));
-            }
-            break;
-        }
-
-        default:
-            break;
-    }
 }
 
 @end

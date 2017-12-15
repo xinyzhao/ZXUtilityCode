@@ -23,11 +23,14 @@
 //
 
 #import "ZXPlayer.h"
+#import "ZXBrightnessView.h"
 
 @interface ZXPlayer ()
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerItem *playerItem;
 @property (nonatomic, strong) id playerObserver;
+@property (nonatomic, strong) UISlider *volumeSlider;
+@property (nonatomic, strong) ZXBrightnessView *brightnessView;
 
 @end
 
@@ -68,8 +71,33 @@
         if (_player) {
             _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         }
+        //
+        _panGestureRate = CGPointMake(0.5, 0.5);
+        _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPanGestureRecognizer:)];
+        //
+        _brightnessView = [ZXBrightnessView brightnessView];
+        //
+        MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+        for (UIView *view in [volumeView subviews]){
+            if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+                _volumeSlider = (UISlider *)view;
+                break;
+            }
+        }
     }
     return self;
+}
+
+- (void)attachToView:(UIView *)view {
+    if (view) {
+        if (_playerLayer) {
+            [view.layer insertSublayer:_playerLayer atIndex:0];
+        }
+        if (_panGestureRecognizer) {
+            [view addGestureRecognizer:_panGestureRecognizer];
+        }
+        [_brightnessView attachToView:view];
+    }
 }
 
 #pragma mark Playing
@@ -87,6 +115,7 @@
         if (self.duration - self.currentTime <= 0.f) {
             [self seekToTime:0 andPlay:YES];
         } else {
+            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
             [self.player play];
             //
             _isPlaying = YES;
@@ -108,7 +137,7 @@
     }
 }
 
-- (void)remove {
+- (void)stop {
     _isPlaying = NO;
     if (_player) {
         [_player pause];
@@ -126,6 +155,7 @@
         _playerItem = nil;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_brightnessView detach];
 }
 
 #pragma mark Time
@@ -196,6 +226,84 @@
         if (_loadedTime) {
             _loadedTime(loaded, duration);
         }
+    }
+}
+
+#pragma mark Actions
+
+- (void)onPanGestureRecognizer:(id)sender {
+    UIPanGestureRecognizer *pan = sender;
+    
+    // 上下滑动：左侧亮度/右侧音量
+    static BOOL isBrightness = NO;
+    // 左右滑动：时间定位
+    static BOOL isSeeking = NO;
+    // 亮度/音量/时间
+    static CGFloat brightness = 0;
+    static float volume = 0;
+    static NSTimeInterval seekTime = 0;
+    // 比率
+    CGPoint rate = _panGestureRate;
+    if (rate.x > 1.f) {
+        rate.x = 1.f;
+    }
+    if (rate.y > 1.f) {
+        rate.y = 1.f;
+    }
+    
+    // 判断是垂直移动还是水平移动
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan:
+        {
+            // 我们要响应水平移动和垂直移动
+            // 根据上次和本次移动的位置，算出一个速率的point
+            // 使用绝对值来判断移动的方向
+            CGPoint velocity = [pan velocityInView:pan.view];
+            CGFloat x = fabs(velocity.x);
+            CGFloat y = fabs(velocity.y);
+            isSeeking = x > y;
+            if (isSeeking) {
+                seekTime = self.currentTime;
+            } else {
+                CGPoint point = [pan locationInView:pan.view];
+                isBrightness = point.x < pan.view.frame.size.width / 2;
+                if (isBrightness) {
+                    brightness = [UIScreen mainScreen].brightness;
+                } else {
+                    volume = self.volumeSlider.value;
+                }
+            }
+            break;
+        }
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStateEnded:
+        {
+            CGPoint point = [pan translationInView:pan.view];
+            if (isSeeking) {
+                if (rate.x > 0.f) {
+                    NSTimeInterval time = seekTime + (point.x / (pan.view.frame.size.width * rate.x)) * self.duration;
+                    NSLog(@"---x---[%.2f %.2f]", point.x, time - seekTime);
+                    if (time < 0) {
+                        time = 0;
+                    }
+                    if (time > self.duration) {
+                        time = self.duration;
+                    }
+                    [self seekToTime:time andPlay:pan.state == UIGestureRecognizerStateEnded];
+                }
+            } else if (rate.y > 0.00f) {
+                CGFloat y = point.y / (pan.view.frame.size.height * rate.y);
+                if (isBrightness) {
+                    [UIScreen mainScreen].brightness = brightness - y;
+                } else if (fabs(self.volumeSlider.value - (volume - y)) > 0.05) {
+                    self.volumeSlider.value = volume - y;
+                }
+            }
+            break;
+        }
+            
+        default:
+            break;
     }
 }
 
