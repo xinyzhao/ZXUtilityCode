@@ -141,7 +141,6 @@
         if (self.duration - self.currentTime <= 0.f) {
             [self seekToTime:0 andPlay:YES];
         } else {
-            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
             [self.player play];
             //
             _isPlaying = YES;
