@@ -166,6 +166,9 @@
     _isPlaying = NO;
     if (_player) {
         [_player pause];
+        if (_playerStatus) {
+            _playerStatus(ZXPlayerStatusEnded, nil);
+        }
         if (_playerObserver) {
             [_player removeTimeObserver:_playerObserver];
             _playerObserver = nil;
