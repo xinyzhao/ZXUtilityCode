@@ -309,7 +309,6 @@
             if (isSeeking) {
                 if (rate.x > 0.f) {
                     NSTimeInterval time = seekTime + (point.x / (pan.view.frame.size.width * rate.x)) * self.duration;
-                    NSLog(@"---x---[%.2f %.2f]", point.x, time - seekTime);
                     if (time < 0) {
                         time = 0;
                     }
