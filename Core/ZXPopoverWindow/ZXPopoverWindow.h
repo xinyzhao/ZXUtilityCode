@@ -49,6 +49,11 @@
 @property (nonatomic, assign) NSTimeInterval dismissingDuration;
 
 /**
+ Dismiss when tap the background, defatult YES
+ */
+@property (nonatomic, assign) BOOL dismissWhenTapBackground;
+
+/**
  Present view in window
 
  @param view Present view

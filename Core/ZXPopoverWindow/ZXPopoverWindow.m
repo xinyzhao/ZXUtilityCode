@@ -40,6 +40,7 @@
         self.presentedBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.4];
         self.presentingDuration = .3;
         self.dismissingDuration = .2;
+        self.dismissWhenTapBackground = YES;
     }
     return self;
 }
@@ -51,6 +52,7 @@
         self.presentedBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.4];
         self.presentingDuration = .3;
         self.dismissingDuration = .2;
+        self.dismissWhenTapBackground = YES;
     }
     return self;
 }
@@ -111,7 +113,10 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint point = [gestureRecognizer locationInView:self.presentedView];
-    return !CGRectContainsPoint(self.presentedView.bounds, point);
+    if (!CGRectContainsPoint(self.presentedView.bounds, point)) {
+        return _dismissWhenTapBackground;
+    }
+    return NO;
 }
 
 @end
