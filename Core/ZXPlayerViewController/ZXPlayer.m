@@ -50,7 +50,10 @@
     self = [super init];
     if (self) {
         if (URL) {
-            _playerItem = [AVPlayerItem playerItemWithURL:URL];
+            AVURLAsset *asset = [AVURLAsset URLAssetWithURL:URL options:nil];
+            if (asset) {
+                _playerItem = [AVPlayerItem playerItemWithAsset:asset];
+            }
         }
         if (_playerItem) {
             [_playerItem addObserver:self forKeyPath:@"status" options:(NSKeyValueObservingOptionNew) context:nil];
@@ -224,10 +227,37 @@
     }
 }
 
+#pragma mark Image
+
+- (UIImage *)videoPreviewImage {
+    UIImage *image = nil;
+    if (self.playerItem.asset) {
+        AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:self.playerItem.asset];
+        generator.appliesPreferredTrackTransform = YES;
+        CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+        CMTime actualTime;
+        NSError *error = nil;
+        CGImageRef imageRef = [generator copyCGImageAtTime:time actualTime:&actualTime error:&error];
+        if (imageRef) {
+            image = [[UIImage alloc] initWithCGImage:imageRef];
+            CGImageRelease(imageRef);
+        }
+    }
+    return image;
+}
+
 #pragma mark Notifications
 
 - (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
-    [self pause];
+    if (self.isPlaying) {
+        _isPlaying = NO;
+        //
+        [self.player pause];
+        //
+        if (_playerStatus) {
+            _playerStatus(ZXPlayerStatusEnded, nil);
+        }
+    }
 }
 
 #pragma mark <NSKeyValueObserving>

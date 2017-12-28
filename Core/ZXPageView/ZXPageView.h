@@ -107,6 +107,14 @@ typedef NS_ENUM(NSInteger, ZXPageViewOrientation) {
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
 
 /**
+ Get subview for page at index
+
+ @param index Page index
+ @return subview
+ */
+- (UIView *)subviewForPageAtIndex:(NSInteger)index;
+   
+/**
  Reload data
  */
 - (void)reloadData;
