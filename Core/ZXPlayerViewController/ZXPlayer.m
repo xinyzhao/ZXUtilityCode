@@ -189,6 +189,9 @@
     if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
         NSTimeInterval duration = self.duration;
         time = CMTimeGetSeconds(_playerItem.currentTime);
+        if (time < 0.f) {
+            time = 0.f;
+        }
         if (time > duration) {
             time = duration;
         }
