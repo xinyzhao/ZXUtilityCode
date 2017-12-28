@@ -31,7 +31,6 @@ typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
     ZXPlayerStatusFailed = AVPlayerStatusFailed,
     ZXPlayerStatusPlaying,
     ZXPlayerStatusPaused,
-    ZXPlayerStatusEnded,
 };
 
 @interface ZXPlayer : NSObject

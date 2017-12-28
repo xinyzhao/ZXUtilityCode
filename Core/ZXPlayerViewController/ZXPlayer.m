@@ -51,18 +51,19 @@
     if (self) {
         if (URL) {
             _playerItem = [AVPlayerItem playerItemWithURL:URL];
-            [_playerItem addObserver:self forKeyPath:@"status" options:(NSKeyValueObservingOptionNew) context:nil];
-            [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
-            [_playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:nil];
-            [_playerItem addObserver:self forKeyPath:@"playbackLikelyToKeepUp" options:NSKeyValueObservingOptionNew context:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerItemDidPlayToEndTime:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
         }
         if (_playerItem) {
-            __weak typeof(self) weakSelf = self;
+            [_playerItem addObserver:self forKeyPath:@"status" options:(NSKeyValueObservingOptionNew) context:nil];
+            [_playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerItemDidPlayToEndTime:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+            //
             _player = [AVPlayer playerWithPlayerItem:_playerItem];
+        }
+        if (_player) {
             if (@available(iOS 10.0, *)) {
                 _player.automaticallyWaitsToMinimizeStalling = NO;
             }
+            __weak typeof(self) weakSelf = self;
             _playerObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, 30) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
                 if (!weakSelf.isSeeking) {
                     if (weakSelf.playbackTime) {
@@ -70,8 +71,7 @@
                     }
                 }
             }];
-        }
-        if (_player) {
+            //
             _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         }
         //
@@ -132,30 +132,28 @@
     return _playerItem.status == AVPlayerItemStatusReadyToPlay;
 }
 
-- (BOOL)isPlaying {
-    return _isPlaying;
-}
-
 - (void)play {
-    if ([self isReadToPlay]) {
-        if (self.duration - self.currentTime <= 0.f) {
+    if (self.isReadToPlay && !self.isPlaying) {
+        _isPlaying = YES;
+        //
+        if (self.duration - self.currentTime < 0.5) {
             [self seekToTime:0 andPlay:YES];
         } else {
             [self.player play];
-            //
-            _isPlaying = YES;
-            if (_playerStatus) {
-                _playerStatus(ZXPlayerStatusPlaying, nil);
-            }
+        }
+        //
+        if (_playerStatus) {
+            _playerStatus(ZXPlayerStatusPlaying, nil);
         }
     }
 }
 
 - (void)pause {
-    if ([self isReadToPlay]) {
-        [_player pause];
-        //
+    if (self.isReadToPlay && self.isPlaying) {
         _isPlaying = NO;
+        //
+        [self.player pause];
+        //
         if (_playerStatus) {
             _playerStatus(ZXPlayerStatusPaused, nil);
         }
@@ -163,46 +161,48 @@
 }
 
 - (void)stop {
-    _isPlaying = NO;
+    [self pause];
+    //
     if (_player) {
-        [_player pause];
-        if (_playerStatus) {
-            _playerStatus(ZXPlayerStatusEnded, nil);
-        }
         if (_playerObserver) {
             [_player removeTimeObserver:_playerObserver];
             _playerObserver = nil;
         }
         _player = nil;
     }
+    //
     if (_playerItem) {
-        [_playerItem removeObserver:self forKeyPath:@"status"];
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
         [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-        [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-        [_playerItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp"];
+        [_playerItem removeObserver:self forKeyPath:@"status"];
         _playerItem = nil;
     }
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark Time
 
 - (NSTimeInterval)currentTime {
+    NSTimeInterval time = 0.f;
     if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        return CMTimeGetSeconds(_playerItem.currentTime);
+        NSTimeInterval duration = self.duration;
+        time = CMTimeGetSeconds(_playerItem.currentTime);
+        if (time > duration) {
+            time = duration;
+        }
     }
-    return 0.f;
+    return time;
 }
 
 - (NSTimeInterval)duration {
+    NSTimeInterval duration = 0.f;
     if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        return CMTimeGetSeconds(_playerItem.duration);
+        duration = round(CMTimeGetSeconds(_playerItem.duration));
     }
-    return 0.f;
+    return duration;
 }
 
 - (void)seekToTime:(NSTimeInterval)time andPlay:(BOOL)play {
-    if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
+    if (self.isReadToPlay) {
         [self pause];
         _isSeeking = !play;
         //
@@ -227,14 +227,7 @@
 #pragma mark Notifications
 
 - (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
-    if ([self isReadToPlay]) {
-        [_player pause];
-    }
-    //
-    _isPlaying = NO;
-    if (_playerStatus) {
-        _playerStatus(ZXPlayerStatusEnded, nil);
-    }
+    [self pause];
 }
 
 #pragma mark <NSKeyValueObserving>
@@ -278,13 +271,10 @@
     if (rate.y > 1.f) {
         rate.y = 1.f;
     }
-    // 判断是垂直移动还是水平移动
+    //
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:
         {
-            // 我们要响应水平移动和垂直移动
-            // 根据上次和本次移动的位置，算出一个速率的point
-            // 使用绝对值来判断移动的方向
             CGPoint velocity = [pan velocityInView:pan.view];
             CGFloat x = fabs(velocity.x);
             CGFloat y = fabs(velocity.y);
