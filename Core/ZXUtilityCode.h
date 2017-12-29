@@ -69,5 +69,6 @@
 #import "ZXTabBarController.h"
 #import "ZXTagView.h"
 #import "ZXToastView.h"
+#import "ZXURLSession.h"
 
 #endif /* ZXUtilityCode_h */

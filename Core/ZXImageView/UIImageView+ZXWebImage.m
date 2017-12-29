@@ -1,5 +1,5 @@
 //
-// ZXImageCache.m
+// UIImageView+ZXWebImage.m
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,35 +22,20 @@
 // THE SOFTWARE.
 //
 
-#import "ZXImageCache.h"
+#import "UIImageView+ZXWebImage.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <objc/runtime.h>
+#import "ZXURLSession.h"
 
-@interface UIImageView (DownloadTask)
-@property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
-
-@end
-
-@implementation UIImageView (DownloadTask)
-
-- (void)setDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    objc_setAssociatedObject(self, @selector(downloadTask), downloadTask, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSURLSessionDownloadTask *)downloadTask {
-    return objc_getAssociatedObject(self, @selector(downloadTask));
-}
-
-@end
-
-@implementation UIImageView (ZXImageCache)
-static NSCache *_imageCache = nil;
+@implementation UIImageView (ZXWebImage)
 
 + (NSCache *)imageCache {
-    if (_imageCache == nil) {
-        _imageCache = [[NSCache alloc] init];
-    }
-    return _imageCache;
+    static NSCache *imageCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        imageCache = [[NSCache alloc] init];
+    });
+    return imageCache;
 }
 
 + (NSString *)MD5String:(NSString *)str {
@@ -65,6 +50,18 @@ static NSCache *_imageCache = nil;
     return md5;
 }
 
+#pragma mark Task
+
+- (void)setDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    objc_setAssociatedObject(self, @selector(downloadTask), downloadTask, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSURLSessionDownloadTask *)downloadTask {
+    return objc_getAssociatedObject(self, @selector(downloadTask));
+}
+
+#pragma mark URL
+
 - (void)zx_setImageWithURL:(NSURL *)imageURL {
     [self zx_setImageWithURL:imageURL placeholder:nil];
 }
@@ -73,7 +70,7 @@ static NSCache *_imageCache = nil;
     [self zx_setImageWithURL:imageURL placeholder:image completion:nil];
 }
 
-- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCache)completion {
+- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(void(^)(UIImage *image, NSError *error, NSURL *imageURL))completion {
     self.image = image;
     //
     if (self.downloadTask) {
@@ -106,7 +103,7 @@ static NSCache *_imageCache = nil;
     // 从网络加载
     if (data == nil) {
         __weak typeof(self) weakSelf = self;
-        self.downloadTask = [[NSURLSession sharedSession] downloadTaskWithRequest:[NSURLRequest requestWithURL:imageURL] completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        self.downloadTask = [[ZXURLSession URLSession] downloadTaskWithRequest:[NSURLRequest requestWithURL:imageURL] completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
             if (location) {
                 //
                 NSString *file = [NSTemporaryDirectory() stringByAppendingPathComponent:key];

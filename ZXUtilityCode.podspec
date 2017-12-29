@@ -186,6 +186,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "ZXImageView" do |ss|
+    ss.dependency 'ZXUtilityCode/ZXURLSession'
     ss.source_files  = "Core/ZXImageView/*.{h,m}"
     ss.public_header_files = "Core/ZXImageView/*.h"
   end
@@ -246,5 +247,11 @@ Pod::Spec.new do |s|
     ss.source_files  = "Core/ZXToastView/*.{h,m}"
     ss.public_header_files = "Core/ZXToastView/*.h"
   end
+
+  s.subspec "ZXURLSession" do |ss|
+    ss.source_files  = "Core/ZXURLSession/*.{h,m}"
+    ss.public_header_files = "Core/ZXURLSession/*.h"
+  end
+
 
 end

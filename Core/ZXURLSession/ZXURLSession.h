@@ -1,5 +1,5 @@
 //
-// ZXImageCache.h
+// ZXURLSession.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,49 +22,37 @@
 // THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+@interface ZXURLSession : NSObject <NSURLSessionDelegate>
 
 /**
- ZXImageCache
-
- @param image Cached image
- @param error Cached error
- @param imageURL Cached URL
+ The URL session
  */
-typedef void(^ZXImageCache)(UIImage *image, NSError *error, NSURL *imageURL);
+@property (nonatomic, strong) NSURLSession * _Nonnull URLSession;
 
 /**
- UIImageView Category
+ Enable to allow untrusted SSL certificates, default YES.
  */
-@interface UIImageView (ZXImageCache)
+@property (nonatomic, assign) BOOL allowInvalidCertificates;
 
 /**
- Set image with URL
-
- @param imageURL Image URL
+ The credential that should be used for authentication.
  */
-- (void)zx_setImageWithURL:(NSURL *)imageURL;
+@property (nonatomic, strong) NSURLCredential * _Nullable credential;
 
 /**
- Set image with URL and placeholder image
-
- @param imageURL Image URL
- @param image Placeholder image
+ Shared instance
+ 
+ @return The instance
  */
-- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image;
++ (instancetype _Nonnull)sharedSession;
 
 /**
- Set image with URL and placeholder image, completion block
-
- @param imageURL Image URL
- @param image Placeholder image
- @param completion Completion block
+ Get the NSURLSession
+ 
+ @return NSURLSession
  */
-- (void)zx_setImageWithURL:(NSURL *)imageURL placeholder:(UIImage *)image completion:(ZXImageCache)completion;
-
-/**
- Cacnel image load
- */
-- (void)zx_cancelImageLoad;
++ (NSURLSession *_Nonnull)URLSession;
 
 @end

@@ -48,16 +48,15 @@
 @implementation ZXDownloadTask
 
 - (instancetype)initWithURL:(NSURL *)URL {
-    return [self initWithURL:URL localPath:nil backgroundMode:NO];
+    return [self initWithURL:URL path:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL localPath:(NSString *)path backgroundMode:(BOOL)backgroundMode {
+- (instancetype)initWithURL:(NSURL *)URL path:(NSString *)path {
     self = [super init];
     if (self) {
         _observers = [[NSMutableDictionary alloc] init];
         _taskURL = [URL copy];
         _taskIdentifier = [URL.absoluteString SHA1String];
-        _backgroundMode = backgroundMode;
         //
         BOOL isDirectory = NO;
         if (path == nil) {

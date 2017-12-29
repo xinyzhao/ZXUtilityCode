@@ -22,9 +22,9 @@
 // THE SOFTWARE.
 //
 
-#import "ZXImageView.h"
 #import "ZXImageViewCell.h"
-#import "ZXImageCache.h"
+#import "ZXImageView.h"
+#import "UIImageView+ZXWebImage.h"
 
 @interface ZXImageViewCell () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 {
@@ -40,11 +40,6 @@
 @end
 
 @implementation ZXImageViewCell
-
-- (void)dealloc
-{
-//    NSLog(@"%s", __func__);
-}
 
 #pragma mark Setter
 

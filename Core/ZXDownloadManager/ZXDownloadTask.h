@@ -57,11 +57,6 @@ typedef NS_ENUM(NSInteger, ZXDownloadState) {
 @property (nonatomic, readonly, nonnull) NSString *localFilePath;
 
 /**
- The download task in the backgournd or not
- */
-@property (nonatomic, readonly) BOOL backgroundMode;
-
-/**
  The current state of the task
  */
 @property (nonatomic, assign) ZXDownloadState state;
@@ -90,14 +85,13 @@ typedef NS_ENUM(NSInteger, ZXDownloadState) {
 - (instancetype _Nonnull)initWithURL:(NSURL *_Nonnull)URL;
 
 /**
- Init with URL, save path and background mode
+ Init with URL, save path
 
  @param URL The URL of download
- @param localPath The local path of download
- @param backgroundMode The background mode
+ @param path The local path of download
  @return ZXDownloadTask
  */
-- (instancetype _Nonnull)initWithURL:(NSURL *_Nonnull)URL localPath:(NSString *_Nullable)localPath backgroundMode:(BOOL)backgroundMode;
+- (instancetype _Nonnull)initWithURL:(NSURL *_Nonnull)URL path:(NSString *_Nullable)path;
 
 /**
  Add observer
