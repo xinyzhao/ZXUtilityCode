@@ -52,9 +52,14 @@
 @property (nonatomic, assign) BOOL resumeBrokenEnabled;
 
 /**
- Set in [UIApplicationDelegate application:handleEventsForBackgroundURLSession:completionHandler:]
+ Enable to allow untrusted SSL certificates, default YES.
  */
-@property (nonatomic, strong, nullable) void(^backgroundCompletionHandler)(void);
+@property (nonatomic, assign) BOOL allowInvalidCertificates;
+
+/**
+ The credential that should be used for authentication.
+ */
+@property (nonatomic, strong) NSURLCredential * _Nullable credential;
 
 /**
  Create or got exist download task with URL

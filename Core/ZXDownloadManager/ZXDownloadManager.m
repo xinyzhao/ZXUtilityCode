@@ -27,7 +27,6 @@
 
 @interface ZXDownloadManager () <NSURLSessionDelegate, NSURLSessionDataDelegate>
 @property (nonatomic, strong) NSURLSession *session;
-@property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSMutableDictionary *downloadTasks;
 
 @end
@@ -49,22 +48,11 @@
         self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
                                                      delegate:self
                                                 delegateQueue:[[NSOperationQueue alloc] init]];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        NSURLSessionConfiguration *backgroundConfiguration = nil;
-        if (@available(iOS 8.0, *)) {
-            backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
-        } else {
-            backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:[[NSBundle mainBundle] bundleIdentifier]];
-        }
-#pragma clang diagnostic pop
-        self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration
-                                                               delegate:self
-                                                          delegateQueue:nil];
         self.downloadTasks = [[NSMutableDictionary alloc] init];
         self.localPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:NSStringFromClass([self class])];
         self.maximumConcurrent = 0;
         self.resumeBrokenEnabled = YES;
+        self.allowInvalidCertificates = YES;
     }
     return self;
 }
@@ -76,7 +64,7 @@
 - (ZXDownloadTask *)downloadTaskWithURL:(NSURL *)URL inDirectory:(NSString *)path inBackground:(BOOL)backgroundMode {
     ZXDownloadTask *task = [self downloadTaskForURL:URL];
     if (task == nil) {
-        task = [[ZXDownloadTask alloc] initWithURL:URL localPath:(path ? path : self.localPath) backgroundMode:backgroundMode];
+        task = [[ZXDownloadTask alloc] initWithURL:URL path:(path ? path : self.localPath)];
         if (task.state != ZXDownloadStateCompleted) {
             // Range
             // bytes=x-y ==  x byte ~ y byte
@@ -125,6 +113,7 @@
     if (task.state == ZXDownloadStateRunning ||
         task.state == ZXDownloadStateCancelled ||
         task.state == ZXDownloadStateCompleted) {
+        task.state = task.state;
         return NO;
     }
     //
@@ -214,6 +203,35 @@
 
 #pragma mark <NSURLSessionTaskDelegate>
 
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+    __block NSURLCredential *credential = nil;
+    
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        if (self.allowInvalidCertificates) {
+            credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+            disposition = NSURLSessionAuthChallengeUseCredential;
+        } else {
+            disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+        }
+    } else {
+        if (challenge.previousFailureCount == 0) {
+            if (self.credential) {
+                credential = self.credential;
+                disposition = NSURLSessionAuthChallengeUseCredential;
+            } else {
+                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+            }
+        } else {
+            disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+        }
+    }
+    
+    if (completionHandler) {
+        completionHandler(disposition, credential);
+    }
+}
+
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
         return;
@@ -226,34 +244,6 @@
         [self.downloadTasks removeObjectForKey:obj.taskIdentifier];
         [self resumeNextDowloadTask];
     }
-}
-
-#pragma mark <NSURLSessionDelegate>
-
-- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
-    // Check if all download tasks have been finished.
-    __weak typeof(self) weakSelf = self;
-    [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-        if ([downloadTasks count] == 0) {
-            if (weakSelf.backgroundCompletionHandler != nil) {
-                // Copy locally the completion handler.
-                void(^completionHandler)(void) = weakSelf.backgroundCompletionHandler;
-                
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    // Call the completion handler to tell the system that there are no other background transfers.
-                    completionHandler();
-                    
-                    // Show a local notification when all downloads are over.
-                    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-                    localNotification.alertBody = @"All files have been downloaded!";
-                    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
-                }];
-                
-                // Make nil the backgroundCompletionHandler.
-                weakSelf.backgroundCompletionHandler = nil;
-            }
-        }
-    }];
 }
 
 @end
