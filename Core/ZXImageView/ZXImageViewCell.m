@@ -24,7 +24,7 @@
 
 #import "ZXImageViewCell.h"
 #import "ZXImageView.h"
-#import "UIImageView+ZXWebImage.h"
+#import "UIImageView+ZXWebCache.h"
 
 @interface ZXImageViewCell () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 {

@@ -1,5 +1,5 @@
 //
-// UIImageView+ZXWebImage.h
+// UIImageView+ZXWebCache.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -24,7 +24,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIImageView (ZXWebImage)
+@interface UIImageView (ZXWebCache)
 
 /**
  Set image with URL

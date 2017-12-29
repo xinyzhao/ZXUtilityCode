@@ -1,5 +1,5 @@
 //
-// UIImageView+ZXWebImage.m
+// UIImageView+ZXWebCache.m
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -22,12 +22,12 @@
 // THE SOFTWARE.
 //
 
-#import "UIImageView+ZXWebImage.h"
+#import "UIImageView+ZXWebCache.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <objc/runtime.h>
 #import "ZXURLSession.h"
 
-@implementation UIImageView (ZXWebImage)
+@implementation UIImageView (ZXWebCache)
 
 + (NSCache *)imageCache {
     static NSCache *imageCache;
