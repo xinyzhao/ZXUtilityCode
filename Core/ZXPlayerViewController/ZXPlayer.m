@@ -35,6 +35,8 @@
 @property (nonatomic, strong) ZXBrightnessView *brightnessView;
 @property (nonatomic, strong) UISlider *volumeSlider;
 
+@property (nonatomic, assign) BOOL isEnded;
+
 @end
 
 @implementation ZXPlayer
@@ -139,7 +141,8 @@
     if (self.isReadToPlay && !self.isPlaying) {
         _isPlaying = YES;
         //
-        if (self.duration - self.currentTime < 0.5) {
+        if (self.isEnded) {
+            _isEnded = NO;
             [self seekToTime:0 andPlay:YES];
         } else {
             [self.player play];
@@ -187,13 +190,9 @@
 - (NSTimeInterval)currentTime {
     NSTimeInterval time = 0.f;
     if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        NSTimeInterval duration = self.duration;
         time = CMTimeGetSeconds(_playerItem.currentTime);
         if (time < 0.f) {
             time = 0.f;
-        }
-        if (time > duration) {
-            time = duration;
         }
     }
     return time;
@@ -202,7 +201,7 @@
 - (NSTimeInterval)duration {
     NSTimeInterval duration = 0.f;
     if (_playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        duration = round(CMTimeGetSeconds(_playerItem.duration));
+        duration = CMTimeGetSeconds(_playerItem.duration);
     }
     return duration;
 }
@@ -254,6 +253,7 @@
 - (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
     if (self.isPlaying) {
         _isPlaying = NO;
+        _isEnded = YES;
         //
         [self.player pause];
         //
