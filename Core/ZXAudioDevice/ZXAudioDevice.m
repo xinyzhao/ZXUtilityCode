@@ -68,7 +68,9 @@
     if (error) {
         NSLog(@"%@", error);
     }
-    self.overrideSpeaker = _overrideSpeaker;
+    if (self.overrideSpeaker) {
+        self.overrideSpeaker = _overrideSpeaker;
+    }
 }
 
 - (NSString *)currentInput {
@@ -132,7 +134,9 @@
         AVAudioSessionRouteDescription *previousRoute = notification.userInfo[AVAudioSessionRouteChangePreviousRouteKey];
         _audioSessionRouteChange(previousRoute, reason);
     }
-    self.overrideSpeaker = _overrideSpeaker;
+    if (self.overrideSpeaker) {
+        self.overrideSpeaker = _overrideSpeaker;
+    }
 }
 
 #pragma mark Proximity Monitoring
