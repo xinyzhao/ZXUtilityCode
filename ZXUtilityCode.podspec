@@ -19,12 +19,6 @@ Pod::Spec.new do |s|
 
   s.source_files  = "Core/ZXUtilityCode.h"
   s.public_header_files = "Core/ZXUtilityCode.h"
-  
-  s.subspec "AVAudioProximityDetector" do |ss|
-    ss.source_files  = "Core/AVAudioProximityDetector/*.{h,m}"
-    ss.public_header_files = "Core/AVAudioProximityDetector/*.h"
-    ss.frameworks = "AVFoundation"
-  end
 
   s.subspec "Base64Encoding" do |ss|
     ss.source_files  = "Core/Base64Encoding/*.{h,m}"

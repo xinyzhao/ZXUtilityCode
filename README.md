@@ -23,7 +23,6 @@ pod "ZXUtilityCode"
 
 ## Components
 
-* AVAudioProximityDetector
 * Base64Encoding
 * HashValue
 * JSONObject

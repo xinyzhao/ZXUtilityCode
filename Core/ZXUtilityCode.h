@@ -25,7 +25,6 @@
 #ifndef ZXUtilityCode_h
 #define ZXUtilityCode_h
 
-#import "AVAudioProximityDetector.h"
 #import "JSONObject.h"
 #import "NSArray+Extra.h"
 #import "NSData+Base64Encoding.h"
