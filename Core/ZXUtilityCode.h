@@ -50,6 +50,7 @@
 #import "UIView+Snapshot.h"
 #import "UIViewController+Extra.h"
 #import "ZXAlertView.h"
+#import "ZXAudioDevice.h"
 #import "ZXAuthorizationHelper.h"
 #import "ZXBadgeLabel.h"
 #import "ZXBrightnessView.h"

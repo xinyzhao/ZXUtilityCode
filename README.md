@@ -46,6 +46,7 @@ pod "ZXUtilityCode"
 * UIView+Snapshot
 * UIViewController+Extra
 * ZXAlertView
+* ZXAudioDevice
 * ZXAuthorizationHelper
 * ZXBadgeLabel
 * ZXBrightnessView

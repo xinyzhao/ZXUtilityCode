@@ -138,6 +138,12 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/ZXAlertView/*.h"
   end
 
+  s.subspec "ZXAudioDevice" do |ss|
+    ss.source_files  = "Core/ZXAudioDevice/*.{h,m}"
+    ss.public_header_files = "Core/ZXAudioDevice/*.h"
+    ss.frameworks = "AVFoundation"
+  end
+
   s.subspec "ZXAuthorizationHelper" do |ss|
     ss.source_files  = "Core/ZXAuthorizationHelper/*.{h,m}"
     ss.public_header_files = "Core/ZXAuthorizationHelper/*.h"
