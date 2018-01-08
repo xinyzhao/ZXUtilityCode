@@ -127,9 +127,11 @@
                     strongSelf.downloadTask = nil;
                 });
             } else {
-                if (completion) {
-                    completion(nil, error, imageURL);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (completion) {
+                        completion(nil, error, imageURL);
+                    }
+                });
             }
         }];
         [self.downloadTask resume];
