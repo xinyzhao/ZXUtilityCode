@@ -41,8 +41,6 @@
 
 @implementation ZXPlayer
 @synthesize isPlaying = _isPlaying;
-@synthesize isSeeking = _isSeeking;
-@synthesize playerLayer = _playerLayer;
 
 + (instancetype)playerWithURL:(NSURL *)URL {
     return [[ZXPlayer alloc] initWithURL:URL];
@@ -51,8 +49,9 @@
 - (instancetype)initWithURL:(NSURL *)URL {
     self = [super init];
     if (self) {
-        if (URL) {
-            AVURLAsset *asset = [AVURLAsset URLAssetWithURL:URL options:nil];
+        _URL = [URL copy];
+        if (_URL) {
+            AVURLAsset *asset = [AVURLAsset URLAssetWithURL:_URL options:nil];
             if (asset) {
                 _playerItem = [AVPlayerItem playerItemWithAsset:asset];
             }
@@ -70,7 +69,7 @@
             }
             __weak typeof(self) weakSelf = self;
             _playerObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, 30) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-                if (!weakSelf.isSeeking) {
+                if (weakSelf.isPlaying) {
                     if (weakSelf.playbackTime) {
                         weakSelf.playbackTime(weakSelf.currentTime, weakSelf.duration);
                     }
@@ -80,7 +79,9 @@
             _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         }
         //
-        _panGestureRate = CGPointMake(0.5, 0.5);
+        _brightnessFactor = 0.5;
+        _seekingFactor = 0.5;
+        _volumeFactor = 0.5;
         _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPanGestureRecognizer:)];
         //
         _brightnessView = [ZXBrightnessView brightnessView];
@@ -129,6 +130,55 @@
         [_attachView.layer removeObserver:self forKeyPath:@"bounds"];
         _attachView = nil;
     }
+}
+
+#pragma mark Properties
+
+- (void)setBrightnessFactor:(CGFloat)brightnessFactor {
+    if (brightnessFactor < 0.00) {
+        _brightnessFactor = 0.00;
+    } else if (brightnessFactor > 1.00) {
+        _brightnessFactor = 1.00;
+    } else {
+        _brightnessFactor = brightnessFactor;
+    }
+}
+
+- (void)setSeekingFactor:(CGFloat)seekingFactor {
+    if (seekingFactor < 0.00) {
+        _seekingFactor = 0.00;
+    } else if (seekingFactor > 1.00) {
+        _seekingFactor = 1.00;
+    } else {
+        _seekingFactor = seekingFactor;
+    }
+}
+
+- (void)setVolumeFactor:(CGFloat)volumeFactor {
+    if (volumeFactor < 0.00) {
+        _volumeFactor = 0.00;
+    } else if (volumeFactor > 1.00) {
+        _volumeFactor = 1.00;
+    } else {
+        _volumeFactor = volumeFactor;
+    }
+}
+
+- (UIImage *)videoPreviewImage {
+    UIImage *image = nil;
+    if (self.playerItem.asset) {
+        AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:self.playerItem.asset];
+        generator.appliesPreferredTrackTransform = YES;
+        CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+        CMTime actualTime;
+        NSError *error = nil;
+        CGImageRef imageRef = [generator copyCGImageAtTime:time actualTime:&actualTime error:&error];
+        if (imageRef) {
+            image = [[UIImage alloc] initWithCGImage:imageRef];
+            CGImageRelease(imageRef);
+        }
+    }
+    return image;
 }
 
 #pragma mark Playing
@@ -209,7 +259,6 @@
 - (void)seekToTime:(NSTimeInterval)time andPlay:(BOOL)play {
     if (self.isReadToPlay) {
         [self pause];
-        _isSeeking = !play;
         //
         NSTimeInterval duration = self.duration;
         if (time > duration) {
@@ -222,30 +271,11 @@
             if (weakSelf.playbackTime) {
                 weakSelf.playbackTime(time, duration);
             }
-            if (!weakSelf.isSeeking) {
+            if (play) {
                 [weakSelf play];
             }
         }];
     }
-}
-
-#pragma mark Image
-
-- (UIImage *)videoPreviewImage {
-    UIImage *image = nil;
-    if (self.playerItem.asset) {
-        AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:self.playerItem.asset];
-        generator.appliesPreferredTrackTransform = YES;
-        CMTime time = CMTimeMakeWithSeconds(0.0, 600);
-        CMTime actualTime;
-        NSError *error = nil;
-        CGImageRef imageRef = [generator copyCGImageAtTime:time actualTime:&actualTime error:&error];
-        if (imageRef) {
-            image = [[UIImage alloc] initWithCGImage:imageRef];
-            CGImageRelease(imageRef);
-        }
-    }
-    return image;
 }
 
 #pragma mark Notifications
@@ -296,14 +326,6 @@
     static CGFloat brightness = 0;
     static float volume = 0;
     static NSTimeInterval seekTime = 0;
-    // 比率
-    CGPoint rate = _panGestureRate;
-    if (rate.x > 1.f) {
-        rate.x = 1.f;
-    }
-    if (rate.y > 1.f) {
-        rate.y = 1.f;
-    }
     //
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:
@@ -330,8 +352,8 @@
         {
             CGPoint point = [pan translationInView:pan.view];
             if (isSeeking) {
-                if (rate.x > 0.f) {
-                    NSTimeInterval time = seekTime + (point.x / (pan.view.frame.size.width * rate.x)) * self.duration;
+                if (_seekingFactor > 0.00) {
+                    NSTimeInterval time = seekTime + (point.x / (pan.view.frame.size.width * _seekingFactor)) * self.duration;
                     if (time < 0) {
                         time = 0;
                     }
@@ -340,11 +362,14 @@
                     }
                     [self seekToTime:time andPlay:pan.state == UIGestureRecognizerStateEnded];
                 }
-            } else if (rate.y > 0.00f) {
-                CGFloat y = point.y / (pan.view.frame.size.height * rate.y);
-                if (isBrightness) {
+            } else if (isBrightness) {
+                if (_brightnessFactor > 0.00) {
+                    CGFloat y = point.y / (pan.view.frame.size.height * _brightnessFactor);
                     [UIScreen mainScreen].brightness = brightness - y;
-                } else if (fabs(self.volumeSlider.value - (volume - y)) > 0.05) {
+                }
+            } else {
+                if (_volumeFactor > 0.00) {
+                    CGFloat y = point.y / (pan.view.frame.size.height * _volumeFactor);
                     self.volumeSlider.value = volume - y;
                 }
             }
