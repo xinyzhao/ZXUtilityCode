@@ -35,12 +35,11 @@
 @property (nonatomic, strong) ZXBrightnessView *brightnessView;
 @property (nonatomic, strong) UISlider *volumeSlider;
 
-@property (nonatomic, assign) BOOL isEnded;
+@property (nonatomic, assign) ZXPlaybackStatus status;
 
 @end
 
 @implementation ZXPlayer
-@synthesize isPlaying = _isPlaying;
 
 + (instancetype)playerWithURL:(NSURL *)URL {
     return [[ZXPlayer alloc] initWithURL:URL];
@@ -49,6 +48,7 @@
 - (instancetype)initWithURL:(NSURL *)URL {
     self = [super init];
     if (self) {
+        _status = ZXPlaybackStatusUnknown;
         _URL = [URL copy];
         if (_URL) {
             AVURLAsset *asset = [AVURLAsset URLAssetWithURL:_URL options:nil];
@@ -68,6 +68,7 @@
                 _player.automaticallyWaitsToMinimizeStalling = NO;
             }
             __weak typeof(self) weakSelf = self;
+            [_player addObserver:self forKeyPath:@"rate" options:(NSKeyValueObservingOptionNew) context:nil];
             _playerObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, 30) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
                 if (weakSelf.isPlaying) {
                     if (weakSelf.playbackTime) {
@@ -134,6 +135,15 @@
 
 #pragma mark Properties
 
+- (void)setStatus:(ZXPlaybackStatus)status {
+    if (_status != status) {
+        _status = status;
+        if (_playbackStatus) {
+            _playbackStatus(_status);
+        }
+    }
+}
+
 - (void)setBrightnessFactor:(CGFloat)brightnessFactor {
     if (brightnessFactor < 0.00) {
         _brightnessFactor = 0.00;
@@ -187,32 +197,27 @@
     return _playerItem.status == AVPlayerItemStatusReadyToPlay;
 }
 
+- (BOOL)isPlaying {
+    return _status == ZXPlaybackStatusPlaying;
+}
+
+- (BOOL)isEnded {
+    return _status == ZXPlaybackStatusEnded;
+}
+
 - (void)play {
     if (self.isReadToPlay && !self.isPlaying) {
-        _isPlaying = YES;
-        //
         if (self.isEnded) {
-            _isEnded = NO;
             [self seekToTime:0 andPlay:YES];
         } else {
             [self.player play];
-        }
-        //
-        if (_playerStatus) {
-            _playerStatus(ZXPlayerStatusPlaying, nil);
         }
     }
 }
 
 - (void)pause {
-    if (self.isReadToPlay && self.isPlaying) {
-        _isPlaying = NO;
-        //
+    if (self.isPlaying) {
         [self.player pause];
-        //
-        if (_playerStatus) {
-            _playerStatus(ZXPlayerStatusPaused, nil);
-        }
     }
 }
 
@@ -220,6 +225,7 @@
     [self pause];
     //
     if (_player) {
+        [_player removeObserver:self forKeyPath:@"rate"];
         if (_playerObserver) {
             [_player removeTimeObserver:_playerObserver];
             _playerObserver = nil;
@@ -229,8 +235,8 @@
     //
     if (_playerItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self];
-        [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
         [_playerItem removeObserver:self forKeyPath:@"status"];
+        [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
         _playerItem = nil;
     }
 }
@@ -272,24 +278,9 @@
                 weakSelf.playbackTime(time, duration);
             }
             if (play) {
-                [weakSelf play];
+                [weakSelf.player play];
             }
         }];
-    }
-}
-
-#pragma mark Notifications
-
-- (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
-    if (self.isPlaying) {
-        _isPlaying = NO;
-        _isEnded = YES;
-        //
-        [self.player pause];
-        //
-        if (_playerStatus) {
-            _playerStatus(ZXPlayerStatusEnded, nil);
-        }
     }
 }
 
@@ -297,7 +288,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"status"]) {
-        ZXPlayerStatus status = [[change objectForKey:@"new"] intValue];
+        AVPlayerStatus status = [[change objectForKey:@"new"] integerValue];
         if (_playerStatus) {
             _playerStatus(status, _playerItem.error);
         }
@@ -308,13 +299,22 @@
         if (_loadedTime) {
             _loadedTime(loaded, duration);
         }
+    } else if ([keyPath isEqualToString:@"rate"]) {
+        BOOL isPlaying = ABS([[change objectForKey:@"new"] floatValue]) > 0.0;
+        self.status = isPlaying ? ZXPlaybackStatusPlaying : ZXPlaybackStatusPaused;
     } else if ([keyPath isEqualToString:@"bounds"]) {
         CGRect bounds = [[change objectForKey:@"new"] CGRectValue];
         _playerLayer.frame = bounds;
     }
 }
 
-#pragma mark Actions
+#pragma mark Notifications
+
+- (void)playerItemDidPlayToEndTime:(NSNotification *)notification {
+    self.status = ZXPlaybackStatusEnded;
+}
+
+#pragma mark Gestures
 
 - (void)onPanGestureRecognizer:(id)sender {
     UIPanGestureRecognizer *pan = sender;

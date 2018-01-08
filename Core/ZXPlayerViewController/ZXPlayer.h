@@ -25,13 +25,11 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 
-typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
-    ZXPlayerStatusUnknown = AVPlayerStatusUnknown,
-    ZXPlayerStatusReadyToPlay = AVPlayerStatusReadyToPlay,
-    ZXPlayerStatusFailed = AVPlayerStatusFailed,
-    ZXPlayerStatusPlaying,
-    ZXPlayerStatusPaused,
-    ZXPlayerStatusEnded,
+typedef NS_ENUM(NSInteger, ZXPlaybackStatus) {
+    ZXPlaybackStatusUnknown,
+    ZXPlaybackStatusPlaying,
+    ZXPlaybackStatusPaused,
+    ZXPlaybackStatusEnded,
 };
 
 @interface ZXPlayer : NSObject
@@ -42,9 +40,11 @@ typedef NS_ENUM(NSInteger, ZXPlayerStatus) {
 @property (nonatomic, readonly) NSTimeInterval currentTime;
 @property (nonatomic, readonly) NSTimeInterval duration;
 
-@property (nonatomic, copy) void (^playerStatus)(ZXPlayerStatus status, NSError *error);
-@property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
+@property (nonatomic, copy) void (^playerStatus)(AVPlayerStatus status, NSError *error);
 @property (nonatomic, copy) void (^loadedTime)(NSTimeInterval time, NSTimeInterval duration);
+
+@property (nonatomic, copy) void (^playbackStatus)(ZXPlaybackStatus status);
+@property (nonatomic, copy) void (^playbackTime)(NSTimeInterval time, NSTimeInterval duration);
 
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic, assign) CGFloat seekingFactor; // 0 - 1, 0 mean is disabled, default is 0.5
