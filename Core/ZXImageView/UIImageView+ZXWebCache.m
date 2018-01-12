@@ -23,8 +23,8 @@
 //
 
 #import "UIImageView+ZXWebCache.h"
-#import <CommonCrypto/CommonDigest.h>
 #import <objc/runtime.h>
+#import "ZXHashValue.h"
 #import "ZXURLSession.h"
 
 @implementation UIImageView (ZXWebCache)
@@ -78,7 +78,7 @@
         self.downloadTask = nil;
     }
     // 从缓存中加载
-    NSString *key = [UIImageView MD5String:imageURL.absoluteString];
+    NSString *key = [[[ZXHashValue alloc] initWithString:imageURL.absoluteString] MD5String];
     __block NSData *data = [[UIImageView imageCache] objectForKey:key];
     // 从本地加载
     if (data == nil) {

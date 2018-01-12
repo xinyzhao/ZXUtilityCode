@@ -25,11 +25,6 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/Base64Encoding/*.h"
   end
 
-  s.subspec "ZXHashValue" do |ss|
-    ss.source_files  = "Core/ZXHashValue/*.{h,m}"
-    ss.public_header_files = "Core/ZXHashValue/*.h"
-  end
-
   s.subspec "JSONObject" do |ss|
     ss.source_files  = "Core/JSONObject/*.{h,m}"
     ss.public_header_files = "Core/JSONObject/*.h"
@@ -179,6 +174,11 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/ZXDrawingView/*.h"
   end
 
+  s.subspec "ZXHashValue" do |ss|
+    ss.source_files  = "Core/ZXHashValue/*.{h,m}"
+    ss.public_header_files = "Core/ZXHashValue/*.h"
+  end
+
   s.subspec "ZXHTTPClient" do |ss|
     ss.source_files  = "Core/ZXHTTPClient/*.{h,m}"
     ss.public_header_files = "Core/ZXHTTPClient/*.h"
@@ -186,6 +186,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "ZXImageView" do |ss|
+    ss.dependency 'ZXUtilityCode/ZXHashValue'
     ss.dependency 'ZXUtilityCode/ZXURLSession'
     ss.source_files  = "Core/ZXImageView/*.{h,m}"
     ss.public_header_files = "Core/ZXImageView/*.h"
