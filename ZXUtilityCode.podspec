@@ -169,7 +169,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "ZXDownloadManager" do |ss|
-  	ss.dependency 'ZXUtilityCode/HashValue'
+  	ss.dependency 'ZXUtilityCode/ZXHashValue'
     ss.source_files  = "Core/ZXDownloadManager/*.{h,m}"
     ss.public_header_files = "Core/ZXDownloadManager/*.h"
   end
