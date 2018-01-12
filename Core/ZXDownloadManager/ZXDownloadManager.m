@@ -83,7 +83,7 @@
 }
 
 - (ZXDownloadTask *)downloadTaskForURL:(NSURL *)URL {
-    NSString *taskIdentifier = [[ZXHashValue alloc] initWithString:URL.absoluteString] SHA1String];
+    NSString *taskIdentifier = [[[ZXHashValue alloc] initWithString:URL.absoluteString] SHA1String];
     return [self.downloadTasks objectForKey:taskIdentifier];
 }
 
