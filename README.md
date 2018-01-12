@@ -24,7 +24,6 @@ pod "ZXUtilityCode"
 ## Components
 
 * Base64Encoding
-* HashValue
 * JSONObject
 * NSArray+Extra
 * NSDate+Extra
@@ -53,6 +52,7 @@ pod "ZXUtilityCode"
 * ZXCircularProgressView
 * ZXDownloadManager
 * ZXDrawingView
+* ZXHashValue
 * ZXHTTPClient
 * ZXImageView
 * ZXNetworkTrafficMonitor

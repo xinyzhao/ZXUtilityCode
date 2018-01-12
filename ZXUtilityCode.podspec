@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "ZXUtilityCode"
-  s.version      = "2.0.6"
+  s.version      = "2.0.7"
   s.summary      = "Utility codes for iOS."
   s.description  = <<-DESC
                    Provides a few utility codes for iOS.
@@ -25,9 +25,9 @@ Pod::Spec.new do |s|
     ss.public_header_files = "Core/Base64Encoding/*.h"
   end
 
-  s.subspec "HashValue" do |ss|
-    ss.source_files  = "Core/HashValue/*.{h,m}"
-    ss.public_header_files = "Core/HashValue/*.h"
+  s.subspec "ZXHashValue" do |ss|
+    ss.source_files  = "Core/ZXHashValue/*.{h,m}"
+    ss.public_header_files = "Core/ZXHashValue/*.h"
   end
 
   s.subspec "JSONObject" do |ss|

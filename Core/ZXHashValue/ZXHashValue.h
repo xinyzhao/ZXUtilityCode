@@ -1,5 +1,5 @@
 //
-// NSString+HashValue.h
+// ZXHashValue.h
 //
 // Copyright (c) 2016-2017 Zhao Xin (https://github.com/xinyzhao/ZXUtilityCode)
 //
@@ -24,34 +24,17 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (HashValue)
+@interface ZXHashValue : NSObject
 
-/**
- Create a MD5 hash data
- 
- @return NSData
- */
+- (instancetype)initWithData:(NSData *)data;
+- (instancetype)initWithString:(NSString *)string;
+- (instancetype)initWithFileAtPath:(NSString *)path;
+- (instancetype)initWithURL:(NSURL *)URL;
+
 - (NSData *)MD5Data;
-
-/**
- Create a MD5 hash string
- 
- @return NSString
- */
 - (NSString *)MD5String;
 
-/**
- Create a SHA hash data
- 
- @return NSData
- */
 - (NSData *)SHA1Data;
-
-/**
- Create a SHA hash string
- 
- @return NSString
- */
 - (NSString *)SHA1String;
 
 @end
