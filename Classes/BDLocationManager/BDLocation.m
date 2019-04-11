@@ -1,9 +1,8 @@
 //
-// BDLocation.h
+// BDLocation.m
+// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
-//
-// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +23,56 @@
 // THE SOFTWARE.
 //
 
-#import <JSONModel/JSONModel.h>
-#import <CoreLocation/CoreLocation.h>
+#import "BDLocation.h"
 
-@interface BDLocation : JSONModel
-@property (nonatomic, strong) NSString<Optional> *address; // 地址
-@property (nonatomic, strong) NSString<Optional> *name; // 名称
-@property (nonatomic, strong) NSString<Optional> *city; // 城市
-@property (nonatomic, strong) NSString<Optional> *cityCode; // 城市编码
-@property (nonatomic, strong) NSString<Optional> *country; // 国家
-@property (nonatomic, strong) NSString<Optional> *countryCode; // 国家编码
-@property (nonatomic, strong) NSString<Optional> *district; // 地区
-@property (nonatomic, strong) NSString<Optional> *province; // 省份
-@property (nonatomic, strong) NSString<Optional> *street; // 街道
-@property (nonatomic, strong) NSString<Optional> *streetNumber; // 街道编号
-@property (nonatomic, assign) CLLocationDegrees latitude; // 纬度
-@property (nonatomic, assign) CLLocationDegrees longitude; // 经度
+@implementation BDLocation
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.latitude = kCLLocationCoordinate2DInvalid.latitude;
+        self.longitude = kCLLocationCoordinate2DInvalid.longitude;
+    }
+    return self;
+}
 
 - (instancetype)initWithLatitude:(CLLocationDegrees)latitude
-                       longitude:(CLLocationDegrees)longitude;
+                       longitude:(CLLocationDegrees)longitude {
+    self = [super init];
+    if (self) {
+        self.latitude = latitude;
+        self.longitude = longitude;
+    }
+    return self;
+}
 
 - (instancetype)initWithLatitude:(CLLocationDegrees)latitude
                        longitude:(CLLocationDegrees)longitude
                          address:(NSString *)address
-                            name:(NSString *)name;
+                            name:(NSString *)name {
+    self = [super init];
+    if (self) {
+        self.latitude = latitude;
+        self.longitude = longitude;
+        self.address = address;
+        self.name = name;
+    }
+    return self;
+}
 
-// 获取地址名称
-- (NSString *)addressName;
+- (NSString *)addressName {
+    if (self.name.length > 0) {
+        return self.name;
+    }
+    if (self.address.length > 0) {
+        return self.address;
+    }
+    return nil;
+}
 
-// 获取经纬度坐标
-- (CLLocationCoordinate2D)coordinate;
+- (CLLocationCoordinate2D)coordinate {
+    return CLLocationCoordinate2DMake(_latitude, _longitude);
+}
 
 @end

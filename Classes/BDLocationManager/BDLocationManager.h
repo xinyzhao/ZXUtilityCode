@@ -1,9 +1,8 @@
 //
-// BDGeocoder.h
+// BDLocationManager.h
+// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
-//
-// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,16 +25,27 @@
 
 #import "BDLocation.h"
 
-// 地理编码完成 block
-typedef void (^BDGeocodeCompletion)(NSArray<BDLocation *> *locations, NSError *error);
+// BDLocationManager
+@interface BDLocationManager : NSObject
 
-// 地理编码器
-@interface BDGeocoder : NSObject
+// 位置信息
+@property (nonatomic, strong) BDLocation *location;
 
-// 正向地理编码，根据地址或名称返回经纬度
-- (void)geocodeLocation:(BDLocation *)location completion:(BDGeocodeCompletion)completion;
+// 单例
++ (BDLocationManager *)defaultManager;
 
-// 反向地理编码，根据经纬度返回地址或名称
-- (void)reverseGeocodeLocation:(BDLocation *)location completion:(BDGeocodeCompletion)completion;
+// 定位服务
+- (void)startLocationService;
+- (void)stopLocationService;
+
+// 更新位置
+- (void)startUpdatingLocation;
+- (void)stopUpdatingLocation;
 
 @end
+
+/**
+ * @brief 位置更新通知
+ * @param notification.userInfo = {@"location":BDLocation}
+ */
+extern NSString *const BDLocationManagerDidUpdateLocationNotification;

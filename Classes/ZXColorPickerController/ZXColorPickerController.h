@@ -1,9 +1,8 @@
 //
-// ZXColorPickerCell.h
+// ZXColorPickerController.h
+// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
-//
-// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +25,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ZXColorPickerCell : UIControl
-@property (weak, nonatomic) IBOutlet UILabel *textLabel;
-@property (weak, nonatomic) IBOutlet UISlider *textSlider;
-@property (weak, nonatomic) IBOutlet UITextField *textField;
-@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+typedef void(^ZXColorPickerCompletion)(UIColor *color);
 
-@property (assign, nonatomic) BOOL isHexValue; // Default NO
-@property (assign, nonatomic) BOOL isPercentValue; // Default NO
+@interface ZXColorPickerController : UIViewController
+/// 当前颜色
+@property (strong, nonatomic) UIColor *currentColor;
+/// 完成Block
+@property (copy, nonatomic) ZXColorPickerCompletion completionBlock;
 
 @end

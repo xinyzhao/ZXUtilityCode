@@ -1,9 +1,8 @@
 //
-// BDLocationManager.h
+// ZXColorPickerCell.h
+// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
-//
-// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +23,15 @@
 // THE SOFTWARE.
 //
 
-#import "BDLocation.h"
+#import <UIKit/UIKit.h>
 
-// BDLocationManager
-@interface BDLocationManager : NSObject
+@interface ZXColorPickerCell : UIControl
+@property (weak, nonatomic) IBOutlet UILabel *textLabel;
+@property (weak, nonatomic) IBOutlet UISlider *textSlider;
+@property (weak, nonatomic) IBOutlet UITextField *textField;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
-// 位置信息
-@property (nonatomic, strong) BDLocation *location;
-
-// 单例
-+ (BDLocationManager *)defaultManager;
-
-// 定位服务
-- (void)startLocationService;
-- (void)stopLocationService;
-
-// 更新位置
-- (void)startUpdatingLocation;
-- (void)stopUpdatingLocation;
+@property (assign, nonatomic) BOOL isHexValue; // Default NO
+@property (assign, nonatomic) BOOL isPercentValue; // Default NO
 
 @end
-
-/**
- * @brief 位置更新通知
- * @param notification.userInfo = {@"location":BDLocation}
- */
-extern NSString *const BDLocationManagerDidUpdateLocationNotification;

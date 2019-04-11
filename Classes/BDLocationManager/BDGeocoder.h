@@ -1,9 +1,8 @@
 //
-// ZXColorPickerController.h
+// BDGeocoder.h
+// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Copyright (c) 2016 Zhao Xin. All rights reserved.
-//
-// https://github.com/xinyzhao/ZXUtilityCode
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +23,18 @@
 // THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import "BDLocation.h"
 
-typedef void(^ZXColorPickerCompletion)(UIColor *color);
+// 地理编码完成 block
+typedef void (^BDGeocodeCompletion)(NSArray<BDLocation *> *locations, NSError *error);
 
-@interface ZXColorPickerController : UIViewController
-/// 当前颜色
-@property (strong, nonatomic) UIColor *currentColor;
-/// 完成Block
-@property (copy, nonatomic) ZXColorPickerCompletion completionBlock;
+// 地理编码器
+@interface BDGeocoder : NSObject
+
+// 正向地理编码，根据地址或名称返回经纬度
+- (void)geocodeLocation:(BDLocation *)location completion:(BDGeocodeCompletion)completion;
+
+// 反向地理编码，根据经纬度返回地址或名称
+- (void)reverseGeocodeLocation:(BDLocation *)location completion:(BDGeocodeCompletion)completion;
 
 @end
