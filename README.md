@@ -14,6 +14,7 @@ Provides a few utility codes for iOS.
 * Coordinates
 * WKWebView+H5Pay
 * ZXColorPickerController
+* ZXImageView
 
 ## License
 
