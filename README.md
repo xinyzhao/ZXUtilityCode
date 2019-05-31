@@ -15,6 +15,7 @@ Provides a few utility codes for iOS.
 * WKWebView+H5Pay
 * ZXColorPickerController
 * ZXImageView
+* ZXRefreshView
 
 ## License
 
